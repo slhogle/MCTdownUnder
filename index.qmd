@@ -1,0 +1,124 @@
+---
+title: "Data analysis for the project hogleLabProjTemplate"
+date: today
+author:
+  - name: Shane L Hogle
+    orcid: 0000-0003-2595-3863
+    affiliation: 
+      - name: University of Turku
+        city: Turku
+        state: Finland
+        url: https://www.utu.fi/en
+#abstract: > 
+#  The abstract text can go here 
+#  and also here ...
+keywords:
+  - Microbiology
+  - Ecology
+  - Evolution
+  - Antimicrobial resistance (AMR)
+license: "CC BY"
+copyright: 
+  holder: Shane L Hogle
+  year: 2025
+# citation: 
+#   container-title: BioRxiv
+#   volume: 
+#   issue: 
+#   doi: 
+funding: "The author received no specific funding for this work."
+#bibliography: references.bib
+---
+
+## Manuscript:
+
+◇ Corresponding author
+
+### Published record
+
+**Title XYZ**\
+FIRST AUTHOR<sup>◇</sup>, ..., LAST AUTHOR<sup>◇</sup>. *XYZ* (2025) [doi:]()
+
+### Preprint
+
+**Title XYZ**\
+FIRST AUTHOR<sup>◇</sup>, ..., LAST AUTHOR<sup>◇</sup>. *BioRxiv* (2025) [doi:]()
+
+## Introduction
+
+The goal of this project is to examine how ...
+
+## Experiment overview
+
+This is how we did our experiment...
+
+## Analysis overview
+
+This is how we did our data analysis...
+
+## Availability
+
+Data and code in this GitHub repository (<https://github.com/GHUSERNAME/REPOSITORYNAME>) are provided under [GNU AGPL3](https://www.gnu.org/licenses/agpl-3.0.html).
+The rendered project site is available at <https://GHUSERNAME.github.io/REPOSITORYNAME/>, which has been produced using [Quarto notebooks](https://quarto.org/). 
+The content on the rendered site is released under the [CC BY 4.0.](https://creativecommons.org/licenses/by/4.0/)
+This repository hosts all code and data for this project, including the code necessary to fully recreate the rendered webpage.
+
+An archived release of the code is available from Zenodo: <https://zenodo.org/records/EVENTUAL_ZENODO_RECORD>
+
+Raw sequencing data used in the project is available from NCBI Bioproject [PRJNA00000000](https://www.ncbi.nlm.nih
+
+## Reproducibility
+
+The project uses [`renv`](https://rstudio.github.io/renv/index.html) to create a reproducible environment to execute the code in this project. [See here](https://rstudio.github.io/renv/articles/renv.html#collaboration) for a brief overview on collaboration and reproduction of the entire project. 
+To get up and running from an established repository, you could do:
+
+``` r
+install.packages("renv")
+renv::restore()
+```
+
+To initiate `renv` for a new project:
+
+``` r
+install.packages("renv")
+# initialize
+renv::init()
+# install some new packages
+renv::install("tidyverse")
+# record those packages in the lockfile
+renv::snapshot()
+```
+
+```{r}
+#| eval: true
+#| echo: false
+#| output: false
+#| error: false
+#| warning: false
+# If you want to automoate setting up some general directory structure you can do that here in a quarto chunk
+# that does not get output to the final HTML. 
+
+# Setup project structure
+library(here)
+library(fs)
+
+# define directory paths and overall structure
+# the _data_raw directory is never touched or modified! 
+# All downstream work and intermediate results should be put in the data directory
+
+fs::dir_create(here::here("data", "X", "Y01"), recurse = TRUE)
+fs::dir_create(here::here("data", "X", "Y02"), recurse = TRUE)
+fs::dir_create(here::here("data", "X", "Y03"), recurse = TRUE)
+fs::dir_create(here::here("data", "X", "Y04"), recurse = TRUE)
+fs::dir_create(here::here("data", "A", "B01"), recurse = TRUE)
+fs::dir_create(here::here("data", "A", "B02"), recurse = TRUE)
+
+fs::dir_create(here::here("R", "X", "Y01"), recurse = TRUE)
+fs::dir_create(here::here("R", "X", "Y02"), recurse = TRUE)
+fs::dir_create(here::here("R", "X", "Y03"), recurse = TRUE)
+fs::dir_create(here::here("R", "X", "Y04"), recurse = TRUE)
+fs::dir_create(here::here("R", "A", "B01"), recurse = TRUE)
+fs::dir_create(here::here("R", "A", "B02"), recurse = TRUE)
+
+fs::dir_create(here::here("figs"), recurse = TRUE)
+```
