@@ -1,0 +1,221 @@
+---
+title: "Analyzing monoculture growth summary"
+author: "Shane Hogle"
+date: today
+link-citations: true
+abstract: "In the prior step we imported, smoothed, and calculated summary statistics for the species growth on [Biolog Ecoplates](https://www.biolog.com/products/community-analysis-microplates/ecoplate/). Here we will do some simple plots and analysis of the growth data on different carbon sources from the ecoplates."
+---
+
+# Setup
+
+## Libraries
+
+```{r}
+#| output: false
+#| warning: false
+#| error: false
+library(tidyverse)
+library(here)
+library(fs)
+library(scales)
+source(here::here("R", "utils_gcurves.R"))
+```
+
+## Global variables
+
+```{r}
+#| output: false
+#| warning: false
+#| error: false
+data_raw <- here::here("_data_raw", "biolog_ecoplates")
+data <- here::here("data", "biolog_ecoplates")
+
+# make processed data directory if it doesn't exist
+fs::dir_create(data)
+```
+
+## Read growth summary data
+
+```{r}
+#| output: false
+#| warning: false
+#| error: false
+
+gcurves <- readr::read_tsv(here::here(data, "ecoplate_gcurves_smooth.tsv"))
+many_auc_res <- readr::read_tsv(here::here(data, "ecoplate_gcurve_auc_results.tsv"))
+many_spline_res <- readr::read_tsv(here::here(data, "ecoplate_gcurve_spline_results.tsv"))
+```
+
+# Plot growth curves
+
+::: {#fig-01}
+```{r}
+#| fig.width: 8
+#| fig.height: 8
+#| echo: false
+#| warning: false
+gcurves %>% 
+  filter(strainID == "HAMBI_1287") %>% 
+  ggplot() + 
+  ggplot2::geom_line(aes(x = hours, y = OD600_rollmean, color = evolution, group = interaction(well, plate_name))) +
+  ggplot2::labs(x = "Hours", y = "OD600") +
+  ggplot2::scale_x_continuous(breaks = seq(0, 48, 12), labels = seq(0, 48, 12)) +
+  labs(y = "Absorbance (590 nm)", x = "Hours", title = "Citrobacter koseri HAMBI_1287") +
+  facet_wrap(~`carbon source`, labeller = labeller(`carbon source` = label_wrap_gen(20)))
+```
+Growth of Citrobacter koseri HAMBI_1287 on 31 different carbon substrates and water in Biolog Ecoplates. Absorbance is measured at 590 nm.
+:::
+
+::: {#fig-02}
+```{r}
+#| fig.width: 8
+#| fig.height: 8
+#| echo: false
+#| warning: false
+gcurves %>% 
+  filter(strainID == "HAMBI_1977") %>% 
+  ggplot() + 
+  ggplot2::geom_line(aes(x = hours, y = OD600_rollmean, color = evolution, group = interaction(well, plate_name))) +
+  ggplot2::labs(x = "Hours", y = "OD600") +
+  ggplot2::scale_x_continuous(breaks = seq(0, 48, 12), labels = seq(0, 48, 12)) +
+  facet_wrap(~`carbon source`)+
+  labs(y = "Absorbance (590 nm)", x = "Hours", title = "Pseudomonas chlororaphis HAMBI_1977") +
+  facet_wrap(~`carbon source`, labeller = labeller(`carbon source` = label_wrap_gen(20)))
+```
+Growth of Pseudomonas chlororaphis HAMBI_1977 on 31 different carbon substrates and water in Biolog Ecoplates. Absorbance is measured at 590 nm.
+:::
+
+# Plot maximum observed absorbance
+
+Some clustering to plot by more similar responses
+
+```{r}
+df2clust <- many_auc_res %>% 
+  mutate(strainID2 = paste0(toupper(evolution), "_", strain)) %>% 
+  summarize(y = min(max_od), .by=c(strainID2, `carbon source`)) %>% 
+  pivot_wider(names_from = "carbon source", values_from = "y") %>% 
+  pivot_longer(c(-strainID2, -water)) %>% 
+  mutate(value_norm = value - water) %>% 
+  pivot_wider(id_cols = c(-water, -value), names_from = "strainID2", values_from = "value_norm") %>% 
+  as.data.frame() %>% 
+  column_to_rownames(var = "name")
+
+# scale the dataframe for clustering
+df2clust_scaled <- scale(df2clust)
+
+# perform the hierarchcical clustering using euclidean distance and Ward's D
+hc <- hclust(dist(df2clust_scaled, method = "euclidean"), method = "ward.D2" )
+
+# plot
+df2clust %>% 
+  rownames_to_column(var = "carbon") %>% 
+  pivot_longer(cols = -carbon) %>% 
+  mutate(carbon = factor(carbon, levels = hc$labels[hc$order]),
+         name = factor(name, levels = c("ANC_1287", "EVO_1287", "ANC_1977", "EVO_1977"))) %>% 
+  ggplot(aes(x = name, y = carbon)) +
+  geom_tile(aes(fill = value)) +
+  scale_x_discrete(guide = guide_axis(angle = 90)) +
+  scale_fill_viridis_c() +
+  scale_color_manual(values = c("white", "black"), guide = "none") +
+  labs(y = "Carbon substrate", fill = "Maximum\nabsorbance", x = "") +
+  coord_fixed() + 
+  ggplot2::theme(panel.grid = element_blank(),
+                 panel.background = element_blank(), 
+                 strip.background = element_blank(),
+                 panel.border = element_blank())
+```
+
+
+::: {#fig-03}
+```{r}
+#| fig.width: 8
+#| fig.height: 8
+#| echo: false
+#| warning: false
+many_auc_res %>% 
+  mutate(strainID2 = paste0(toupper(evolution), "_", strain)) %>% 
+  summarize(y = min(max_od), .by=c(strainID2, `carbon source`)) %>% 
+  #summarize(ggplot2::mean_cl_boot(max_od), .by=c(strainID2, `carbon source`)) %>% 
+  mutate(strainID2 = factor(strainID2, levels = c("ANC_1287", "EVO_1287", "ANC_1977", "EVO_1977"))) %>% 
+  ggplot(aes(x = strainID2, y = `carbon source`)) +
+  geom_tile(aes(fill = y)) +
+  scale_x_discrete(guide = guide_axis(angle = 90)) +
+  scale_fill_viridis_c() +
+  scale_color_manual(values = c("white", "black"), guide = "none") +
+  labs(y = "Carbon substrate", fill = "Maximum\nabsorbance", x = "") +
+  coord_fixed() + 
+  ggplot2::theme(panel.grid = element_blank(),
+                 panel.background = element_blank(), 
+                 strip.background = element_blank(),
+                 panel.border = element_blank())
+```
+Mean maximum absorbance (590 nm, fill) over 2 replicates for the 4 strains (x-axis) grown on 31 carbon substrates and water (y-axis). 
+:::
+
+# Plot AUC
+
+::: {#fig-04}
+```{r}
+#| fig.width: 8
+#| fig.height: 8
+#| echo: false
+#| warning: false
+many_auc_res %>% 
+  mutate(strainID2 = paste0(toupper(evolution), "_", strain)) %>% 
+  summarize(ggplot2::mean_cl_boot(auc), .by=c(strainID2, `carbon source`)) %>% 
+  mutate(strainID2 = factor(strainID2, levels = c("ANC_1287", "EVO_1287", "ANC_1977", "EVO_1977"))) %>% 
+  ggplot(aes(x = strainID2, y = `carbon source`)) +
+  geom_tile(aes(fill = y)) +
+  scale_x_discrete(guide = guide_axis(angle = 90)) +
+  scale_fill_viridis_c() +
+  scale_color_manual(values = c("white", "black"), guide = "none") +
+  labs(y = "Carbon substrate", fill = "Area under the\ngrowth curve", x = "") +
+  coord_fixed() + 
+  ggplot2::theme(panel.grid = element_blank(),
+                 panel.background = element_blank(), 
+                 strip.background = element_blank(),
+                 panel.border = element_blank())
+```
+As in @fig-03 but for total area under the growth curve.
+:::
+
+# Plot growth rate
+
+::: {#fig-04}
+```{r}
+#| fig.width: 8
+#| fig.height: 8
+#| echo: false
+#| warning: false
+many_spline_res %>% 
+  mutate(strainID2 = paste0(toupper(evolution), "_", strain)) %>% 
+  summarize(ggplot2::mean_cl_boot(mumax), .by=c(strainID2, `carbon source`)) %>% 
+  mutate(strainID2 = factor(strainID2, levels = c("ANC_1287", "EVO_1287", "ANC_1977", "EVO_1977"))) %>% 
+  ggplot(aes(x = strainID2, y = `carbon source`)) +
+  geom_tile(aes(fill = y)) +
+  scale_x_discrete(guide = guide_axis(angle = 90)) +
+  scale_fill_viridis_c() +
+  scale_color_manual(values = c("white", "black"), guide = "none") +
+  labs(y = "Carbon substrate", fill = "Growth rate\n(hr-1)", x = "") +
+  coord_fixed() + 
+  ggplot2::theme(panel.grid = element_blank(),
+                 panel.background = element_blank(), 
+                 strip.background = element_blank(),
+                 panel.border = element_blank())
+```
+As in @fig-03 but for growth rate (hr-1)
+:::
+
+# Save
+
+```{r}
+#| eval: false
+ggsave(
+  here::here("figs", "monoculture_auc_filtrate.svg"),
+  auc_filtrate,
+  width = 8,
+  height = 8,
+  units = "in",
+  device = "svg"
+)
+```

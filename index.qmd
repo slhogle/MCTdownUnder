@@ -1,5 +1,5 @@
 ---
-title: "Data analysis for the project hogleLabProjTemplate"
+title: "Data analysis for the project MCTdownUnder"
 date: today
 author:
   - name: Shane L Hogle
@@ -32,17 +32,13 @@ funding: "The author received no specific funding for this work."
 
 ## Manuscript:
 
-◇ Corresponding author
-
 ### Published record
 
-**Title XYZ**\
-FIRST AUTHOR<sup>◇</sup>, ..., LAST AUTHOR<sup>◇</sup>. *XYZ* (2025) [doi:]()
+TBD
 
 ### Preprint
 
-**Title XYZ**\
-FIRST AUTHOR<sup>◇</sup>, ..., LAST AUTHOR<sup>◇</sup>. *BioRxiv* (2025) [doi:]()
+TBD
 
 ## Introduction
 
@@ -58,14 +54,12 @@ This is how we did our data analysis...
 
 ## Availability
 
-Data and code in this GitHub repository (<https://github.com/GHUSERNAME/REPOSITORYNAME>) are provided under [GNU AGPL3](https://www.gnu.org/licenses/agpl-3.0.html).
-The rendered project site is available at <https://GHUSERNAME.github.io/REPOSITORYNAME/>, which has been produced using [Quarto notebooks](https://quarto.org/). 
+Data and code in this GitHub repository (<https://github.com/slhogle/MCTdownUnder>) are provided under [GNU AGPL3](https://www.gnu.org/licenses/agpl-3.0.html).
+The rendered project site is available at <https://slhogle.github.io/MCTdownUnder/>, which has been produced using [Quarto notebooks](https://quarto.org/). 
 The content on the rendered site is released under the [CC BY 4.0.](https://creativecommons.org/licenses/by/4.0/)
 This repository hosts all code and data for this project, including the code necessary to fully recreate the rendered webpage.
 
 An archived release of the code is available from Zenodo: <https://zenodo.org/records/EVENTUAL_ZENODO_RECORD>
-
-Raw sequencing data used in the project is available from NCBI Bioproject [PRJNA00000000](https://www.ncbi.nlm.nih
 
 ## Reproducibility
 
@@ -90,7 +84,7 @@ renv::snapshot()
 ```
 
 ```{r}
-#| eval: true
+#| eval: false
 #| echo: false
 #| output: false
 #| error: false
