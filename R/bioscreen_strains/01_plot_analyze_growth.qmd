@@ -1,0 +1,127 @@
+---
+title: "Monoculture growth"
+author: "Shane Hogle"
+date: today
+link-citations: true
+abstract: "Growth of strains at different Streptomycin concentrations"
+---
+
+# Introduction
+
+Inspect the growth of both Streptomycin-sensitive (Sens/Anc) and Streptomycin-resistant (Res/Evo) forms of *Citrobacter koseri* 1287 and *Pseudomonas chlororaphis* 1977 at different streptomycin concentrations. 
+
+```{r}
+#| output: false
+#| warning: false
+#| error: false
+##### Libraries
+library(tidyverse)
+library(here)
+library(fs)
+library(scales)
+##### Global vars
+data <- here::here("data", "bioscreen_strains")
+```
+
+# Read
+
+```{r}
+#| output: false
+#| warning: false
+#| error: false
+many_auc_res <- readr::read_tsv(here::here(data, "gcurve_auc_results.tsv"))
+many_spline_res <- readr::read_tsv(here::here(data, "gcurve_spline_results.tsv"))
+gcurves <- readr::read_tsv(here::here(data, "gcurves_formatted_thinned.tsv"))
+```
+
+# Monoculture growth with streptomycin
+
+We'll now examine how the monoculture growth changed with respect to evolutionary history and streptomycin concentrations
+
+## Growth rates
+
+```{r}
+gr_strep <- many_spline_res %>% 
+  mutate(hist = str_split_i(sp_hist, "_", 1),
+         sp = str_split_i(sp_hist, "_", 2)) %>% 
+  summarize(ggplot2::mean_cl_boot(mumax), .by=c(sp, hist, strep_conc)) %>% 
+  mutate(strep_conc = factor(strep_conc, ordered = TRUE)) %>% 
+  ggplot(aes(x = strep_conc, y = y)) +
+  geom_linerange(aes(ymin = ymin, ymax = ymax, color = hist)) +
+  geom_line(aes(color = hist, group = hist), lty=1) +
+  geom_point(aes(color = hist)) +
+  labs(y = "Maximum per capita growth rate μ (hr-1)", x = "Streptomycin conc. (μg/ml)", 
+       color = "Evolutionary\nhistory") +
+  facet_grid(~sp) +
+  scale_x_discrete(guide = guide_axis(angle = 90))
+```
+
+
+::: {#fig-01}
+```{r}
+#| fig.width: 7
+#| fig.height: 4
+#| echo: false
+#| warning: false
+gr_strep
+```
+Maximum specific growth rate ($\mathrm{\mu_{max}}$ in $\mathrm{hr^{-1}}$) for the four different bacterial species (panels) and their different evolutionary histories (colors) at different streptomycin concentrations (horizontal axis, μg/ml). Points are the mean over five biological replicates and line ranges show the 95% confidence interval from bootstraps. EVO = experimentally evolved to high streptomycin.
+:::
+
+## Maximum carrying capcaity (K, maximum observed OD)
+
+```{r}
+k_strep <- many_auc_res %>% 
+  mutate(hist = str_split_i(sp_hist, "_", 1),
+         sp = str_split_i(sp_hist, "_", 2)) %>% 
+  summarize(ggplot2::mean_cl_boot(max_od), .by=c(sp, hist, strep_conc)) %>% 
+  mutate(strep_conc = factor(strep_conc, ordered = TRUE)) %>% 
+  ggplot(aes(x = strep_conc, y = y)) +
+  geom_linerange(aes(ymin = ymin, ymax = ymax, color = hist)) +
+  geom_line(aes(color = hist, group = hist), lty=1) +
+  geom_point(aes(color = hist)) +
+  labs(y = "Maximum carrying capacity (K, OD units)", x = "Streptomycin conc. (μg/ml)", 
+       color = "Evolutionary\nhistory") +
+  facet_grid(~sp) +
+  scale_x_discrete(guide = guide_axis(angle = 90))
+```
+
+::: {#fig-02}
+```{r}
+#| fig.width: 7
+#| fig.height: 4
+#| echo: false
+#| warning: false
+k_strep
+```
+As in @fig-01 and @fig-02 but for maximum carrying capacity (K, maximum observed OD)
+:::
+
+## AUC (area under the growth curve)
+
+```{r}
+auc_strep <- many_auc_res %>% 
+  mutate(hist = str_split_i(sp_hist, "_", 1),
+         sp = str_split_i(sp_hist, "_", 2)) %>% 
+  summarize(ggplot2::mean_cl_boot(auc), .by=c(sp, hist, strep_conc)) %>% 
+  mutate(strep_conc = factor(strep_conc, ordered = TRUE)) %>% 
+  ggplot(aes(x = strep_conc, y = y)) +
+  geom_linerange(aes(ymin = ymin, ymax = ymax, color = hist)) +
+  geom_line(aes(color = hist, group = hist), lty=1) +
+  geom_point(aes(color = hist)) +
+  labs(y = "Total area under the growth curve", x = "Streptomycin conc. (μg/ml)", 
+       color = "Evolutionary\nhistory") +
+  facet_grid(~sp) +
+  scale_x_discrete(guide = guide_axis(angle = 90))
+```
+
+::: {#fig-03}
+```{r}
+#| fig.width: 7
+#| fig.height: 4
+#| echo: false
+#| warning: false
+auc_strep
+```
+Area under the growth curve for the four different bacterial species (panels) and their different evolutionary histories (colors) at different streptomycin concentrations (horizontal axis, μg/ml). Points are the mean over five biological replicates and line ranges show the 95% confidence interval from bootstraps. EVO = experimentally evolved to high streptomycin.
+:::

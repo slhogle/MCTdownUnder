@@ -14,19 +14,27 @@ website:
     search: true
     contents:
 
-      - section: "1. Biolog ecoplates"
+      - section: "1. Str resistance monoculture"
+        contents:
+          - text: "i) Growth at different Str"
+            file: R/bioscreen_strains/01_plot_analyze_growth.qmd
+      - section: "2. Resource use monoculture: Biolog ecoplates"
         contents:
           - text: "i) Reading and formatting data from plate reader"
             file: R/biolog_ecoplates/01_format_growthcurves_batch.qmd
           - text: "ii) Plotting and analyzing growth on different carbon substrates"
             file: R/biolog_ecoplates/02_plot_analyze_growth.qmd
-      - section: "2. Competition using co-culture plates"
+      - section: "3. Competition outcomes from co-culture plates"
         contents:
           - text: "i) Reading and formatting data from plate reader"
             file: R/coculture_plates/01_format_growthcurves_batch.qmd
           - text: "ii) Plotting curves from competition exps"
             file: R/coculture_plates/02_plot_analyze_growth.qmd
-   
+      - section: "4. Long-term co-culture competition outcomes: colony counts"
+        contents:
+          - text: "i) Estimating CFUs and plotting"
+            file: R/longterm_coculture/01_cfu-estimator.qmd
+            
 format:
   html:
     theme:

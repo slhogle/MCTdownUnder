@@ -103,8 +103,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
-<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 
 
 </head>
@@ -148,12 +146,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">1. Biolog ecoplates</span></a>
+ <span class="menu-text">1. Str resistance monoculture</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./R/bioscreen_strains/01_plot_analyze_growth.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">i) Growth at different Str</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">2. Resource use monoculture: Biolog ecoplates</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./R/biolog_ecoplates/01_format_growthcurves_batch.html" class="sidebar-item-text sidebar-link">
@@ -170,13 +185,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">2. Competition using co-culture plates</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">3. Competition outcomes from co-culture plates</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./R/coculture_plates/01_format_growthcurves_batch.html" class="sidebar-item-text sidebar-link">
@@ -187,6 +202,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="sidebar-item-container"> 
   <a href="./R/coculture_plates/02_plot_analyze_growth.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">ii) Plotting curves from competition exps</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">4. Long-term co-culture competition outcomes: colony counts</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./R/longterm_coculture/01_cfu-estimator.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">i) Estimating CFUs and plotting</span></a>
   </div>
 </li>
       </ul>
@@ -862,42 +894,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb3-81"><a href="#cb3-81"></a>renv<span class="sc">::</span><span class="fu">install</span>(<span class="st">"tidyverse"</span>)</span>
 <span id="cb3-82"><a href="#cb3-82"></a><span class="co"># record those packages in the lockfile</span></span>
 <span id="cb3-83"><a href="#cb3-83"></a>renv<span class="sc">::</span><span class="fu">snapshot</span>()</span>
-<span id="cb3-84"><a href="#cb3-84"></a><span class="in">```</span></span>
-<span id="cb3-85"><a href="#cb3-85"></a></span>
-<span id="cb3-88"><a href="#cb3-88"></a><span class="in">```{r}</span></span>
-<span id="cb3-89"><a href="#cb3-89"></a><span class="co">#| eval: false</span></span>
-<span id="cb3-90"><a href="#cb3-90"></a><span class="co">#| echo: false</span></span>
-<span id="cb3-91"><a href="#cb3-91"></a><span class="co">#| output: false</span></span>
-<span id="cb3-92"><a href="#cb3-92"></a><span class="co">#| error: false</span></span>
-<span id="cb3-93"><a href="#cb3-93"></a><span class="co">#| warning: false</span></span>
-<span id="cb3-94"><a href="#cb3-94"></a><span class="co"># If you want to automoate setting up some general directory structure you can do that here in a quarto chunk</span></span>
-<span id="cb3-95"><a href="#cb3-95"></a><span class="co"># that does not get output to the final HTML. </span></span>
-<span id="cb3-96"><a href="#cb3-96"></a></span>
-<span id="cb3-97"><a href="#cb3-97"></a><span class="co"># Setup project structure</span></span>
-<span id="cb3-98"><a href="#cb3-98"></a><span class="fu">library</span>(here)</span>
-<span id="cb3-99"><a href="#cb3-99"></a><span class="fu">library</span>(fs)</span>
-<span id="cb3-100"><a href="#cb3-100"></a></span>
-<span id="cb3-101"><a href="#cb3-101"></a><span class="co"># define directory paths and overall structure</span></span>
-<span id="cb3-102"><a href="#cb3-102"></a><span class="co"># the _data_raw directory is never touched or modified! </span></span>
-<span id="cb3-103"><a href="#cb3-103"></a><span class="co"># All downstream work and intermediate results should be put in the data directory</span></span>
-<span id="cb3-104"><a href="#cb3-104"></a></span>
-<span id="cb3-105"><a href="#cb3-105"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"X"</span>, <span class="st">"Y01"</span>), <span class="at">recurse =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-106"><a href="#cb3-106"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"X"</span>, <span class="st">"Y02"</span>), <span class="at">recurse =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-107"><a href="#cb3-107"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"X"</span>, <span class="st">"Y03"</span>), <span class="at">recurse =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-108"><a href="#cb3-108"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"X"</span>, <span class="st">"Y04"</span>), <span class="at">recurse =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-109"><a href="#cb3-109"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"A"</span>, <span class="st">"B01"</span>), <span class="at">recurse =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-110"><a href="#cb3-110"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"A"</span>, <span class="st">"B02"</span>), <span class="at">recurse =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-111"><a href="#cb3-111"></a></span>
-<span id="cb3-112"><a href="#cb3-112"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"X"</span>, <span class="st">"Y01"</span>), <span class="at">recurse =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-113"><a href="#cb3-113"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"X"</span>, <span class="st">"Y02"</span>), <span class="at">recurse =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-114"><a href="#cb3-114"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"X"</span>, <span class="st">"Y03"</span>), <span class="at">recurse =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-115"><a href="#cb3-115"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"X"</span>, <span class="st">"Y04"</span>), <span class="at">recurse =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-116"><a href="#cb3-116"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"A"</span>, <span class="st">"B01"</span>), <span class="at">recurse =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-117"><a href="#cb3-117"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"A"</span>, <span class="st">"B02"</span>), <span class="at">recurse =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-118"><a href="#cb3-118"></a></span>
-<span id="cb3-119"><a href="#cb3-119"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"figs"</span>), <span class="at">recurse =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-120"><a href="#cb3-120"></a><span class="in">```</span></span>
-</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb3-84"><a href="#cb3-84"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

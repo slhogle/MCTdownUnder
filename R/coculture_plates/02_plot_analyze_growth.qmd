@@ -6,27 +6,18 @@ link-citations: true
 abstract: "In the prior step we imported, smoothed, and calculated summary statistics for the species growth on the coculture plates. Here we will do some simple plots and analysis of the cocultures growth."
 ---
 
-# Setup
-
-## Libraries
-
 ```{r}
 #| output: false
 #| warning: false
 #| error: false
+##### Libraries
 library(tidyverse)
 library(here)
 library(fs)
 library(scales)
 source(here::here("R", "utils_gcurves.R"))
-```
 
-## Global variables
-
-```{r}
-#| output: false
-#| warning: false
-#| error: false
+##### Global variables
 data_raw <- here::here("_data_raw", "coculture_plate")
 data <- here::here("data", "coculture_plate")
 
@@ -34,13 +25,13 @@ data <- here::here("data", "coculture_plate")
 fs::dir_create(data)
 ```
 
-## Read growth summary data
+# Read data
 
 ```{r}
 #| output: false
 #| warning: false
 #| error: false
-
+##### growth summary data
 gcurves <- readr::read_tsv(here::here(data, "coculture_gcurves_smooth.tsv"))
 ```
 
@@ -76,7 +67,7 @@ plot_competing_pair <- function(df, competition_pair){
   
   mc <- df %>%
     mutate(strainID = paste0(stringr::str_to_upper(stringr::str_sub(evolution, start = 1, end=1)), str_extract(strain, "\\d+"))) %>% 
-    dplyr::filter(str_detect(culture_type, "double_media", negate=FALSE)) %>% 
+    dplyr::filter(str_detect(culture_type, "double_broth", negate=FALSE)) %>% 
     dplyr::filter(strainID %in% strainpairs) %>% 
     dplyr::mutate(strep_conc = 0)
   

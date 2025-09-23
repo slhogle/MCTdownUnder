@@ -74,7 +74,7 @@ gcurves %>%
        x = "Hours", 
        color = "",
        lintype = "Replicate",
-       title = "Pseudomonas chlororaphis HAMBI_1977") +
+       title = "Citrobacter koseri HAMBI_1287") +
   facet_wrap(~`carbon source`, labeller = labeller(`carbon source` = label_wrap_gen(20)))
 ```
 Full growth curves of *Citrobacter koseri* HAMBI_1287 on 31 different carbon substrates and water in Biolog Ecoplates over 48 hours of growth. Metabolic activity via tetrazolium reduction is colorometrically tracked with absorbance at 590 nm. Line type denotes the biological replicate, while line color denotes adaptation to the antibiotic streptomycin: Streptomycin resistant (red) Streptomycin sensitive (blue).

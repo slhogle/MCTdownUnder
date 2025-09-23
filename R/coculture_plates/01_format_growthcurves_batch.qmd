@@ -6,14 +6,11 @@ link-citations: true
 abstract: "The ancestral (streptomycin sensitive) and evolved (streptomycin resistant) forms of HAMBI_1287 and HAMBI_1977 were grown on adjacent 0.22 um membrane-separated wells in a Verasys co-culture plate. Note that due to the unique format of the plate rows A and H do not contain any data. Measurements were collected with a Biotek Logphase 600 microplate reader."
 ---
 
-# Setup
-
-## Libraries
-
 ```{r}
 #| output: false
 #| warning: false
 #| error: false
+##### Libraries
 library(here)
 library(tidyverse)
 library(readxl)
@@ -23,14 +20,8 @@ library(fs)
 library(ggforce)
 library(slider)
 source(here::here("R", "utils_gcurves.R"))
-```
 
-## Global variables
-
-```{r}
-#| output: false
-#| warning: false
-#| error: false
+##### Global vars
 data_raw <- here::here("_data_raw", "coculture_plate")
 data <- here::here("data", "coculture_plate")
 
@@ -38,9 +29,7 @@ data <- here::here("data", "coculture_plate")
 fs::dir_create(data)
 ```
 
-# Tidying growth curves from Synergy H1 multimode microplate reader 
-
-## Read growth curves
+# Read and Tidy
 
 ```{r}
 # plate reading function
@@ -59,14 +48,12 @@ read_logphase_xlsx <- function(subdir, filename, sheet, skip){
 }
 ```
 
-## Read sample metadata
-
 ```{r}
+#### Read sample metadata
 samplesheet_diff_test <- readxl::read_xlsx(here::here(data_raw, "20250920_v2", "diffusion_test_2_samplesheet.xlsx"))
 samplesheet_coculture <- readxl::read_xlsx(here::here(data_raw, "20250920_v2", "coculture_samplesheet.xlsx"))
-```
 
-```{r}
+##### Read crowth curves
 # Diffusion test plate
 diff_test <- read_logphase_xlsx("20250920_v2", "diffusion_test_2_Co-culture_1977_1287AE_12.9_15-syys-2025 09-00-26.xlsx", 2, 1) %>% 
   # remove rows A and H
@@ -97,9 +84,7 @@ strep_08 <- read_logphase_xlsx("20250920_v2", "Co-culture_0_4_8ug_plates_22-syys
   left_join(samplesheet_coculture, by = join_by(well)) %>% 
   mutate(strep_conc = 8) %>% 
   mutate(plate_name = "str_08")
-```
 
-```{r}
 # combine all samples, group by plate + well, calculate rolling mean
 coculture_gcurves_sm <- bind_rows(diff_test, strep_00, strep_04, strep_08) %>% 
   dplyr::group_by(plate_name, well) %>% 
@@ -108,6 +93,7 @@ coculture_gcurves_sm <- bind_rows(diff_test, strep_00, strep_04, strep_08) %>%
   ungroup() %>% 
   relocate(OD600_rollmean, .after = "OD600")
 
+# save result for later 
 readr::write_tsv(coculture_gcurves_sm, here::here(data, "coculture_gcurves_smooth.tsv"))
 ```
 
