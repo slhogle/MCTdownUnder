@@ -1,9 +1,9 @@
 ---
-title: "Formatting co-culture growth curves from Synergy H1"
+title: "Formatting co-culture growth curves from Logphase 600 Plate reader"
 author: "Shane Hogle"
 date: today
 link-citations: true
-abstract: "The ancestral (streptomycin sensitive) and evolved (streptomycin resistant) forms of HAMBI_1287 and HAMBI_1977 were grown on adjacent 0.22 um membrane-separated wells in a Verasys co-culture plate. Note that due to the unique format of the plate rows A and H do not contain any data. Measurements were collected with a synergy H1 multimode microplate reader."
+abstract: "The ancestral (streptomycin sensitive) and evolved (streptomycin resistant) forms of HAMBI_1287 and HAMBI_1977 were grown on adjacent 0.22 um membrane-separated wells in a Verasys co-culture plate. Note that due to the unique format of the plate rows A and H do not contain any data. Measurements were collected with a Biotek Logphase 600 microplate reader."
 ---
 
 # Setup
@@ -43,46 +43,77 @@ fs::dir_create(data)
 ## Read growth curves
 
 ```{r}
-plate01 <- readxl::read_xlsx(here::here(data_raw, "20250714_init", "rawdata_versarys.xlsx"), sheet = 3, skip = 1) %>% 
+# plate reading function
+read_logphase_xlsx <- function(subdir, filename, sheet, skip){
+  readxl::read_xlsx(here::here(data_raw, subdir, filename), sheet = sheet, skip = skip) %>% 
   # set interval start to be first cell and make all intervals relative to that
   # use time_length to just create an hours variable of type numeric
   mutate(seconds = lubridate::time_length(lubridate::interval(Time[1], Time), unit = "second")) %>% 
   tidyr::pivot_longer(c(-seconds, -Time), names_to = "well", values_to = "OD600") %>%
   mutate(hours = lubridate::time_length(seconds, unit = "hours")) %>% 
   # converting the well format so it matches the samplesheet
-  mutate(well = paste0(str_extract(well, "^[A-H]"), str_pad(str_extract(well, "\\d+"), width = 2, pad = "0", side = "left"))) %>% 
+  mutate(well = paste0(str_extract(well, "^[A-H]"), str_pad(str_extract(well, "\\d+"), 
+                                                            width = 2, pad = "0", side = "left"))) %>% 
   dplyr::select(seconds, hours, well, OD600) %>% 
-  # create a plate variable for later combining
-  mutate(plate_name = "plate01")
+  mutate(OD600 = as.numeric(OD600))
+}
 ```
-
-# Format growth curves
 
 ## Read sample metadata
 
 ```{r}
-samplesheet01 <- readxl::read_xlsx(here::here(data_raw, "20250714_init", "samplesheet.xlsx")) %>% 
-  mutate(strainID = paste0(strain, str_to_upper(str_sub(evolution, 1, 1)))) %>% 
-  mutate(plate_name = "plate01")
+samplesheet_diff_test <- readxl::read_xlsx(here::here(data_raw, "20250920_v2", "diffusion_test_2_samplesheet.xlsx"))
+samplesheet_coculture <- readxl::read_xlsx(here::here(data_raw, "20250920_v2", "coculture_samplesheet.xlsx"))
 ```
 
-## Join with metadata to remove ununsed samples
+```{r}
+# Diffusion test plate
+diff_test <- read_logphase_xlsx("20250920_v2", "diffusion_test_2_Co-culture_1977_1287AE_12.9_15-syys-2025 09-00-26.xlsx", 2, 1) %>% 
+  # remove rows A and H
+  filter(str_detect(well, "^A|^H", negate = TRUE)) %>% 
+  left_join(samplesheet_diff_test, by = join_by(well)) %>% 
+  mutate(plate_name = "diffusion_test")
+
+# Experiment plate 0 ug/ml streptomycin
+strep_00 <- read_logphase_xlsx("20250920_v2", "Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx", 2, 1) %>% 
+  # rows A and H not collected here so they are NA
+  drop_na() %>% 
+  left_join(samplesheet_coculture, by = join_by(well)) %>% 
+  mutate(strep_conc = 0) %>% 
+  mutate(plate_name = "str_00")
+
+# Experiment plate 4 ug/ml streptomycin
+strep_04 <- read_logphase_xlsx("20250920_v2", "Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx", 5, 1) %>% 
+  # rows A and H not collected here so they are NA
+  drop_na() %>% 
+  left_join(samplesheet_coculture, by = join_by(well)) %>% 
+  mutate(strep_conc = 4) %>% 
+  mutate(plate_name = "str_04")
+
+# Experiment plate 8 ug/ml streptomycin
+strep_08 <- read_logphase_xlsx("20250920_v2", "Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx", 8, 1) %>% 
+  # rows A and H not collected here so they are NA
+  drop_na() %>% 
+  left_join(samplesheet_coculture, by = join_by(well)) %>% 
+  mutate(strep_conc = 8) %>% 
+  mutate(plate_name = "str_08")
+```
 
 ```{r}
-coculture_gcurves_sm <-plate01 %>% 
-  left_join(samplesheet01, by = join_by(well, plate_name)) %>% 
+# combine all samples, group by plate + well, calculate rolling mean
+coculture_gcurves_sm <- bind_rows(diff_test, strep_00, strep_04, strep_08) %>% 
   dplyr::group_by(plate_name, well) %>% 
+  arrange(plate_name, well) %>% 
   dplyr::mutate(OD600_rollmean = slider::slide_dbl(OD600, mean, .before = 2, .after = 2)) %>% 
   ungroup() %>% 
-  relocate(OD600_rollmean, .after = "OD600") %>% 
-  filter(str_detect(well, "^A|^H", negate = TRUE))
+  relocate(OD600_rollmean, .after = "OD600")
 
 readr::write_tsv(coculture_gcurves_sm, here::here(data, "coculture_gcurves_smooth.tsv"))
 ```
 
 # Inspect growth curves
 
-## plate01 (Ancestral HAMBI_1287 ANC)
+## plate01 (diffusion test)
 
 This plate contains three replicates for the ancestral form of HAMBI_1287
 
@@ -92,9 +123,42 @@ This plate contains three replicates for the ancestral form of HAMBI_1287
 #| fig.height: 8
 #| echo: false
 #| warning: false
-plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="plate01", rows=6, cols=12, page=1)
+plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="diffusion_test", rows=6, cols=12, page=1, scales = "fixed")
 ```
-Growth curves for the first coculture plate. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of 9 points. Orange is non-smoothed. Note that rows A and H are meaningless because of the construction of the plate. Columns 2 and 10 were not inoculated with bacteria.
+Growth curves for the "diffusion test" coculture plate. Columns 1, 3, 5, and 7 have only M9 salts. Columns 2, 4, 6, 8, 9, 10, 11, and 12 had R2A medium. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. Bacteria were inoculated into rows B-D, columns 1, 3, 5, and 7 and rows E-F columsn 2, 4, 6, and 8. Columns 9 and 11 were not inoculated with any bacteria. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of 9 points. Orange is non-smoothed. Note that rows A and H are meaningless because of the construction of the plate. Note: rows A and H are blank.
+:::
+
+::: {#fig-02}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="str_00", rows=6, cols=12, page=1, scales = "fixed")
+```
+Growth curves for the coculture plate with no streptomycin. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of 9 points. Orange is non-smoothed. Note that rows A and H are meaningless because of the construction of the plate. Note: rows A and H are blank.
+:::
+
+::: {#fig-03}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="str_04", rows=6, cols=12, page=1, scales = "fixed")
+```
+Growth curves for the coculture plate with 4 ug/ml streptomycin. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of 9 points. Orange is non-smoothed. Note that rows A and H are meaningless because of the construction of the plate. Note: rows A and H are blank.
+:::
+
+::: {#fig-04}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="str_08", rows=6, cols=12, page=1, scales = "fixed")
+```
+Growth curves for the coculture plate with 8 ug/ml streptomycin. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of 9 points. Orange is non-smoothed. Note that rows A and H are meaningless because of the construction of the plate. Note: rows A and H are blank.
 :::
 
 # Growth curve statistics
@@ -155,15 +219,48 @@ many_spline_fitted <- purrr::map(many_spline@fits, \(x) data.frame(x@FUN(x@obs$t
 
 #### Plate01
 
-::: {#fig-04}
+::: {#fig-05}
 ```{r}
 #| fig.width: 12
 #| fig.height: 8
 #| echo: false
 #| warning: false
-plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="plate01", rows=6, cols=12, page = 1)
+plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="diffusion_test", rows=6, cols=12, page = 1, scales = "fixed")
 ```
 As in @fig-01. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
+:::
+
+::: {#fig-06}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="str_00", rows=6, cols=12, page = 1, scales = "fixed")
+```
+As in @fig-02. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
+:::
+
+::: {#fig-07}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="str_04", rows=6, cols=12, page = 1, scales = "fixed")
+```
+As in @fig-03. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
+:::
+
+::: {#fig-08}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="str_08", rows=6, cols=12, page = 1, scales = "fixed")
+```
+As in @fig-04. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
 :::
 
 ## AUC
@@ -176,9 +273,8 @@ many_auc_res <- coculture_gcurves_sm %>%
             max_od = max(OD600_rollmean),
             min_od = min(OD600_rollmean),
             .by = id) %>% 
-  dplyr::left_join(dplyr::distinct(dplyr::select(coculture_gcurves_sm, plate_name:id)), by = join_by(id)) %>% 
-  dplyr::select(-id) %>% 
-  dplyr::relocate(auc, max_od, min_od, .after="strainID")
+  dplyr::left_join(dplyr::distinct(dplyr::select(coculture_gcurves_sm, strain:id)), by = join_by(id)) %>% 
+  dplyr::select(-id)
 ```
 
 # Write all output
@@ -189,8 +285,7 @@ readr::write_tsv(many_auc_res, here::here(data, "coculture_gcurve_auc_results.ts
 
 ```{r}
 many_spline_res %>% 
-  dplyr::left_join(dplyr::distinct(dplyr::select(coculture_gcurves_sm, plate_name:id)), by = join_by(id)) %>% 
-  dplyr::select(-id) %>% 
-  dplyr::relocate(y0:r2, .after="strainID") %>% 
+  dplyr::left_join(dplyr::distinct(dplyr::select(coculture_gcurves_sm, strain:id)), by = join_by(id)) %>% 
+  dplyr::select(-id) %>%
   readr::write_tsv(here::here(data, "coculture_gcurve_spline_results.tsv"))
 ```

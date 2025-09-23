@@ -8,42 +8,51 @@ abstract: "In the prior step we imported, smoothed, and calculated summary stati
 
 # Setup
 
-## Libraries
-
 ```{r}
 #| output: false
 #| warning: false
 #| error: false
+##### Libraries
 library(tidyverse)
 library(here)
 library(fs)
 library(scales)
+library(errors)
 source(here::here("R", "utils_gcurves.R"))
-```
 
-## Global variables
-
-```{r}
-#| output: false
-#| warning: false
-#| error: false
+##### Global variabless
 data_raw <- here::here("_data_raw", "biolog_ecoplates")
 data <- here::here("data", "biolog_ecoplates")
-
 # make processed data directory if it doesn't exist
 fs::dir_create(data)
 ```
 
-## Read growth summary data
+# Introduction
+
+The [Biolog Ecoplates](https://www.biolog.com/products/community-analysis-microplates/ecoplate/) utilize tetrazolium reduction to measure the metabolic response of bacterial cells to different carbon substrates.  Oxidized tetrazolium salt is water soluble, colorless in solution, and can freely diffuse into bacterial cells. Once inside the cell, tetrazolium is reduced by reducing agents like NADH an NADPH which are generated via cellular metabolism and catabolism. Once reduced tetrazolium is transformed into pink product. This assay measures the accumulation of reduced tetrazolium (colormetric absorbance at 590 nm) and hence the accumulation and concentration of reducing agents from cellular metabolism. This process will reflect both the concentration of cells in solution and per-capita concentration of reductant from central metabolism. There is a useful overview of the Tetrazolium colorometric procedure [available here.](https://fi.promega.com/resources/pubhub/is-your-mtt-assay-really-the-best-choice/)
+
+# Read data
 
 ```{r}
 #| output: false
 #| warning: false
 #| error: false
-
-gcurves <- readr::read_tsv(here::here(data, "ecoplate_gcurves_smooth.tsv"))
+##### Growth summary data (e.g., AUC and growth rates from )
 many_auc_res <- readr::read_tsv(here::here(data, "ecoplate_gcurve_auc_results.tsv"))
 many_spline_res <- readr::read_tsv(here::here(data, "ecoplate_gcurve_spline_results.tsv"))
+
+##### Full growth curves
+gcurves <- readr::read_tsv(here::here(data, "ecoplate_gcurves_smooth.tsv")) %>% 
+  arrange(strainID, well, plate_name) %>% 
+  group_by(strainID, evolution, plate_name, `carbon source`, well) %>% 
+  mutate(id = dplyr::cur_group_id()) %>% 
+  group_by(strainID, evolution, `carbon source`) %>% 
+  mutate(replicate = case_when(id == min(id) ~ 1,
+                               id == max(id) ~ n_distinct(id),
+                               TRUE ~ 2)) %>% 
+  mutate(replicate = LETTERS[replicate]) %>% 
+  dplyr::select(-id) %>% 
+  ungroup() 
 ```
 
 # Plot growth curves
@@ -55,15 +64,20 @@ many_spline_res <- readr::read_tsv(here::here(data, "ecoplate_gcurve_spline_resu
 #| echo: false
 #| warning: false
 gcurves %>% 
+  mutate(hist = if_else(str_detect(evolution, "anc"), "Str Sens.", "Str Res.")) %>% 
   filter(strainID == "HAMBI_1287") %>% 
   ggplot() + 
-  ggplot2::geom_line(aes(x = hours, y = OD600_rollmean, color = evolution, group = interaction(well, plate_name))) +
+  ggplot2::geom_line(aes(x = hours, y = OD600_rollmean, color = hist, linetype = replicate, group = interaction(well, plate_name))) +
   ggplot2::labs(x = "Hours", y = "OD600") +
   ggplot2::scale_x_continuous(breaks = seq(0, 48, 12), labels = seq(0, 48, 12)) +
-  labs(y = "Absorbance (590 nm)", x = "Hours", title = "Citrobacter koseri HAMBI_1287") +
+  labs(y = "Metabolic performance (absorbance units, λ = 590 nm)", 
+       x = "Hours", 
+       color = "",
+       lintype = "Replicate",
+       title = "Pseudomonas chlororaphis HAMBI_1977") +
   facet_wrap(~`carbon source`, labeller = labeller(`carbon source` = label_wrap_gen(20)))
 ```
-Growth of Citrobacter koseri HAMBI_1287 on 31 different carbon substrates and water in Biolog Ecoplates. Absorbance is measured at 590 nm.
+Full growth curves of *Citrobacter koseri* HAMBI_1287 on 31 different carbon substrates and water in Biolog Ecoplates over 48 hours of growth. Metabolic activity via tetrazolium reduction is colorometrically tracked with absorbance at 590 nm. Line type denotes the biological replicate, while line color denotes adaptation to the antibiotic streptomycin: Streptomycin resistant (red) Streptomycin sensitive (blue).
 :::
 
 ::: {#fig-02}
@@ -73,18 +87,105 @@ Growth of Citrobacter koseri HAMBI_1287 on 31 different carbon substrates and wa
 #| echo: false
 #| warning: false
 gcurves %>% 
+  mutate(hist = if_else(str_detect(evolution, "anc"), "Str Sens.", "Str Res.")) %>% 
   filter(strainID == "HAMBI_1977") %>% 
   ggplot() + 
-  ggplot2::geom_line(aes(x = hours, y = OD600_rollmean, color = evolution, group = interaction(well, plate_name))) +
+  ggplot2::geom_line(aes(x = hours, y = OD600_rollmean, color = hist, linetype = replicate, group = interaction(well, plate_name))) +
   ggplot2::labs(x = "Hours", y = "OD600") +
   ggplot2::scale_x_continuous(breaks = seq(0, 48, 12), labels = seq(0, 48, 12)) +
   facet_wrap(~`carbon source`)+
-  labs(y = "Absorbance (590 nm)", x = "Hours", title = "Pseudomonas chlororaphis HAMBI_1977") +
+  labs(y = "Metabolic performance (absorbance units, λ = 590 nm)", 
+       x = "Hours", 
+       color = "",
+       lintype = "Replicate",
+       title = "Pseudomonas chlororaphis HAMBI_1977") +
   facet_wrap(~`carbon source`, labeller = labeller(`carbon source` = label_wrap_gen(20)))
 ```
-Growth of Pseudomonas chlororaphis HAMBI_1977 on 31 different carbon substrates and water in Biolog Ecoplates. Absorbance is measured at 590 nm.
+Growth of *Pseudomonas chlororaphis* HAMBI_1977 on 31 different carbon substrates and water in Biolog Ecoplates over 48 hours of growth. Metabolic activity via tetrazolium reduction is colorometrically tracked with absorbance at 590 nm. Line type denotes the biological replicate, while line color denotes adaptation to the antibiotic streptomycin: Streptomycin resistant (red) Streptomycin sensitive (blue).
 :::
 
+# Plot maximum absorbance
+
+```{r}
+#| output: false
+#| warning: false
+# 1. for each replicate take the mean over all measurements within 0.05 units of the max
+# 2. subtract water from all values
+# 3. calculate mean and bootstrapped 95% CI across biological replicates
+gcurves_metabolic_pref <- gcurves %>% 
+  mutate(strainID2 = paste0(toupper(evolution), "_", strain)) %>%
+  filter(hours > 24) %>% 
+  group_by(strainID2, `carbon source`, replicate) %>% 
+  filter(OD600 >= max(OD600)-0.05) %>% 
+  summarize(OD600 = mean(OD600)) %>% 
+  ungroup() %>% 
+  pivot_wider(names_from = `carbon source`, values_from = "OD600") %>% 
+  pivot_longer(cols = c(-strainID2, -replicate, -water), names_to = "carbon_source", values_to = "OD600") %>% 
+  mutate(OD600_norm = if_else((OD600 - water) < 0, 0, OD600-water)) %>% 
+  summarize(ggplot2::mean_cl_boot(OD600), .by=c(strainID2, carbon_source)) %>% 
+  mutate(y_e = errors::set_errors(y, ymax-y)) %>% 
+  group_by(strainID2) %>% 
+  mutate(y_e_r = y_e/max(y_e)) %>% 
+  ungroup()
+
+# Order of carbon compounds from highest metabolic output to lowest
+carbon_order_1287 <- gcurves_metabolic_pref %>% 
+  filter(strainID2 == "ANC_1287") %>% 
+  arrange(y_e_r) %>% 
+  pull(carbon_source)
+
+carbon_order_1977 <- gcurves_metabolic_pref %>% 
+  filter(strainID2 == "ANC_1977") %>% 
+  arrange(y_e_r) %>% 
+  pull(carbon_source)
+
+# plot
+p1287 <- gcurves_metabolic_pref %>% 
+  filter(str_detect(strainID2, "1287")) %>% 
+  mutate(hist = if_else(str_detect(strainID2, "ANC"), "Str Sens.", "Str Res.")) %>% 
+  mutate(carbon_source = factor(carbon_source, levels = carbon_order_1287)) %>% 
+  ggplot(aes(y = carbon_source, x = y_e, color = hist)) + 
+  geom_errors() +
+  geom_point(size = 3) + 
+  labs(y = "Carbon source ranked by metabolic output", 
+       x = "Metabolic performance (absorbance units, λ = 590 nm)",
+       color = "", title = "Citrobacter koseri 1287")
+
+p1977 <- gcurves_metabolic_pref %>% 
+  filter(str_detect(strainID2, "1977")) %>% 
+  mutate(hist = if_else(str_detect(strainID2, "ANC"), "Str Sens.", "Str Res.")) %>% 
+  mutate(carbon_source = factor(carbon_source, levels = carbon_order_1977)) %>% 
+  ggplot(aes(y = carbon_source, x = y_e, color = hist)) + 
+  geom_errors() +
+  geom_point(size = 3) + 
+  labs(y = "Carbon source ranked by metabolic output", 
+       x = "Metabolic performance (absorbance units, λ = 590 nm)",
+       color = "", title = "Pseudomonas chlororaphis 1977")
+```
+
+::: {#fig-03}
+```{r}
+#| fig.width: 8
+#| fig.height: 6
+#| echo: false
+#| warning: false
+p1287
+```
+Mean maximum metabolic performance of *Citrobacter koseri* 1287 grown 31 carbon substrates over 48 hours. Horizontal axis depicts the maximum absorbance (AU, 590 nm) reached over 48 hours. Point represents the mean over three biological replicates while the line range depicts the 95% confidence interval. Carbon sources are displayed on the vertical axis and organized by decreasing maximum metabolic output of the ancestral, Streptomycin-sensitive strain. Point/line color depicts whether the strain is Streptomycin resistant/evolved (red) or Streptomycin sensitive/ancestral (blue).
+:::
+
+::: {#fig-04}
+```{r}
+#| fig.width: 8
+#| fig.height: 6
+#| echo: false
+#| warning: false
+p1977
+```
+Mean maximum metabolic performance of *Pseudomonas chlororaphis* 1977 grown 31 carbon substrates over 48 hours. Horizontal axis depicts the maximum absorbance (AU, 590 nm) reached over 48 hours. Point represents the mean over three biological replicates while the line range depicts the 95% confidence interval. Carbon sources are displayed on the vertical axis and organized by decreasing maximum metabolic output of the ancestral Streptomycin sensitive strain. Point/line color depicts whether the strain is Streptomycin resistant/evolved (red) or Streptomycin sensitive/ancestral (blue).
+:::
+
+````{comment}
 # Plot maximum observed absorbance
 
 Some clustering to plot by more similar responses
@@ -111,7 +212,7 @@ df2clust %>%
   rownames_to_column(var = "carbon") %>% 
   pivot_longer(cols = -carbon) %>% 
   mutate(carbon = factor(carbon, levels = hc$labels[hc$order]),
-         name = factor(name, levels = c("ANC_1287", "EVO_1287", "ANC_1977", "EVO_1977"))) %>% 
+         name = factor(name, levels = c("ANC_1287", "EVO_1287", "ANC_1977", "EVO_1977"))) #%>% 
   ggplot(aes(x = name, y = carbon)) +
   geom_tile(aes(fill = value)) +
   scale_x_discrete(guide = guide_axis(angle = 90)) +
@@ -219,3 +320,4 @@ ggsave(
   device = "svg"
 )
 ```
+````

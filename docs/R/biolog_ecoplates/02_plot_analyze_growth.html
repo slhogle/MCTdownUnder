@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Shane Hogle">
-<meta name="dcterms.date" content="2025-07-22">
+<meta name="dcterms.date" content="2025-09-23">
 
 <title>Analyzing monoculture growth summary – MCTdownUnder</title>
 <style>
@@ -198,17 +198,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup"><span class="header-section-number">1</span> Setup</a>
-  <ul class="collapse">
-  <li><a href="#libraries" id="toc-libraries" class="nav-link" data-scroll-target="#libraries"><span class="header-section-number">1.1</span> Libraries</a></li>
-  <li><a href="#global-variables" id="toc-global-variables" class="nav-link" data-scroll-target="#global-variables"><span class="header-section-number">1.2</span> Global variables</a></li>
-  <li><a href="#read-growth-summary-data" id="toc-read-growth-summary-data" class="nav-link" data-scroll-target="#read-growth-summary-data"><span class="header-section-number">1.3</span> Read growth summary data</a></li>
-  </ul></li>
-  <li><a href="#plot-growth-curves" id="toc-plot-growth-curves" class="nav-link" data-scroll-target="#plot-growth-curves"><span class="header-section-number">2</span> Plot growth curves</a></li>
-  <li><a href="#plot-maximum-observed-absorbance" id="toc-plot-maximum-observed-absorbance" class="nav-link" data-scroll-target="#plot-maximum-observed-absorbance"><span class="header-section-number">3</span> Plot maximum observed absorbance</a></li>
-  <li><a href="#plot-auc" id="toc-plot-auc" class="nav-link" data-scroll-target="#plot-auc"><span class="header-section-number">4</span> Plot AUC</a></li>
-  <li><a href="#plot-growth-rate" id="toc-plot-growth-rate" class="nav-link" data-scroll-target="#plot-growth-rate"><span class="header-section-number">5</span> Plot growth rate</a></li>
-  <li><a href="#save" id="toc-save" class="nav-link" data-scroll-target="#save"><span class="header-section-number">6</span> Save</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup"><span class="header-section-number">1</span> Setup</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction"><span class="header-section-number">2</span> Introduction</a></li>
+  <li><a href="#read-data" id="toc-read-data" class="nav-link" data-scroll-target="#read-data"><span class="header-section-number">3</span> Read data</a></li>
+  <li><a href="#plot-growth-curves" id="toc-plot-growth-curves" class="nav-link" data-scroll-target="#plot-growth-curves"><span class="header-section-number">4</span> Plot growth curves</a></li>
+  <li><a href="#plot-maximum-absorbance" id="toc-plot-maximum-absorbance" class="nav-link" data-scroll-target="#plot-maximum-absorbance"><span class="header-section-number">5</span> Plot maximum absorbance</a></li>
   </ul>
 </nav>
     </div>
@@ -234,7 +228,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 22, 2025</p>
+      <p class="date">September 23, 2025</p>
     </div>
   </div>
   
@@ -254,46 +248,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="setup" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Setup</h1>
-<section id="libraries" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="libraries"><span class="header-section-number">1.1</span> Libraries</h2>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Show/hide code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(here)</span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(fs)</span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">library</span>(scales)</span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"utils_gcurves.R"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="do">##### Libraries</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(here)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">library</span>(fs)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">library</span>(scales)</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="fu">library</span>(errors)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"utils_gcurves.R"</span>))</span>
+<span id="cb1-8"><a href="#cb1-8"></a></span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="do">##### Global variabless</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a>data_raw <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"biolog_ecoplates"</span>)</span>
+<span id="cb1-11"><a href="#cb1-11"></a>data <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"biolog_ecoplates"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12"></a><span class="co"># make processed data directory if it doesn't exist</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
-<section id="global-variables" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="global-variables"><span class="header-section-number">1.2</span> Global variables</h2>
+<section id="introduction" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Introduction</h1>
+<p>The <a href="https://www.biolog.com/products/community-analysis-microplates/ecoplate/">Biolog Ecoplates</a> utilize tetrazolium reduction to measure the metabolic response of bacterial cells to different carbon substrates. Oxidized tetrazolium salt is water soluble, colorless in solution, and can freely diffuse into bacterial cells. Once inside the cell, tetrazolium is reduced by reducing agents like NADH an NADPH which are generated via cellular metabolism and catabolism. Once reduced tetrazolium is transformed into pink product. This assay measures the accumulation of reduced tetrazolium (colormetric absorbance at 590 nm) and hence the accumulation and concentration of reducing agents from cellular metabolism. This process will reflect both the concentration of cells in solution and per-capita concentration of reductant from central metabolism. There is a useful overview of the Tetrazolium colorometric procedure <a href="https://fi.promega.com/resources/pubhub/is-your-mtt-assay-really-the-best-choice/">available here.</a></p>
+</section>
+<section id="read-data" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Read data</h1>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Show/hide code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>data_raw <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"biolog_ecoplates"</span>)</span>
-<span id="cb2-2"><a href="#cb2-2"></a>data <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"biolog_ecoplates"</span>)</span>
-<span id="cb2-3"><a href="#cb2-3"></a></span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="co"># make processed data directory if it doesn't exist</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="do">##### Growth summary data (e.g., AUC and growth rates from )</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>many_auc_res <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(data, <span class="st">"ecoplate_gcurve_auc_results.tsv"</span>))</span>
+<span id="cb2-3"><a href="#cb2-3"></a>many_spline_res <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(data, <span class="st">"ecoplate_gcurve_spline_results.tsv"</span>))</span>
+<span id="cb2-4"><a href="#cb2-4"></a></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="do">##### Full growth curves</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>gcurves <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(data, <span class="st">"ecoplate_gcurves_smooth.tsv"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-7"><a href="#cb2-7"></a>  <span class="fu">arrange</span>(strainID, well, plate_name) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-8"><a href="#cb2-8"></a>  <span class="fu">group_by</span>(strainID, evolution, plate_name, <span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>, well) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-9"><a href="#cb2-9"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> dplyr<span class="sc">::</span><span class="fu">cur_group_id</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-10"><a href="#cb2-10"></a>  <span class="fu">group_by</span>(strainID, evolution, <span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-11"><a href="#cb2-11"></a>  <span class="fu">mutate</span>(<span class="at">replicate =</span> <span class="fu">case_when</span>(id <span class="sc">==</span> <span class="fu">min</span>(id) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb2-12"><a href="#cb2-12"></a>                               id <span class="sc">==</span> <span class="fu">max</span>(id) <span class="sc">~</span> <span class="fu">n_distinct</span>(id),</span>
+<span id="cb2-13"><a href="#cb2-13"></a>                               <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">2</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-14"><a href="#cb2-14"></a>  <span class="fu">mutate</span>(<span class="at">replicate =</span> LETTERS[replicate]) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-15"><a href="#cb2-15"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>id) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-16"><a href="#cb2-16"></a>  <span class="fu">ungroup</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
-<section id="read-growth-summary-data" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="read-growth-summary-data"><span class="header-section-number">1.3</span> Read growth summary data</h2>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Show/hide code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>gcurves <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(data, <span class="st">"ecoplate_gcurves_smooth.tsv"</span>))</span>
-<span id="cb3-2"><a href="#cb3-2"></a>many_auc_res <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(data, <span class="st">"ecoplate_gcurve_auc_results.tsv"</span>))</span>
-<span id="cb3-3"><a href="#cb3-3"></a>many_spline_res <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(data, <span class="st">"ecoplate_gcurve_spline_results.tsv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-</section>
-</section>
-<section id="plot-growth-curves" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Plot growth curves</h1>
+<section id="plot-growth-curves" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Plot growth curves</h1>
 <div id="fig-01" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -301,14 +304,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="02_plot_analyze_growth_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="768"></p>
+<p><img src="02_plot_analyze_growth_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Growth of Citrobacter koseri HAMBI_1287 on 31 different carbon substrates and water in Biolog Ecoplates. Absorbance is measured at 590 nm.
+Figure&nbsp;1: Full growth curves of <em>Citrobacter koseri</em> HAMBI_1287 on 31 different carbon substrates and water in Biolog Ecoplates over 48 hours of growth. Metabolic activity via tetrazolium reduction is colorometrically tracked with absorbance at 590 nm. Line type denotes the biological replicate, while line color denotes adaptation to the antibiotic streptomycin: Streptomycin resistant (red) Streptomycin sensitive (blue).
 </figcaption>
 </figure>
 </div>
@@ -319,58 +322,81 @@ Figure&nbsp;1: Growth of Citrobacter koseri HAMBI_1287 on 31 different carbon su
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="02_plot_analyze_growth_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="768"></p>
+<p><img src="02_plot_analyze_growth_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Growth of Pseudomonas chlororaphis HAMBI_1977 on 31 different carbon substrates and water in Biolog Ecoplates. Absorbance is measured at 590 nm.
+Figure&nbsp;2: Growth of <em>Pseudomonas chlororaphis</em> HAMBI_1977 on 31 different carbon substrates and water in Biolog Ecoplates over 48 hours of growth. Metabolic activity via tetrazolium reduction is colorometrically tracked with absorbance at 590 nm. Line type denotes the biological replicate, while line color denotes adaptation to the antibiotic streptomycin: Streptomycin resistant (red) Streptomycin sensitive (blue).
 </figcaption>
 </figure>
 </div>
 </section>
-<section id="plot-maximum-observed-absorbance" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Plot maximum observed absorbance</h1>
-<p>Some clustering to plot by more similar responses</p>
+<section id="plot-maximum-absorbance" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Plot maximum absorbance</h1>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Show/hide code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>df2clust <span class="ot">&lt;-</span> many_auc_res <span class="sc">%&gt;%</span> </span>
-<span id="cb4-2"><a href="#cb4-2"></a>  <span class="fu">mutate</span>(<span class="at">strainID2 =</span> <span class="fu">paste0</span>(<span class="fu">toupper</span>(evolution), <span class="st">"_"</span>, strain)) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-3"><a href="#cb4-3"></a>  <span class="fu">summarize</span>(<span class="at">y =</span> <span class="fu">min</span>(max_od), <span class="at">.by=</span><span class="fu">c</span>(strainID2, <span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-4"><a href="#cb4-4"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">"carbon source"</span>, <span class="at">values_from =</span> <span class="st">"y"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-5"><a href="#cb4-5"></a>  <span class="fu">pivot_longer</span>(<span class="fu">c</span>(<span class="sc">-</span>strainID2, <span class="sc">-</span>water)) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-6"><a href="#cb4-6"></a>  <span class="fu">mutate</span>(<span class="at">value_norm =</span> value <span class="sc">-</span> water) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-7"><a href="#cb4-7"></a>  <span class="fu">pivot_wider</span>(<span class="at">id_cols =</span> <span class="fu">c</span>(<span class="sc">-</span>water, <span class="sc">-</span>value), <span class="at">names_from =</span> <span class="st">"strainID2"</span>, <span class="at">values_from =</span> <span class="st">"value_norm"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-8"><a href="#cb4-8"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb4-9"><a href="#cb4-9"></a>  <span class="fu">column_to_rownames</span>(<span class="at">var =</span> <span class="st">"name"</span>)</span>
-<span id="cb4-10"><a href="#cb4-10"></a></span>
-<span id="cb4-11"><a href="#cb4-11"></a><span class="co"># scale the dataframe for clustering</span></span>
-<span id="cb4-12"><a href="#cb4-12"></a>df2clust_scaled <span class="ot">&lt;-</span> <span class="fu">scale</span>(df2clust)</span>
-<span id="cb4-13"><a href="#cb4-13"></a></span>
-<span id="cb4-14"><a href="#cb4-14"></a><span class="co"># perform the hierarchcical clustering using euclidean distance and Ward's D</span></span>
-<span id="cb4-15"><a href="#cb4-15"></a>hc <span class="ot">&lt;-</span> <span class="fu">hclust</span>(<span class="fu">dist</span>(df2clust_scaled, <span class="at">method =</span> <span class="st">"euclidean"</span>), <span class="at">method =</span> <span class="st">"ward.D2"</span> )</span>
-<span id="cb4-16"><a href="#cb4-16"></a></span>
-<span id="cb4-17"><a href="#cb4-17"></a><span class="co"># plot</span></span>
-<span id="cb4-18"><a href="#cb4-18"></a>df2clust <span class="sc">%&gt;%</span> </span>
-<span id="cb4-19"><a href="#cb4-19"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">"carbon"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-20"><a href="#cb4-20"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>carbon) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-21"><a href="#cb4-21"></a>  <span class="fu">mutate</span>(<span class="at">carbon =</span> <span class="fu">factor</span>(carbon, <span class="at">levels =</span> hc<span class="sc">$</span>labels[hc<span class="sc">$</span>order]),</span>
-<span id="cb4-22"><a href="#cb4-22"></a>         <span class="at">name =</span> <span class="fu">factor</span>(name, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"ANC_1287"</span>, <span class="st">"EVO_1287"</span>, <span class="st">"ANC_1977"</span>, <span class="st">"EVO_1977"</span>))) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-23"><a href="#cb4-23"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> name, <span class="at">y =</span> carbon)) <span class="sc">+</span></span>
-<span id="cb4-24"><a href="#cb4-24"></a>  <span class="fu">geom_tile</span>(<span class="fu">aes</span>(<span class="at">fill =</span> value)) <span class="sc">+</span></span>
-<span id="cb4-25"><a href="#cb4-25"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">guide =</span> <span class="fu">guide_axis</span>(<span class="at">angle =</span> <span class="dv">90</span>)) <span class="sc">+</span></span>
-<span id="cb4-26"><a href="#cb4-26"></a>  <span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span></span>
-<span id="cb4-27"><a href="#cb4-27"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"white"</span>, <span class="st">"black"</span>), <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb4-28"><a href="#cb4-28"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Carbon substrate"</span>, <span class="at">fill =</span> <span class="st">"Maximum</span><span class="sc">\n</span><span class="st">absorbance"</span>, <span class="at">x =</span> <span class="st">""</span>) <span class="sc">+</span></span>
-<span id="cb4-29"><a href="#cb4-29"></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span> </span>
-<span id="cb4-30"><a href="#cb4-30"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb4-31"><a href="#cb4-31"></a>                 <span class="at">panel.background =</span> <span class="fu">element_blank</span>(), </span>
-<span id="cb4-32"><a href="#cb4-32"></a>                 <span class="at">strip.background =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb4-33"><a href="#cb4-33"></a>                 <span class="at">panel.border =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># 1. for each replicate take the mean over all measurements within 0.05 units of the max</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="co"># 2. subtract water from all values</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co"># 3. calculate mean and bootstrapped 95% CI across biological replicates</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>gcurves_metabolic_pref <span class="ot">&lt;-</span> gcurves <span class="sc">%&gt;%</span> </span>
+<span id="cb3-5"><a href="#cb3-5"></a>  <span class="fu">mutate</span>(<span class="at">strainID2 =</span> <span class="fu">paste0</span>(<span class="fu">toupper</span>(evolution), <span class="st">"_"</span>, strain)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>  <span class="fu">filter</span>(hours <span class="sc">&gt;</span> <span class="dv">24</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-7"><a href="#cb3-7"></a>  <span class="fu">group_by</span>(strainID2, <span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>, replicate) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-8"><a href="#cb3-8"></a>  <span class="fu">filter</span>(OD600 <span class="sc">&gt;=</span> <span class="fu">max</span>(OD600)<span class="sc">-</span><span class="fl">0.05</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-9"><a href="#cb3-9"></a>  <span class="fu">summarize</span>(<span class="at">OD600 =</span> <span class="fu">mean</span>(OD600)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-10"><a href="#cb3-10"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb3-11"><a href="#cb3-11"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>, <span class="at">values_from =</span> <span class="st">"OD600"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-12"><a href="#cb3-12"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="sc">-</span>strainID2, <span class="sc">-</span>replicate, <span class="sc">-</span>water), <span class="at">names_to =</span> <span class="st">"carbon_source"</span>, <span class="at">values_to =</span> <span class="st">"OD600"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-13"><a href="#cb3-13"></a>  <span class="fu">mutate</span>(<span class="at">OD600_norm =</span> <span class="fu">if_else</span>((OD600 <span class="sc">-</span> water) <span class="sc">&lt;</span> <span class="dv">0</span>, <span class="dv">0</span>, OD600<span class="sc">-</span>water)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-14"><a href="#cb3-14"></a>  <span class="fu">summarize</span>(ggplot2<span class="sc">::</span><span class="fu">mean_cl_boot</span>(OD600), <span class="at">.by=</span><span class="fu">c</span>(strainID2, carbon_source)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-15"><a href="#cb3-15"></a>  <span class="fu">mutate</span>(<span class="at">y_e =</span> errors<span class="sc">::</span><span class="fu">set_errors</span>(y, ymax<span class="sc">-</span>y)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-16"><a href="#cb3-16"></a>  <span class="fu">group_by</span>(strainID2) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-17"><a href="#cb3-17"></a>  <span class="fu">mutate</span>(<span class="at">y_e_r =</span> y_e<span class="sc">/</span><span class="fu">max</span>(y_e)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-18"><a href="#cb3-18"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb3-19"><a href="#cb3-19"></a></span>
+<span id="cb3-20"><a href="#cb3-20"></a><span class="co"># Order of carbon compounds from highest metabolic output to lowest</span></span>
+<span id="cb3-21"><a href="#cb3-21"></a>carbon_order_1287 <span class="ot">&lt;-</span> gcurves_metabolic_pref <span class="sc">%&gt;%</span> </span>
+<span id="cb3-22"><a href="#cb3-22"></a>  <span class="fu">filter</span>(strainID2 <span class="sc">==</span> <span class="st">"ANC_1287"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-23"><a href="#cb3-23"></a>  <span class="fu">arrange</span>(y_e_r) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-24"><a href="#cb3-24"></a>  <span class="fu">pull</span>(carbon_source)</span>
+<span id="cb3-25"><a href="#cb3-25"></a></span>
+<span id="cb3-26"><a href="#cb3-26"></a>carbon_order_1977 <span class="ot">&lt;-</span> gcurves_metabolic_pref <span class="sc">%&gt;%</span> </span>
+<span id="cb3-27"><a href="#cb3-27"></a>  <span class="fu">filter</span>(strainID2 <span class="sc">==</span> <span class="st">"ANC_1977"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-28"><a href="#cb3-28"></a>  <span class="fu">arrange</span>(y_e_r) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-29"><a href="#cb3-29"></a>  <span class="fu">pull</span>(carbon_source)</span>
+<span id="cb3-30"><a href="#cb3-30"></a></span>
+<span id="cb3-31"><a href="#cb3-31"></a><span class="co"># plot</span></span>
+<span id="cb3-32"><a href="#cb3-32"></a>p1287 <span class="ot">&lt;-</span> gcurves_metabolic_pref <span class="sc">%&gt;%</span> </span>
+<span id="cb3-33"><a href="#cb3-33"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(strainID2, <span class="st">"1287"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-34"><a href="#cb3-34"></a>  <span class="fu">mutate</span>(<span class="at">hist =</span> <span class="fu">if_else</span>(<span class="fu">str_detect</span>(strainID2, <span class="st">"ANC"</span>), <span class="st">"Str Sens."</span>, <span class="st">"Str Res."</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-35"><a href="#cb3-35"></a>  <span class="fu">mutate</span>(<span class="at">carbon_source =</span> <span class="fu">factor</span>(carbon_source, <span class="at">levels =</span> carbon_order_1287)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-36"><a href="#cb3-36"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> carbon_source, <span class="at">x =</span> y_e, <span class="at">color =</span> hist)) <span class="sc">+</span> </span>
+<span id="cb3-37"><a href="#cb3-37"></a>  <span class="fu">geom_errors</span>() <span class="sc">+</span></span>
+<span id="cb3-38"><a href="#cb3-38"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span> </span>
+<span id="cb3-39"><a href="#cb3-39"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Carbon source ranked by metabolic output"</span>, </span>
+<span id="cb3-40"><a href="#cb3-40"></a>       <span class="at">x =</span> <span class="st">"Metabolic performance (absorbance units, λ = 590 nm)"</span>,</span>
+<span id="cb3-41"><a href="#cb3-41"></a>       <span class="at">color =</span> <span class="st">""</span>, <span class="at">title =</span> <span class="st">"Citrobacter koseri 1287"</span>)</span>
+<span id="cb3-42"><a href="#cb3-42"></a></span>
+<span id="cb3-43"><a href="#cb3-43"></a>p1977 <span class="ot">&lt;-</span> gcurves_metabolic_pref <span class="sc">%&gt;%</span> </span>
+<span id="cb3-44"><a href="#cb3-44"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(strainID2, <span class="st">"1977"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-45"><a href="#cb3-45"></a>  <span class="fu">mutate</span>(<span class="at">hist =</span> <span class="fu">if_else</span>(<span class="fu">str_detect</span>(strainID2, <span class="st">"ANC"</span>), <span class="st">"Str Sens."</span>, <span class="st">"Str Res."</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-46"><a href="#cb3-46"></a>  <span class="fu">mutate</span>(<span class="at">carbon_source =</span> <span class="fu">factor</span>(carbon_source, <span class="at">levels =</span> carbon_order_1977)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-47"><a href="#cb3-47"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> carbon_source, <span class="at">x =</span> y_e, <span class="at">color =</span> hist)) <span class="sc">+</span> </span>
+<span id="cb3-48"><a href="#cb3-48"></a>  <span class="fu">geom_errors</span>() <span class="sc">+</span></span>
+<span id="cb3-49"><a href="#cb3-49"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span> </span>
+<span id="cb3-50"><a href="#cb3-50"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Carbon source ranked by metabolic output"</span>, </span>
+<span id="cb3-51"><a href="#cb3-51"></a>       <span class="at">x =</span> <span class="st">"Metabolic performance (absorbance units, λ = 590 nm)"</span>,</span>
+<span id="cb3-52"><a href="#cb3-52"></a>       <span class="at">color =</span> <span class="st">""</span>, <span class="at">title =</span> <span class="st">"Pseudomonas chlororaphis 1977"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+</div>
+<div id="fig-03" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -379,9 +405,15 @@ Figure&nbsp;2: Growth of Pseudomonas chlororaphis HAMBI_1977 on 31 different car
 </div>
 </div>
 </div>
-<div id="fig-03" class="quarto-float quarto-figure quarto-figure-center anchored">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Mean maximum metabolic performance of <em>Citrobacter koseri</em> 1287 grown 31 carbon substrates over 48 hours. Horizontal axis depicts the maximum absorbance (AU, 590 nm) reached over 48 hours. Point represents the mean over three biological replicates while the line range depicts the 95% confidence interval. Carbon sources are displayed on the vertical axis and organized by decreasing maximum metabolic output of the ancestral, Streptomycin-sensitive strain. Point/line color depicts whether the strain is Streptomycin resistant/evolved (red) or Streptomycin sensitive/ancestral (blue).
+</figcaption>
+</figure>
+</div>
+<div id="fig-04" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div aria-describedby="fig-04-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -392,68 +424,10 @@ Figure&nbsp;2: Growth of Pseudomonas chlororaphis HAMBI_1977 on 31 different car
 </div>
 </div>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Mean maximum absorbance (590 nm, fill) over 2 replicates for the 4 strains (x-axis) grown on 31 carbon substrates and water (y-axis).
-</figcaption>
-</figure>
-</div>
-</section>
-<section id="plot-auc" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Plot AUC</h1>
-<div id="fig-04" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-04-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02_plot_analyze_growth_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="768"></p>
-</figure>
-</div>
-</div>
-</div>
-</div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-04-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: As in <a href="#fig-03" class="quarto-xref">Figure&nbsp;3</a> but for total area under the growth curve.
+Figure&nbsp;4: Mean maximum metabolic performance of <em>Pseudomonas chlororaphis</em> 1977 grown 31 carbon substrates over 48 hours. Horizontal axis depicts the maximum absorbance (AU, 590 nm) reached over 48 hours. Point represents the mean over three biological replicates while the line range depicts the 95% confidence interval. Carbon sources are displayed on the vertical axis and organized by decreasing maximum metabolic output of the ancestral Streptomycin sensitive strain. Point/line color depicts whether the strain is Streptomycin resistant/evolved (red) or Streptomycin sensitive/ancestral (blue).
 </figcaption>
 </figure>
-</div>
-</section>
-<section id="plot-growth-rate" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Plot growth rate</h1>
-<div id="fig-04" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-04-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02_plot_analyze_growth_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="768"></p>
-</figure>
-</div>
-</div>
-</div>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-04-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5: As in <a href="#fig-03" class="quarto-xref">Figure&nbsp;3</a> but for growth rate (hr-1)
-</figcaption>
-</figure>
-</div>
-</section>
-<section id="save" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Save</h1>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Show/hide code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">ggsave</span>(</span>
-<span id="cb5-2"><a href="#cb5-2"></a>  here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"figs"</span>, <span class="st">"monoculture_auc_filtrate.svg"</span>),</span>
-<span id="cb5-3"><a href="#cb5-3"></a>  auc_filtrate,</span>
-<span id="cb5-4"><a href="#cb5-4"></a>  <span class="at">width =</span> <span class="dv">8</span>,</span>
-<span id="cb5-5"><a href="#cb5-5"></a>  <span class="at">height =</span> <span class="dv">8</span>,</span>
-<span id="cb5-6"><a href="#cb5-6"></a>  <span class="at">units =</span> <span class="st">"in"</span>,</span>
-<span id="cb5-7"><a href="#cb5-7"></a>  <span class="at">device =</span> <span class="st">"svg"</span></span>
-<span id="cb5-8"><a href="#cb5-8"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 
 
@@ -930,227 +904,329 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb6" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">---</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="an">title:</span><span class="co"> "Analyzing monoculture growth summary"</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="an">author:</span><span class="co"> "Shane Hogle"</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="an">date:</span><span class="co"> today</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="an">link-citations:</span><span class="co"> true</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a><span class="an">abstract:</span><span class="co"> "In the prior step we imported, smoothed, and calculated summary statistics for the species growth on [Biolog Ecoplates](https://www.biolog.com/products/community-analysis-microplates/ecoplate/). Here we will do some simple plots and analysis of the growth data on different carbon sources from the ecoplates."</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="co">---</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a></span>
-<span id="cb6-9"><a href="#cb6-9"></a><span class="fu"># Setup</span></span>
-<span id="cb6-10"><a href="#cb6-10"></a></span>
-<span id="cb6-11"><a href="#cb6-11"></a><span class="fu">## Libraries</span></span>
-<span id="cb6-12"><a href="#cb6-12"></a></span>
-<span id="cb6-15"><a href="#cb6-15"></a><span class="in">```{r}</span></span>
-<span id="cb6-16"><a href="#cb6-16"></a><span class="co">#| output: false</span></span>
-<span id="cb6-17"><a href="#cb6-17"></a><span class="co">#| warning: false</span></span>
-<span id="cb6-18"><a href="#cb6-18"></a><span class="co">#| error: false</span></span>
-<span id="cb6-19"><a href="#cb6-19"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb6-20"><a href="#cb6-20"></a><span class="fu">library</span>(here)</span>
-<span id="cb6-21"><a href="#cb6-21"></a><span class="fu">library</span>(fs)</span>
-<span id="cb6-22"><a href="#cb6-22"></a><span class="fu">library</span>(scales)</span>
-<span id="cb6-23"><a href="#cb6-23"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"utils_gcurves.R"</span>))</span>
-<span id="cb6-24"><a href="#cb6-24"></a><span class="in">```</span></span>
-<span id="cb6-25"><a href="#cb6-25"></a></span>
-<span id="cb6-26"><a href="#cb6-26"></a><span class="fu">## Global variables</span></span>
-<span id="cb6-27"><a href="#cb6-27"></a></span>
-<span id="cb6-30"><a href="#cb6-30"></a><span class="in">```{r}</span></span>
-<span id="cb6-31"><a href="#cb6-31"></a><span class="co">#| output: false</span></span>
-<span id="cb6-32"><a href="#cb6-32"></a><span class="co">#| warning: false</span></span>
-<span id="cb6-33"><a href="#cb6-33"></a><span class="co">#| error: false</span></span>
-<span id="cb6-34"><a href="#cb6-34"></a>data_raw <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"biolog_ecoplates"</span>)</span>
-<span id="cb6-35"><a href="#cb6-35"></a>data <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"biolog_ecoplates"</span>)</span>
-<span id="cb6-36"><a href="#cb6-36"></a></span>
-<span id="cb6-37"><a href="#cb6-37"></a><span class="co"># make processed data directory if it doesn't exist</span></span>
-<span id="cb6-38"><a href="#cb6-38"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(data)</span>
-<span id="cb6-39"><a href="#cb6-39"></a><span class="in">```</span></span>
-<span id="cb6-40"><a href="#cb6-40"></a></span>
-<span id="cb6-41"><a href="#cb6-41"></a><span class="fu">## Read growth summary data</span></span>
-<span id="cb6-42"><a href="#cb6-42"></a></span>
-<span id="cb6-45"><a href="#cb6-45"></a><span class="in">```{r}</span></span>
-<span id="cb6-46"><a href="#cb6-46"></a><span class="co">#| output: false</span></span>
-<span id="cb6-47"><a href="#cb6-47"></a><span class="co">#| warning: false</span></span>
-<span id="cb6-48"><a href="#cb6-48"></a><span class="co">#| error: false</span></span>
-<span id="cb6-49"><a href="#cb6-49"></a></span>
-<span id="cb6-50"><a href="#cb6-50"></a>gcurves <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(data, <span class="st">"ecoplate_gcurves_smooth.tsv"</span>))</span>
-<span id="cb6-51"><a href="#cb6-51"></a>many_auc_res <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(data, <span class="st">"ecoplate_gcurve_auc_results.tsv"</span>))</span>
-<span id="cb6-52"><a href="#cb6-52"></a>many_spline_res <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(data, <span class="st">"ecoplate_gcurve_spline_results.tsv"</span>))</span>
-<span id="cb6-53"><a href="#cb6-53"></a><span class="in">```</span></span>
-<span id="cb6-54"><a href="#cb6-54"></a></span>
-<span id="cb6-55"><a href="#cb6-55"></a><span class="fu"># Plot growth curves</span></span>
-<span id="cb6-56"><a href="#cb6-56"></a></span>
-<span id="cb6-57"><a href="#cb6-57"></a>::: {#fig-01}</span>
-<span id="cb6-60"><a href="#cb6-60"></a><span class="in">```{r}</span></span>
-<span id="cb6-61"><a href="#cb6-61"></a><span class="co">#| fig.width: 8</span></span>
-<span id="cb6-62"><a href="#cb6-62"></a><span class="co">#| fig.height: 8</span></span>
-<span id="cb6-63"><a href="#cb6-63"></a><span class="co">#| echo: false</span></span>
-<span id="cb6-64"><a href="#cb6-64"></a><span class="co">#| warning: false</span></span>
-<span id="cb6-65"><a href="#cb6-65"></a>gcurves <span class="sc">%&gt;%</span> </span>
-<span id="cb6-66"><a href="#cb6-66"></a>  <span class="fu">filter</span>(strainID <span class="sc">==</span> <span class="st">"HAMBI_1287"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-67"><a href="#cb6-67"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb6-68"><a href="#cb6-68"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> hours, <span class="at">y =</span> OD600_rollmean, <span class="at">color =</span> evolution, <span class="at">group =</span> <span class="fu">interaction</span>(well, plate_name))) <span class="sc">+</span></span>
-<span id="cb6-69"><a href="#cb6-69"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Hours"</span>, <span class="at">y =</span> <span class="st">"OD600"</span>) <span class="sc">+</span></span>
-<span id="cb6-70"><a href="#cb6-70"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">48</span>, <span class="dv">12</span>), <span class="at">labels =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">48</span>, <span class="dv">12</span>)) <span class="sc">+</span></span>
-<span id="cb6-71"><a href="#cb6-71"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Absorbance (590 nm)"</span>, <span class="at">x =</span> <span class="st">"Hours"</span>, <span class="at">title =</span> <span class="st">"Citrobacter koseri HAMBI_1287"</span>) <span class="sc">+</span></span>
-<span id="cb6-72"><a href="#cb6-72"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span><span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>, <span class="at">labeller =</span> <span class="fu">labeller</span>(<span class="st">`</span><span class="at">carbon source</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">label_wrap_gen</span>(<span class="dv">20</span>)))</span>
-<span id="cb6-73"><a href="#cb6-73"></a><span class="in">```</span></span>
-<span id="cb6-74"><a href="#cb6-74"></a>Growth of Citrobacter koseri HAMBI_1287 on 31 different carbon substrates and water in Biolog Ecoplates. Absorbance is measured at 590 nm.</span>
-<span id="cb6-75"><a href="#cb6-75"></a>:::</span>
-<span id="cb6-76"><a href="#cb6-76"></a></span>
-<span id="cb6-77"><a href="#cb6-77"></a>::: {#fig-02}</span>
-<span id="cb6-80"><a href="#cb6-80"></a><span class="in">```{r}</span></span>
-<span id="cb6-81"><a href="#cb6-81"></a><span class="co">#| fig.width: 8</span></span>
-<span id="cb6-82"><a href="#cb6-82"></a><span class="co">#| fig.height: 8</span></span>
-<span id="cb6-83"><a href="#cb6-83"></a><span class="co">#| echo: false</span></span>
-<span id="cb6-84"><a href="#cb6-84"></a><span class="co">#| warning: false</span></span>
-<span id="cb6-85"><a href="#cb6-85"></a>gcurves <span class="sc">%&gt;%</span> </span>
-<span id="cb6-86"><a href="#cb6-86"></a>  <span class="fu">filter</span>(strainID <span class="sc">==</span> <span class="st">"HAMBI_1977"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-87"><a href="#cb6-87"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb6-88"><a href="#cb6-88"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> hours, <span class="at">y =</span> OD600_rollmean, <span class="at">color =</span> evolution, <span class="at">group =</span> <span class="fu">interaction</span>(well, plate_name))) <span class="sc">+</span></span>
-<span id="cb6-89"><a href="#cb6-89"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Hours"</span>, <span class="at">y =</span> <span class="st">"OD600"</span>) <span class="sc">+</span></span>
-<span id="cb6-90"><a href="#cb6-90"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">48</span>, <span class="dv">12</span>), <span class="at">labels =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">48</span>, <span class="dv">12</span>)) <span class="sc">+</span></span>
-<span id="cb6-91"><a href="#cb6-91"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span><span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>)<span class="sc">+</span></span>
-<span id="cb6-92"><a href="#cb6-92"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Absorbance (590 nm)"</span>, <span class="at">x =</span> <span class="st">"Hours"</span>, <span class="at">title =</span> <span class="st">"Pseudomonas chlororaphis HAMBI_1977"</span>) <span class="sc">+</span></span>
-<span id="cb6-93"><a href="#cb6-93"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span><span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>, <span class="at">labeller =</span> <span class="fu">labeller</span>(<span class="st">`</span><span class="at">carbon source</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">label_wrap_gen</span>(<span class="dv">20</span>)))</span>
-<span id="cb6-94"><a href="#cb6-94"></a><span class="in">```</span></span>
-<span id="cb6-95"><a href="#cb6-95"></a>Growth of Pseudomonas chlororaphis HAMBI_1977 on 31 different carbon substrates and water in Biolog Ecoplates. Absorbance is measured at 590 nm.</span>
-<span id="cb6-96"><a href="#cb6-96"></a>:::</span>
-<span id="cb6-97"><a href="#cb6-97"></a></span>
-<span id="cb6-98"><a href="#cb6-98"></a><span class="fu"># Plot maximum observed absorbance</span></span>
-<span id="cb6-99"><a href="#cb6-99"></a></span>
-<span id="cb6-100"><a href="#cb6-100"></a>Some clustering to plot by more similar responses</span>
-<span id="cb6-101"><a href="#cb6-101"></a></span>
-<span id="cb6-104"><a href="#cb6-104"></a><span class="in">```{r}</span></span>
-<span id="cb6-105"><a href="#cb6-105"></a>df2clust <span class="ot">&lt;-</span> many_auc_res <span class="sc">%&gt;%</span> </span>
-<span id="cb6-106"><a href="#cb6-106"></a>  <span class="fu">mutate</span>(<span class="at">strainID2 =</span> <span class="fu">paste0</span>(<span class="fu">toupper</span>(evolution), <span class="st">"_"</span>, strain)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-107"><a href="#cb6-107"></a>  <span class="fu">summarize</span>(<span class="at">y =</span> <span class="fu">min</span>(max_od), <span class="at">.by=</span><span class="fu">c</span>(strainID2, <span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-108"><a href="#cb6-108"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">"carbon source"</span>, <span class="at">values_from =</span> <span class="st">"y"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-109"><a href="#cb6-109"></a>  <span class="fu">pivot_longer</span>(<span class="fu">c</span>(<span class="sc">-</span>strainID2, <span class="sc">-</span>water)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-110"><a href="#cb6-110"></a>  <span class="fu">mutate</span>(<span class="at">value_norm =</span> value <span class="sc">-</span> water) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-111"><a href="#cb6-111"></a>  <span class="fu">pivot_wider</span>(<span class="at">id_cols =</span> <span class="fu">c</span>(<span class="sc">-</span>water, <span class="sc">-</span>value), <span class="at">names_from =</span> <span class="st">"strainID2"</span>, <span class="at">values_from =</span> <span class="st">"value_norm"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-112"><a href="#cb6-112"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb6-113"><a href="#cb6-113"></a>  <span class="fu">column_to_rownames</span>(<span class="at">var =</span> <span class="st">"name"</span>)</span>
-<span id="cb6-114"><a href="#cb6-114"></a></span>
-<span id="cb6-115"><a href="#cb6-115"></a><span class="co"># scale the dataframe for clustering</span></span>
-<span id="cb6-116"><a href="#cb6-116"></a>df2clust_scaled <span class="ot">&lt;-</span> <span class="fu">scale</span>(df2clust)</span>
-<span id="cb6-117"><a href="#cb6-117"></a></span>
-<span id="cb6-118"><a href="#cb6-118"></a><span class="co"># perform the hierarchcical clustering using euclidean distance and Ward's D</span></span>
-<span id="cb6-119"><a href="#cb6-119"></a>hc <span class="ot">&lt;-</span> <span class="fu">hclust</span>(<span class="fu">dist</span>(df2clust_scaled, <span class="at">method =</span> <span class="st">"euclidean"</span>), <span class="at">method =</span> <span class="st">"ward.D2"</span> )</span>
-<span id="cb6-120"><a href="#cb6-120"></a></span>
-<span id="cb6-121"><a href="#cb6-121"></a><span class="co"># plot</span></span>
-<span id="cb6-122"><a href="#cb6-122"></a>df2clust <span class="sc">%&gt;%</span> </span>
-<span id="cb6-123"><a href="#cb6-123"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">"carbon"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-124"><a href="#cb6-124"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>carbon) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-125"><a href="#cb6-125"></a>  <span class="fu">mutate</span>(<span class="at">carbon =</span> <span class="fu">factor</span>(carbon, <span class="at">levels =</span> hc<span class="sc">$</span>labels[hc<span class="sc">$</span>order]),</span>
-<span id="cb6-126"><a href="#cb6-126"></a>         <span class="at">name =</span> <span class="fu">factor</span>(name, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"ANC_1287"</span>, <span class="st">"EVO_1287"</span>, <span class="st">"ANC_1977"</span>, <span class="st">"EVO_1977"</span>))) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-127"><a href="#cb6-127"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> name, <span class="at">y =</span> carbon)) <span class="sc">+</span></span>
-<span id="cb6-128"><a href="#cb6-128"></a>  <span class="fu">geom_tile</span>(<span class="fu">aes</span>(<span class="at">fill =</span> value)) <span class="sc">+</span></span>
-<span id="cb6-129"><a href="#cb6-129"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">guide =</span> <span class="fu">guide_axis</span>(<span class="at">angle =</span> <span class="dv">90</span>)) <span class="sc">+</span></span>
-<span id="cb6-130"><a href="#cb6-130"></a>  <span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span></span>
-<span id="cb6-131"><a href="#cb6-131"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"white"</span>, <span class="st">"black"</span>), <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb6-132"><a href="#cb6-132"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Carbon substrate"</span>, <span class="at">fill =</span> <span class="st">"Maximum</span><span class="sc">\n</span><span class="st">absorbance"</span>, <span class="at">x =</span> <span class="st">""</span>) <span class="sc">+</span></span>
-<span id="cb6-133"><a href="#cb6-133"></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span> </span>
-<span id="cb6-134"><a href="#cb6-134"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb6-135"><a href="#cb6-135"></a>                 <span class="at">panel.background =</span> <span class="fu">element_blank</span>(), </span>
-<span id="cb6-136"><a href="#cb6-136"></a>                 <span class="at">strip.background =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb6-137"><a href="#cb6-137"></a>                 <span class="at">panel.border =</span> <span class="fu">element_blank</span>())</span>
-<span id="cb6-138"><a href="#cb6-138"></a><span class="in">```</span></span>
-<span id="cb6-139"><a href="#cb6-139"></a></span>
-<span id="cb6-140"><a href="#cb6-140"></a></span>
-<span id="cb6-141"><a href="#cb6-141"></a>::: {#fig-03}</span>
-<span id="cb6-144"><a href="#cb6-144"></a><span class="in">```{r}</span></span>
-<span id="cb6-145"><a href="#cb6-145"></a><span class="co">#| fig.width: 8</span></span>
-<span id="cb6-146"><a href="#cb6-146"></a><span class="co">#| fig.height: 8</span></span>
-<span id="cb6-147"><a href="#cb6-147"></a><span class="co">#| echo: false</span></span>
-<span id="cb6-148"><a href="#cb6-148"></a><span class="co">#| warning: false</span></span>
-<span id="cb6-149"><a href="#cb6-149"></a>many_auc_res <span class="sc">%&gt;%</span> </span>
-<span id="cb6-150"><a href="#cb6-150"></a>  <span class="fu">mutate</span>(<span class="at">strainID2 =</span> <span class="fu">paste0</span>(<span class="fu">toupper</span>(evolution), <span class="st">"_"</span>, strain)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-151"><a href="#cb6-151"></a>  <span class="fu">summarize</span>(<span class="at">y =</span> <span class="fu">min</span>(max_od), <span class="at">.by=</span><span class="fu">c</span>(strainID2, <span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-152"><a href="#cb6-152"></a>  <span class="co">#summarize(ggplot2::mean_cl_boot(max_od), .by=c(strainID2, `carbon source`)) %&gt;% </span></span>
-<span id="cb6-153"><a href="#cb6-153"></a>  <span class="fu">mutate</span>(<span class="at">strainID2 =</span> <span class="fu">factor</span>(strainID2, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"ANC_1287"</span>, <span class="st">"EVO_1287"</span>, <span class="st">"ANC_1977"</span>, <span class="st">"EVO_1977"</span>))) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-154"><a href="#cb6-154"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> strainID2, <span class="at">y =</span> <span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>)) <span class="sc">+</span></span>
-<span id="cb6-155"><a href="#cb6-155"></a>  <span class="fu">geom_tile</span>(<span class="fu">aes</span>(<span class="at">fill =</span> y)) <span class="sc">+</span></span>
-<span id="cb6-156"><a href="#cb6-156"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">guide =</span> <span class="fu">guide_axis</span>(<span class="at">angle =</span> <span class="dv">90</span>)) <span class="sc">+</span></span>
-<span id="cb6-157"><a href="#cb6-157"></a>  <span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span></span>
-<span id="cb6-158"><a href="#cb6-158"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"white"</span>, <span class="st">"black"</span>), <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb6-159"><a href="#cb6-159"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Carbon substrate"</span>, <span class="at">fill =</span> <span class="st">"Maximum</span><span class="sc">\n</span><span class="st">absorbance"</span>, <span class="at">x =</span> <span class="st">""</span>) <span class="sc">+</span></span>
-<span id="cb6-160"><a href="#cb6-160"></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span> </span>
-<span id="cb6-161"><a href="#cb6-161"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb6-162"><a href="#cb6-162"></a>                 <span class="at">panel.background =</span> <span class="fu">element_blank</span>(), </span>
-<span id="cb6-163"><a href="#cb6-163"></a>                 <span class="at">strip.background =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb6-164"><a href="#cb6-164"></a>                 <span class="at">panel.border =</span> <span class="fu">element_blank</span>())</span>
-<span id="cb6-165"><a href="#cb6-165"></a><span class="in">```</span></span>
-<span id="cb6-166"><a href="#cb6-166"></a>Mean maximum absorbance (590 nm, fill) over 2 replicates for the 4 strains (x-axis) grown on 31 carbon substrates and water (y-axis). </span>
-<span id="cb6-167"><a href="#cb6-167"></a>:::</span>
-<span id="cb6-168"><a href="#cb6-168"></a></span>
-<span id="cb6-169"><a href="#cb6-169"></a><span class="fu"># Plot AUC</span></span>
-<span id="cb6-170"><a href="#cb6-170"></a></span>
-<span id="cb6-171"><a href="#cb6-171"></a>::: {#fig-04}</span>
-<span id="cb6-174"><a href="#cb6-174"></a><span class="in">```{r}</span></span>
-<span id="cb6-175"><a href="#cb6-175"></a><span class="co">#| fig.width: 8</span></span>
-<span id="cb6-176"><a href="#cb6-176"></a><span class="co">#| fig.height: 8</span></span>
-<span id="cb6-177"><a href="#cb6-177"></a><span class="co">#| echo: false</span></span>
-<span id="cb6-178"><a href="#cb6-178"></a><span class="co">#| warning: false</span></span>
-<span id="cb6-179"><a href="#cb6-179"></a>many_auc_res <span class="sc">%&gt;%</span> </span>
-<span id="cb6-180"><a href="#cb6-180"></a>  <span class="fu">mutate</span>(<span class="at">strainID2 =</span> <span class="fu">paste0</span>(<span class="fu">toupper</span>(evolution), <span class="st">"_"</span>, strain)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-181"><a href="#cb6-181"></a>  <span class="fu">summarize</span>(ggplot2<span class="sc">::</span><span class="fu">mean_cl_boot</span>(auc), <span class="at">.by=</span><span class="fu">c</span>(strainID2, <span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-182"><a href="#cb6-182"></a>  <span class="fu">mutate</span>(<span class="at">strainID2 =</span> <span class="fu">factor</span>(strainID2, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"ANC_1287"</span>, <span class="st">"EVO_1287"</span>, <span class="st">"ANC_1977"</span>, <span class="st">"EVO_1977"</span>))) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-183"><a href="#cb6-183"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> strainID2, <span class="at">y =</span> <span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>)) <span class="sc">+</span></span>
-<span id="cb6-184"><a href="#cb6-184"></a>  <span class="fu">geom_tile</span>(<span class="fu">aes</span>(<span class="at">fill =</span> y)) <span class="sc">+</span></span>
-<span id="cb6-185"><a href="#cb6-185"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">guide =</span> <span class="fu">guide_axis</span>(<span class="at">angle =</span> <span class="dv">90</span>)) <span class="sc">+</span></span>
-<span id="cb6-186"><a href="#cb6-186"></a>  <span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span></span>
-<span id="cb6-187"><a href="#cb6-187"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"white"</span>, <span class="st">"black"</span>), <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb6-188"><a href="#cb6-188"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Carbon substrate"</span>, <span class="at">fill =</span> <span class="st">"Area under the</span><span class="sc">\n</span><span class="st">growth curve"</span>, <span class="at">x =</span> <span class="st">""</span>) <span class="sc">+</span></span>
-<span id="cb6-189"><a href="#cb6-189"></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span> </span>
-<span id="cb6-190"><a href="#cb6-190"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb6-191"><a href="#cb6-191"></a>                 <span class="at">panel.background =</span> <span class="fu">element_blank</span>(), </span>
-<span id="cb6-192"><a href="#cb6-192"></a>                 <span class="at">strip.background =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb6-193"><a href="#cb6-193"></a>                 <span class="at">panel.border =</span> <span class="fu">element_blank</span>())</span>
-<span id="cb6-194"><a href="#cb6-194"></a><span class="in">```</span></span>
-<span id="cb6-195"><a href="#cb6-195"></a>As in @fig-03 but for total area under the growth curve.</span>
-<span id="cb6-196"><a href="#cb6-196"></a>:::</span>
-<span id="cb6-197"><a href="#cb6-197"></a></span>
-<span id="cb6-198"><a href="#cb6-198"></a><span class="fu"># Plot growth rate</span></span>
-<span id="cb6-199"><a href="#cb6-199"></a></span>
-<span id="cb6-200"><a href="#cb6-200"></a>::: {#fig-04}</span>
-<span id="cb6-203"><a href="#cb6-203"></a><span class="in">```{r}</span></span>
-<span id="cb6-204"><a href="#cb6-204"></a><span class="co">#| fig.width: 8</span></span>
-<span id="cb6-205"><a href="#cb6-205"></a><span class="co">#| fig.height: 8</span></span>
-<span id="cb6-206"><a href="#cb6-206"></a><span class="co">#| echo: false</span></span>
-<span id="cb6-207"><a href="#cb6-207"></a><span class="co">#| warning: false</span></span>
-<span id="cb6-208"><a href="#cb6-208"></a>many_spline_res <span class="sc">%&gt;%</span> </span>
-<span id="cb6-209"><a href="#cb6-209"></a>  <span class="fu">mutate</span>(<span class="at">strainID2 =</span> <span class="fu">paste0</span>(<span class="fu">toupper</span>(evolution), <span class="st">"_"</span>, strain)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-210"><a href="#cb6-210"></a>  <span class="fu">summarize</span>(ggplot2<span class="sc">::</span><span class="fu">mean_cl_boot</span>(mumax), <span class="at">.by=</span><span class="fu">c</span>(strainID2, <span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-211"><a href="#cb6-211"></a>  <span class="fu">mutate</span>(<span class="at">strainID2 =</span> <span class="fu">factor</span>(strainID2, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"ANC_1287"</span>, <span class="st">"EVO_1287"</span>, <span class="st">"ANC_1977"</span>, <span class="st">"EVO_1977"</span>))) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-212"><a href="#cb6-212"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> strainID2, <span class="at">y =</span> <span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>)) <span class="sc">+</span></span>
-<span id="cb6-213"><a href="#cb6-213"></a>  <span class="fu">geom_tile</span>(<span class="fu">aes</span>(<span class="at">fill =</span> y)) <span class="sc">+</span></span>
-<span id="cb6-214"><a href="#cb6-214"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">guide =</span> <span class="fu">guide_axis</span>(<span class="at">angle =</span> <span class="dv">90</span>)) <span class="sc">+</span></span>
-<span id="cb6-215"><a href="#cb6-215"></a>  <span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span></span>
-<span id="cb6-216"><a href="#cb6-216"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"white"</span>, <span class="st">"black"</span>), <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb6-217"><a href="#cb6-217"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Carbon substrate"</span>, <span class="at">fill =</span> <span class="st">"Growth rate</span><span class="sc">\n</span><span class="st">(hr-1)"</span>, <span class="at">x =</span> <span class="st">""</span>) <span class="sc">+</span></span>
-<span id="cb6-218"><a href="#cb6-218"></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span> </span>
-<span id="cb6-219"><a href="#cb6-219"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb6-220"><a href="#cb6-220"></a>                 <span class="at">panel.background =</span> <span class="fu">element_blank</span>(), </span>
-<span id="cb6-221"><a href="#cb6-221"></a>                 <span class="at">strip.background =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb6-222"><a href="#cb6-222"></a>                 <span class="at">panel.border =</span> <span class="fu">element_blank</span>())</span>
-<span id="cb6-223"><a href="#cb6-223"></a><span class="in">```</span></span>
-<span id="cb6-224"><a href="#cb6-224"></a>As in @fig-03 but for growth rate (hr-1)</span>
-<span id="cb6-225"><a href="#cb6-225"></a>:::</span>
-<span id="cb6-226"><a href="#cb6-226"></a></span>
-<span id="cb6-227"><a href="#cb6-227"></a><span class="fu"># Save</span></span>
-<span id="cb6-228"><a href="#cb6-228"></a></span>
-<span id="cb6-231"><a href="#cb6-231"></a><span class="in">```{r}</span></span>
-<span id="cb6-232"><a href="#cb6-232"></a><span class="co">#| eval: false</span></span>
-<span id="cb6-233"><a href="#cb6-233"></a><span class="fu">ggsave</span>(</span>
-<span id="cb6-234"><a href="#cb6-234"></a>  here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"figs"</span>, <span class="st">"monoculture_auc_filtrate.svg"</span>),</span>
-<span id="cb6-235"><a href="#cb6-235"></a>  auc_filtrate,</span>
-<span id="cb6-236"><a href="#cb6-236"></a>  <span class="at">width =</span> <span class="dv">8</span>,</span>
-<span id="cb6-237"><a href="#cb6-237"></a>  <span class="at">height =</span> <span class="dv">8</span>,</span>
-<span id="cb6-238"><a href="#cb6-238"></a>  <span class="at">units =</span> <span class="st">"in"</span>,</span>
-<span id="cb6-239"><a href="#cb6-239"></a>  <span class="at">device =</span> <span class="st">"svg"</span></span>
-<span id="cb6-240"><a href="#cb6-240"></a>)</span>
-<span id="cb6-241"><a href="#cb6-241"></a><span class="in">```</span></span>
+<div class="sourceCode" id="cb4" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">---</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="an">title:</span><span class="co"> "Analyzing monoculture growth summary"</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="an">author:</span><span class="co"> "Shane Hogle"</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="an">date:</span><span class="co"> today</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="an">link-citations:</span><span class="co"> true</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="an">abstract:</span><span class="co"> "In the prior step we imported, smoothed, and calculated summary statistics for the species growth on [Biolog Ecoplates](https://www.biolog.com/products/community-analysis-microplates/ecoplate/). Here we will do some simple plots and analysis of the growth data on different carbon sources from the ecoplates."</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="co">---</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a></span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="fu"># Setup</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a></span>
+<span id="cb4-13"><a href="#cb4-13"></a><span class="in">```{r}</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a><span class="co">#| output: false</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a><span class="co">#| warning: false</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a><span class="co">#| error: false</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a><span class="do">##### Libraries</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb4-19"><a href="#cb4-19"></a><span class="fu">library</span>(here)</span>
+<span id="cb4-20"><a href="#cb4-20"></a><span class="fu">library</span>(fs)</span>
+<span id="cb4-21"><a href="#cb4-21"></a><span class="fu">library</span>(scales)</span>
+<span id="cb4-22"><a href="#cb4-22"></a><span class="fu">library</span>(errors)</span>
+<span id="cb4-23"><a href="#cb4-23"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"utils_gcurves.R"</span>))</span>
+<span id="cb4-24"><a href="#cb4-24"></a></span>
+<span id="cb4-25"><a href="#cb4-25"></a><span class="do">##### Global variabless</span></span>
+<span id="cb4-26"><a href="#cb4-26"></a>data_raw <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"biolog_ecoplates"</span>)</span>
+<span id="cb4-27"><a href="#cb4-27"></a>data <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"biolog_ecoplates"</span>)</span>
+<span id="cb4-28"><a href="#cb4-28"></a><span class="co"># make processed data directory if it doesn't exist</span></span>
+<span id="cb4-29"><a href="#cb4-29"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(data)</span>
+<span id="cb4-30"><a href="#cb4-30"></a><span class="in">```</span></span>
+<span id="cb4-31"><a href="#cb4-31"></a></span>
+<span id="cb4-32"><a href="#cb4-32"></a><span class="fu"># Introduction</span></span>
+<span id="cb4-33"><a href="#cb4-33"></a></span>
+<span id="cb4-34"><a href="#cb4-34"></a>The <span class="co">[</span><span class="ot">Biolog Ecoplates</span><span class="co">](https://www.biolog.com/products/community-analysis-microplates/ecoplate/)</span> utilize tetrazolium reduction to measure the metabolic response of bacterial cells to different carbon substrates.  Oxidized tetrazolium salt is water soluble, colorless in solution, and can freely diffuse into bacterial cells. Once inside the cell, tetrazolium is reduced by reducing agents like NADH an NADPH which are generated via cellular metabolism and catabolism. Once reduced tetrazolium is transformed into pink product. This assay measures the accumulation of reduced tetrazolium (colormetric absorbance at 590 nm) and hence the accumulation and concentration of reducing agents from cellular metabolism. This process will reflect both the concentration of cells in solution and per-capita concentration of reductant from central metabolism. There is a useful overview of the Tetrazolium colorometric procedure <span class="co">[</span><span class="ot">available here.</span><span class="co">](https://fi.promega.com/resources/pubhub/is-your-mtt-assay-really-the-best-choice/)</span></span>
+<span id="cb4-35"><a href="#cb4-35"></a></span>
+<span id="cb4-36"><a href="#cb4-36"></a><span class="fu"># Read data</span></span>
+<span id="cb4-37"><a href="#cb4-37"></a></span>
+<span id="cb4-40"><a href="#cb4-40"></a><span class="in">```{r}</span></span>
+<span id="cb4-41"><a href="#cb4-41"></a><span class="co">#| output: false</span></span>
+<span id="cb4-42"><a href="#cb4-42"></a><span class="co">#| warning: false</span></span>
+<span id="cb4-43"><a href="#cb4-43"></a><span class="co">#| error: false</span></span>
+<span id="cb4-44"><a href="#cb4-44"></a><span class="do">##### Growth summary data (e.g., AUC and growth rates from )</span></span>
+<span id="cb4-45"><a href="#cb4-45"></a>many_auc_res <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(data, <span class="st">"ecoplate_gcurve_auc_results.tsv"</span>))</span>
+<span id="cb4-46"><a href="#cb4-46"></a>many_spline_res <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(data, <span class="st">"ecoplate_gcurve_spline_results.tsv"</span>))</span>
+<span id="cb4-47"><a href="#cb4-47"></a></span>
+<span id="cb4-48"><a href="#cb4-48"></a><span class="do">##### Full growth curves</span></span>
+<span id="cb4-49"><a href="#cb4-49"></a>gcurves <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(data, <span class="st">"ecoplate_gcurves_smooth.tsv"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-50"><a href="#cb4-50"></a>  <span class="fu">arrange</span>(strainID, well, plate_name) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-51"><a href="#cb4-51"></a>  <span class="fu">group_by</span>(strainID, evolution, plate_name, <span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>, well) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-52"><a href="#cb4-52"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> dplyr<span class="sc">::</span><span class="fu">cur_group_id</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-53"><a href="#cb4-53"></a>  <span class="fu">group_by</span>(strainID, evolution, <span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-54"><a href="#cb4-54"></a>  <span class="fu">mutate</span>(<span class="at">replicate =</span> <span class="fu">case_when</span>(id <span class="sc">==</span> <span class="fu">min</span>(id) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb4-55"><a href="#cb4-55"></a>                               id <span class="sc">==</span> <span class="fu">max</span>(id) <span class="sc">~</span> <span class="fu">n_distinct</span>(id),</span>
+<span id="cb4-56"><a href="#cb4-56"></a>                               <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">2</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-57"><a href="#cb4-57"></a>  <span class="fu">mutate</span>(<span class="at">replicate =</span> LETTERS[replicate]) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-58"><a href="#cb4-58"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>id) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-59"><a href="#cb4-59"></a>  <span class="fu">ungroup</span>() </span>
+<span id="cb4-60"><a href="#cb4-60"></a><span class="in">```</span></span>
+<span id="cb4-61"><a href="#cb4-61"></a></span>
+<span id="cb4-62"><a href="#cb4-62"></a><span class="fu"># Plot growth curves</span></span>
+<span id="cb4-63"><a href="#cb4-63"></a></span>
+<span id="cb4-64"><a href="#cb4-64"></a>::: {#fig-01}</span>
+<span id="cb4-67"><a href="#cb4-67"></a><span class="in">```{r}</span></span>
+<span id="cb4-68"><a href="#cb4-68"></a><span class="co">#| fig.width: 8</span></span>
+<span id="cb4-69"><a href="#cb4-69"></a><span class="co">#| fig.height: 8</span></span>
+<span id="cb4-70"><a href="#cb4-70"></a><span class="co">#| echo: false</span></span>
+<span id="cb4-71"><a href="#cb4-71"></a><span class="co">#| warning: false</span></span>
+<span id="cb4-72"><a href="#cb4-72"></a>gcurves <span class="sc">%&gt;%</span> </span>
+<span id="cb4-73"><a href="#cb4-73"></a>  <span class="fu">mutate</span>(<span class="at">hist =</span> <span class="fu">if_else</span>(<span class="fu">str_detect</span>(evolution, <span class="st">"anc"</span>), <span class="st">"Str Sens."</span>, <span class="st">"Str Res."</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-74"><a href="#cb4-74"></a>  <span class="fu">filter</span>(strainID <span class="sc">==</span> <span class="st">"HAMBI_1287"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-75"><a href="#cb4-75"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb4-76"><a href="#cb4-76"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> hours, <span class="at">y =</span> OD600_rollmean, <span class="at">color =</span> hist, <span class="at">linetype =</span> replicate, <span class="at">group =</span> <span class="fu">interaction</span>(well, plate_name))) <span class="sc">+</span></span>
+<span id="cb4-77"><a href="#cb4-77"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Hours"</span>, <span class="at">y =</span> <span class="st">"OD600"</span>) <span class="sc">+</span></span>
+<span id="cb4-78"><a href="#cb4-78"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">48</span>, <span class="dv">12</span>), <span class="at">labels =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">48</span>, <span class="dv">12</span>)) <span class="sc">+</span></span>
+<span id="cb4-79"><a href="#cb4-79"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Metabolic performance (absorbance units, λ = 590 nm)"</span>, </span>
+<span id="cb4-80"><a href="#cb4-80"></a>       <span class="at">x =</span> <span class="st">"Hours"</span>, </span>
+<span id="cb4-81"><a href="#cb4-81"></a>       <span class="at">color =</span> <span class="st">""</span>,</span>
+<span id="cb4-82"><a href="#cb4-82"></a>       <span class="at">lintype =</span> <span class="st">"Replicate"</span>,</span>
+<span id="cb4-83"><a href="#cb4-83"></a>       <span class="at">title =</span> <span class="st">"Pseudomonas chlororaphis HAMBI_1977"</span>) <span class="sc">+</span></span>
+<span id="cb4-84"><a href="#cb4-84"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span><span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>, <span class="at">labeller =</span> <span class="fu">labeller</span>(<span class="st">`</span><span class="at">carbon source</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">label_wrap_gen</span>(<span class="dv">20</span>)))</span>
+<span id="cb4-85"><a href="#cb4-85"></a><span class="in">```</span></span>
+<span id="cb4-86"><a href="#cb4-86"></a>Full growth curves of *Citrobacter koseri* HAMBI_1287 on 31 different carbon substrates and water in Biolog Ecoplates over 48 hours of growth. Metabolic activity via tetrazolium reduction is colorometrically tracked with absorbance at 590 nm. Line type denotes the biological replicate, while line color denotes adaptation to the antibiotic streptomycin: Streptomycin resistant (red) Streptomycin sensitive (blue).</span>
+<span id="cb4-87"><a href="#cb4-87"></a>:::</span>
+<span id="cb4-88"><a href="#cb4-88"></a></span>
+<span id="cb4-89"><a href="#cb4-89"></a>::: {#fig-02}</span>
+<span id="cb4-92"><a href="#cb4-92"></a><span class="in">```{r}</span></span>
+<span id="cb4-93"><a href="#cb4-93"></a><span class="co">#| fig.width: 8</span></span>
+<span id="cb4-94"><a href="#cb4-94"></a><span class="co">#| fig.height: 8</span></span>
+<span id="cb4-95"><a href="#cb4-95"></a><span class="co">#| echo: false</span></span>
+<span id="cb4-96"><a href="#cb4-96"></a><span class="co">#| warning: false</span></span>
+<span id="cb4-97"><a href="#cb4-97"></a>gcurves <span class="sc">%&gt;%</span> </span>
+<span id="cb4-98"><a href="#cb4-98"></a>  <span class="fu">mutate</span>(<span class="at">hist =</span> <span class="fu">if_else</span>(<span class="fu">str_detect</span>(evolution, <span class="st">"anc"</span>), <span class="st">"Str Sens."</span>, <span class="st">"Str Res."</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-99"><a href="#cb4-99"></a>  <span class="fu">filter</span>(strainID <span class="sc">==</span> <span class="st">"HAMBI_1977"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-100"><a href="#cb4-100"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb4-101"><a href="#cb4-101"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> hours, <span class="at">y =</span> OD600_rollmean, <span class="at">color =</span> hist, <span class="at">linetype =</span> replicate, <span class="at">group =</span> <span class="fu">interaction</span>(well, plate_name))) <span class="sc">+</span></span>
+<span id="cb4-102"><a href="#cb4-102"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Hours"</span>, <span class="at">y =</span> <span class="st">"OD600"</span>) <span class="sc">+</span></span>
+<span id="cb4-103"><a href="#cb4-103"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">48</span>, <span class="dv">12</span>), <span class="at">labels =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">48</span>, <span class="dv">12</span>)) <span class="sc">+</span></span>
+<span id="cb4-104"><a href="#cb4-104"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span><span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>)<span class="sc">+</span></span>
+<span id="cb4-105"><a href="#cb4-105"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Metabolic performance (absorbance units, λ = 590 nm)"</span>, </span>
+<span id="cb4-106"><a href="#cb4-106"></a>       <span class="at">x =</span> <span class="st">"Hours"</span>, </span>
+<span id="cb4-107"><a href="#cb4-107"></a>       <span class="at">color =</span> <span class="st">""</span>,</span>
+<span id="cb4-108"><a href="#cb4-108"></a>       <span class="at">lintype =</span> <span class="st">"Replicate"</span>,</span>
+<span id="cb4-109"><a href="#cb4-109"></a>       <span class="at">title =</span> <span class="st">"Pseudomonas chlororaphis HAMBI_1977"</span>) <span class="sc">+</span></span>
+<span id="cb4-110"><a href="#cb4-110"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span><span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>, <span class="at">labeller =</span> <span class="fu">labeller</span>(<span class="st">`</span><span class="at">carbon source</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">label_wrap_gen</span>(<span class="dv">20</span>)))</span>
+<span id="cb4-111"><a href="#cb4-111"></a><span class="in">```</span></span>
+<span id="cb4-112"><a href="#cb4-112"></a>Growth of *Pseudomonas chlororaphis* HAMBI_1977 on 31 different carbon substrates and water in Biolog Ecoplates over 48 hours of growth. Metabolic activity via tetrazolium reduction is colorometrically tracked with absorbance at 590 nm. Line type denotes the biological replicate, while line color denotes adaptation to the antibiotic streptomycin: Streptomycin resistant (red) Streptomycin sensitive (blue).</span>
+<span id="cb4-113"><a href="#cb4-113"></a>:::</span>
+<span id="cb4-114"><a href="#cb4-114"></a></span>
+<span id="cb4-115"><a href="#cb4-115"></a><span class="fu"># Plot maximum absorbance</span></span>
+<span id="cb4-116"><a href="#cb4-116"></a></span>
+<span id="cb4-119"><a href="#cb4-119"></a><span class="in">```{r}</span></span>
+<span id="cb4-120"><a href="#cb4-120"></a><span class="co">#| output: false</span></span>
+<span id="cb4-121"><a href="#cb4-121"></a><span class="co">#| warning: false</span></span>
+<span id="cb4-122"><a href="#cb4-122"></a><span class="co"># 1. for each replicate take the mean over all measurements within 0.05 units of the max</span></span>
+<span id="cb4-123"><a href="#cb4-123"></a><span class="co"># 2. subtract water from all values</span></span>
+<span id="cb4-124"><a href="#cb4-124"></a><span class="co"># 3. calculate mean and bootstrapped 95% CI across biological replicates</span></span>
+<span id="cb4-125"><a href="#cb4-125"></a>gcurves_metabolic_pref <span class="ot">&lt;-</span> gcurves <span class="sc">%&gt;%</span> </span>
+<span id="cb4-126"><a href="#cb4-126"></a>  <span class="fu">mutate</span>(<span class="at">strainID2 =</span> <span class="fu">paste0</span>(<span class="fu">toupper</span>(evolution), <span class="st">"_"</span>, strain)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-127"><a href="#cb4-127"></a>  <span class="fu">filter</span>(hours <span class="sc">&gt;</span> <span class="dv">24</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-128"><a href="#cb4-128"></a>  <span class="fu">group_by</span>(strainID2, <span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>, replicate) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-129"><a href="#cb4-129"></a>  <span class="fu">filter</span>(OD600 <span class="sc">&gt;=</span> <span class="fu">max</span>(OD600)<span class="sc">-</span><span class="fl">0.05</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-130"><a href="#cb4-130"></a>  <span class="fu">summarize</span>(<span class="at">OD600 =</span> <span class="fu">mean</span>(OD600)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-131"><a href="#cb4-131"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb4-132"><a href="#cb4-132"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">`</span><span class="at">carbon source</span><span class="st">`</span>, <span class="at">values_from =</span> <span class="st">"OD600"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-133"><a href="#cb4-133"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="sc">-</span>strainID2, <span class="sc">-</span>replicate, <span class="sc">-</span>water), <span class="at">names_to =</span> <span class="st">"carbon_source"</span>, <span class="at">values_to =</span> <span class="st">"OD600"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-134"><a href="#cb4-134"></a>  <span class="fu">mutate</span>(<span class="at">OD600_norm =</span> <span class="fu">if_else</span>((OD600 <span class="sc">-</span> water) <span class="sc">&lt;</span> <span class="dv">0</span>, <span class="dv">0</span>, OD600<span class="sc">-</span>water)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-135"><a href="#cb4-135"></a>  <span class="fu">summarize</span>(ggplot2<span class="sc">::</span><span class="fu">mean_cl_boot</span>(OD600), <span class="at">.by=</span><span class="fu">c</span>(strainID2, carbon_source)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-136"><a href="#cb4-136"></a>  <span class="fu">mutate</span>(<span class="at">y_e =</span> errors<span class="sc">::</span><span class="fu">set_errors</span>(y, ymax<span class="sc">-</span>y)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-137"><a href="#cb4-137"></a>  <span class="fu">group_by</span>(strainID2) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-138"><a href="#cb4-138"></a>  <span class="fu">mutate</span>(<span class="at">y_e_r =</span> y_e<span class="sc">/</span><span class="fu">max</span>(y_e)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-139"><a href="#cb4-139"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb4-140"><a href="#cb4-140"></a></span>
+<span id="cb4-141"><a href="#cb4-141"></a><span class="co"># Order of carbon compounds from highest metabolic output to lowest</span></span>
+<span id="cb4-142"><a href="#cb4-142"></a>carbon_order_1287 <span class="ot">&lt;-</span> gcurves_metabolic_pref <span class="sc">%&gt;%</span> </span>
+<span id="cb4-143"><a href="#cb4-143"></a>  <span class="fu">filter</span>(strainID2 <span class="sc">==</span> <span class="st">"ANC_1287"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-144"><a href="#cb4-144"></a>  <span class="fu">arrange</span>(y_e_r) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-145"><a href="#cb4-145"></a>  <span class="fu">pull</span>(carbon_source)</span>
+<span id="cb4-146"><a href="#cb4-146"></a></span>
+<span id="cb4-147"><a href="#cb4-147"></a>carbon_order_1977 <span class="ot">&lt;-</span> gcurves_metabolic_pref <span class="sc">%&gt;%</span> </span>
+<span id="cb4-148"><a href="#cb4-148"></a>  <span class="fu">filter</span>(strainID2 <span class="sc">==</span> <span class="st">"ANC_1977"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-149"><a href="#cb4-149"></a>  <span class="fu">arrange</span>(y_e_r) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-150"><a href="#cb4-150"></a>  <span class="fu">pull</span>(carbon_source)</span>
+<span id="cb4-151"><a href="#cb4-151"></a></span>
+<span id="cb4-152"><a href="#cb4-152"></a><span class="co"># plot</span></span>
+<span id="cb4-153"><a href="#cb4-153"></a>p1287 <span class="ot">&lt;-</span> gcurves_metabolic_pref <span class="sc">%&gt;%</span> </span>
+<span id="cb4-154"><a href="#cb4-154"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(strainID2, <span class="st">"1287"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-155"><a href="#cb4-155"></a>  <span class="fu">mutate</span>(<span class="at">hist =</span> <span class="fu">if_else</span>(<span class="fu">str_detect</span>(strainID2, <span class="st">"ANC"</span>), <span class="st">"Str Sens."</span>, <span class="st">"Str Res."</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-156"><a href="#cb4-156"></a>  <span class="fu">mutate</span>(<span class="at">carbon_source =</span> <span class="fu">factor</span>(carbon_source, <span class="at">levels =</span> carbon_order_1287)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-157"><a href="#cb4-157"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> carbon_source, <span class="at">x =</span> y_e, <span class="at">color =</span> hist)) <span class="sc">+</span> </span>
+<span id="cb4-158"><a href="#cb4-158"></a>  <span class="fu">geom_errors</span>() <span class="sc">+</span></span>
+<span id="cb4-159"><a href="#cb4-159"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span> </span>
+<span id="cb4-160"><a href="#cb4-160"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Carbon source ranked by metabolic output"</span>, </span>
+<span id="cb4-161"><a href="#cb4-161"></a>       <span class="at">x =</span> <span class="st">"Metabolic performance (absorbance units, λ = 590 nm)"</span>,</span>
+<span id="cb4-162"><a href="#cb4-162"></a>       <span class="at">color =</span> <span class="st">""</span>, <span class="at">title =</span> <span class="st">"Citrobacter koseri 1287"</span>)</span>
+<span id="cb4-163"><a href="#cb4-163"></a></span>
+<span id="cb4-164"><a href="#cb4-164"></a>p1977 <span class="ot">&lt;-</span> gcurves_metabolic_pref <span class="sc">%&gt;%</span> </span>
+<span id="cb4-165"><a href="#cb4-165"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(strainID2, <span class="st">"1977"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-166"><a href="#cb4-166"></a>  <span class="fu">mutate</span>(<span class="at">hist =</span> <span class="fu">if_else</span>(<span class="fu">str_detect</span>(strainID2, <span class="st">"ANC"</span>), <span class="st">"Str Sens."</span>, <span class="st">"Str Res."</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-167"><a href="#cb4-167"></a>  <span class="fu">mutate</span>(<span class="at">carbon_source =</span> <span class="fu">factor</span>(carbon_source, <span class="at">levels =</span> carbon_order_1977)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-168"><a href="#cb4-168"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> carbon_source, <span class="at">x =</span> y_e, <span class="at">color =</span> hist)) <span class="sc">+</span> </span>
+<span id="cb4-169"><a href="#cb4-169"></a>  <span class="fu">geom_errors</span>() <span class="sc">+</span></span>
+<span id="cb4-170"><a href="#cb4-170"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span> </span>
+<span id="cb4-171"><a href="#cb4-171"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Carbon source ranked by metabolic output"</span>, </span>
+<span id="cb4-172"><a href="#cb4-172"></a>       <span class="at">x =</span> <span class="st">"Metabolic performance (absorbance units, λ = 590 nm)"</span>,</span>
+<span id="cb4-173"><a href="#cb4-173"></a>       <span class="at">color =</span> <span class="st">""</span>, <span class="at">title =</span> <span class="st">"Pseudomonas chlororaphis 1977"</span>)</span>
+<span id="cb4-174"><a href="#cb4-174"></a><span class="in">```</span></span>
+<span id="cb4-175"><a href="#cb4-175"></a></span>
+<span id="cb4-176"><a href="#cb4-176"></a>::: {#fig-03}</span>
+<span id="cb4-179"><a href="#cb4-179"></a><span class="in">```{r}</span></span>
+<span id="cb4-180"><a href="#cb4-180"></a><span class="co">#| fig.width: 8</span></span>
+<span id="cb4-181"><a href="#cb4-181"></a><span class="co">#| fig.height: 6</span></span>
+<span id="cb4-182"><a href="#cb4-182"></a><span class="co">#| echo: false</span></span>
+<span id="cb4-183"><a href="#cb4-183"></a><span class="co">#| warning: false</span></span>
+<span id="cb4-184"><a href="#cb4-184"></a>p1287</span>
+<span id="cb4-185"><a href="#cb4-185"></a><span class="in">```</span></span>
+<span id="cb4-186"><a href="#cb4-186"></a>Mean maximum metabolic performance of *Citrobacter koseri* 1287 grown 31 carbon substrates over 48 hours. Horizontal axis depicts the maximum absorbance (AU, 590 nm) reached over 48 hours. Point represents the mean over three biological replicates while the line range depicts the 95% confidence interval. Carbon sources are displayed on the vertical axis and organized by decreasing maximum metabolic output of the ancestral, Streptomycin-sensitive strain. Point/line color depicts whether the strain is Streptomycin resistant/evolved (red) or Streptomycin sensitive/ancestral (blue).</span>
+<span id="cb4-187"><a href="#cb4-187"></a>:::</span>
+<span id="cb4-188"><a href="#cb4-188"></a></span>
+<span id="cb4-189"><a href="#cb4-189"></a>::: {#fig-04}</span>
+<span id="cb4-192"><a href="#cb4-192"></a><span class="in">```{r}</span></span>
+<span id="cb4-193"><a href="#cb4-193"></a><span class="co">#| fig.width: 8</span></span>
+<span id="cb4-194"><a href="#cb4-194"></a><span class="co">#| fig.height: 6</span></span>
+<span id="cb4-195"><a href="#cb4-195"></a><span class="co">#| echo: false</span></span>
+<span id="cb4-196"><a href="#cb4-196"></a><span class="co">#| warning: false</span></span>
+<span id="cb4-197"><a href="#cb4-197"></a>p1977</span>
+<span id="cb4-198"><a href="#cb4-198"></a><span class="in">```</span></span>
+<span id="cb4-199"><a href="#cb4-199"></a>Mean maximum metabolic performance of *Pseudomonas chlororaphis* 1977 grown 31 carbon substrates over 48 hours. Horizontal axis depicts the maximum absorbance (AU, 590 nm) reached over 48 hours. Point represents the mean over three biological replicates while the line range depicts the 95% confidence interval. Carbon sources are displayed on the vertical axis and organized by decreasing maximum metabolic output of the ancestral Streptomycin sensitive strain. Point/line color depicts whether the strain is Streptomycin resistant/evolved (red) or Streptomycin sensitive/ancestral (blue).</span>
+<span id="cb4-200"><a href="#cb4-200"></a>:::</span>
+<span id="cb4-201"><a href="#cb4-201"></a></span>
+<span id="cb4-202"><a href="#cb4-202"></a><span class="in">````{comment}</span></span>
+<span id="cb4-203"><a href="#cb4-203"></a><span class="in"># Plot maximum observed absorbance</span></span>
+<span id="cb4-204"><a href="#cb4-204"></a></span>
+<span id="cb4-205"><a href="#cb4-205"></a><span class="in">Some clustering to plot by more similar responses</span></span>
+<span id="cb4-206"><a href="#cb4-206"></a></span>
+<span id="cb4-209"><a href="#cb4-209"></a><span class="in">```{r}</span></span>
+<span id="cb4-210"><a href="#cb4-210"></a><span class="in">df2clust &lt;- many_auc_res %&gt;% </span></span>
+<span id="cb4-211"><a href="#cb4-211"></a><span class="in">  mutate(strainID2 = paste0(toupper(evolution), "_", strain)) %&gt;% </span></span>
+<span id="cb4-212"><a href="#cb4-212"></a><span class="in">  summarize(y = min(max_od), .by=c(strainID2, `carbon source`)) %&gt;% </span></span>
+<span id="cb4-213"><a href="#cb4-213"></a><span class="in">  pivot_wider(names_from = "carbon source", values_from = "y") %&gt;% </span></span>
+<span id="cb4-214"><a href="#cb4-214"></a><span class="in">  pivot_longer(c(-strainID2, -water)) %&gt;% </span></span>
+<span id="cb4-215"><a href="#cb4-215"></a><span class="in">  mutate(value_norm = value - water) %&gt;% </span></span>
+<span id="cb4-216"><a href="#cb4-216"></a><span class="in">  pivot_wider(id_cols = c(-water, -value), names_from = "strainID2", values_from = "value_norm") %&gt;% </span></span>
+<span id="cb4-217"><a href="#cb4-217"></a><span class="in">  as.data.frame() %&gt;% </span></span>
+<span id="cb4-218"><a href="#cb4-218"></a><span class="in">  column_to_rownames(var = "name")</span></span>
+<span id="cb4-219"><a href="#cb4-219"></a></span>
+<span id="cb4-220"><a href="#cb4-220"></a><span class="in"># scale the dataframe for clustering</span></span>
+<span id="cb4-221"><a href="#cb4-221"></a><span class="in">df2clust_scaled &lt;- scale(df2clust)</span></span>
+<span id="cb4-222"><a href="#cb4-222"></a></span>
+<span id="cb4-223"><a href="#cb4-223"></a><span class="in"># perform the hierarchcical clustering using euclidean distance and Ward's D</span></span>
+<span id="cb4-224"><a href="#cb4-224"></a><span class="in">hc &lt;- hclust(dist(df2clust_scaled, method = "euclidean"), method = "ward.D2" )</span></span>
+<span id="cb4-225"><a href="#cb4-225"></a></span>
+<span id="cb4-226"><a href="#cb4-226"></a><span class="in"># plot</span></span>
+<span id="cb4-227"><a href="#cb4-227"></a><span class="in">df2clust %&gt;% </span></span>
+<span id="cb4-228"><a href="#cb4-228"></a><span class="in">  rownames_to_column(var = "carbon") %&gt;% </span></span>
+<span id="cb4-229"><a href="#cb4-229"></a><span class="in">  pivot_longer(cols = -carbon) %&gt;% </span></span>
+<span id="cb4-230"><a href="#cb4-230"></a><span class="in">  mutate(carbon = factor(carbon, levels = hc$labels[hc$order]),</span></span>
+<span id="cb4-231"><a href="#cb4-231"></a><span class="in">         name = factor(name, levels = c("ANC_1287", "EVO_1287", "ANC_1977", "EVO_1977"))) #%&gt;% </span></span>
+<span id="cb4-232"><a href="#cb4-232"></a><span class="in">  ggplot(aes(x = name, y = carbon)) +</span></span>
+<span id="cb4-233"><a href="#cb4-233"></a><span class="in">  geom_tile(aes(fill = value)) +</span></span>
+<span id="cb4-234"><a href="#cb4-234"></a><span class="in">  scale_x_discrete(guide = guide_axis(angle = 90)) +</span></span>
+<span id="cb4-235"><a href="#cb4-235"></a><span class="in">  scale_fill_viridis_c() +</span></span>
+<span id="cb4-236"><a href="#cb4-236"></a><span class="in">  scale_color_manual(values = c("white", "black"), guide = "none") +</span></span>
+<span id="cb4-237"><a href="#cb4-237"></a><span class="in">  labs(y = "Carbon substrate", fill = "Maximum\nabsorbance", x = "") +</span></span>
+<span id="cb4-238"><a href="#cb4-238"></a><span class="in">  coord_fixed() + </span></span>
+<span id="cb4-239"><a href="#cb4-239"></a><span class="in">  ggplot2::theme(panel.grid = element_blank(),</span></span>
+<span id="cb4-240"><a href="#cb4-240"></a><span class="in">                 panel.background = element_blank(), </span></span>
+<span id="cb4-241"><a href="#cb4-241"></a><span class="in">                 strip.background = element_blank(),</span></span>
+<span id="cb4-242"><a href="#cb4-242"></a><span class="in">                 panel.border = element_blank())</span></span>
+<span id="cb4-243"><a href="#cb4-243"></a><span class="in">```</span></span>
+<span id="cb4-244"><a href="#cb4-244"></a></span>
+<span id="cb4-245"><a href="#cb4-245"></a></span>
+<span id="cb4-246"><a href="#cb4-246"></a><span class="in">::: {#fig-03}</span></span>
+<span id="cb4-249"><a href="#cb4-249"></a><span class="in">```{r}</span></span>
+<span id="cb4-250"><a href="#cb4-250"></a><span class="in">#| fig.width: 8</span></span>
+<span id="cb4-251"><a href="#cb4-251"></a><span class="in">#| fig.height: 8</span></span>
+<span id="cb4-252"><a href="#cb4-252"></a><span class="in">#| echo: false</span></span>
+<span id="cb4-253"><a href="#cb4-253"></a><span class="in">#| warning: false</span></span>
+<span id="cb4-254"><a href="#cb4-254"></a><span class="in">many_auc_res %&gt;% </span></span>
+<span id="cb4-255"><a href="#cb4-255"></a><span class="in">  mutate(strainID2 = paste0(toupper(evolution), "_", strain)) %&gt;% </span></span>
+<span id="cb4-256"><a href="#cb4-256"></a><span class="in">  summarize(y = min(max_od), .by=c(strainID2, `carbon source`)) %&gt;% </span></span>
+<span id="cb4-257"><a href="#cb4-257"></a><span class="in">  #summarize(ggplot2::mean_cl_boot(max_od), .by=c(strainID2, `carbon source`)) %&gt;% </span></span>
+<span id="cb4-258"><a href="#cb4-258"></a><span class="in">  mutate(strainID2 = factor(strainID2, levels = c("ANC_1287", "EVO_1287", "ANC_1977", "EVO_1977"))) %&gt;% </span></span>
+<span id="cb4-259"><a href="#cb4-259"></a><span class="in">  ggplot(aes(x = strainID2, y = `carbon source`)) +</span></span>
+<span id="cb4-260"><a href="#cb4-260"></a><span class="in">  geom_tile(aes(fill = y)) +</span></span>
+<span id="cb4-261"><a href="#cb4-261"></a><span class="in">  scale_x_discrete(guide = guide_axis(angle = 90)) +</span></span>
+<span id="cb4-262"><a href="#cb4-262"></a><span class="in">  scale_fill_viridis_c() +</span></span>
+<span id="cb4-263"><a href="#cb4-263"></a><span class="in">  scale_color_manual(values = c("white", "black"), guide = "none") +</span></span>
+<span id="cb4-264"><a href="#cb4-264"></a><span class="in">  labs(y = "Carbon substrate", fill = "Maximum\nabsorbance", x = "") +</span></span>
+<span id="cb4-265"><a href="#cb4-265"></a><span class="in">  coord_fixed() + </span></span>
+<span id="cb4-266"><a href="#cb4-266"></a><span class="in">  ggplot2::theme(panel.grid = element_blank(),</span></span>
+<span id="cb4-267"><a href="#cb4-267"></a><span class="in">                 panel.background = element_blank(), </span></span>
+<span id="cb4-268"><a href="#cb4-268"></a><span class="in">                 strip.background = element_blank(),</span></span>
+<span id="cb4-269"><a href="#cb4-269"></a><span class="in">                 panel.border = element_blank())</span></span>
+<span id="cb4-270"><a href="#cb4-270"></a><span class="in">```</span></span>
+<span id="cb4-271"><a href="#cb4-271"></a><span class="in">Mean maximum absorbance (590 nm, fill) over 2 replicates for the 4 strains (x-axis) grown on 31 carbon substrates and water (y-axis). </span></span>
+<span id="cb4-272"><a href="#cb4-272"></a><span class="in">:::</span></span>
+<span id="cb4-273"><a href="#cb4-273"></a></span>
+<span id="cb4-274"><a href="#cb4-274"></a><span class="in"># Plot AUC</span></span>
+<span id="cb4-275"><a href="#cb4-275"></a></span>
+<span id="cb4-276"><a href="#cb4-276"></a><span class="in">::: {#fig-04}</span></span>
+<span id="cb4-279"><a href="#cb4-279"></a><span class="in">```{r}</span></span>
+<span id="cb4-280"><a href="#cb4-280"></a><span class="in">#| fig.width: 8</span></span>
+<span id="cb4-281"><a href="#cb4-281"></a><span class="in">#| fig.height: 8</span></span>
+<span id="cb4-282"><a href="#cb4-282"></a><span class="in">#| echo: false</span></span>
+<span id="cb4-283"><a href="#cb4-283"></a><span class="in">#| warning: false</span></span>
+<span id="cb4-284"><a href="#cb4-284"></a><span class="in">many_auc_res %&gt;% </span></span>
+<span id="cb4-285"><a href="#cb4-285"></a><span class="in">  mutate(strainID2 = paste0(toupper(evolution), "_", strain)) %&gt;% </span></span>
+<span id="cb4-286"><a href="#cb4-286"></a><span class="in">  summarize(ggplot2::mean_cl_boot(auc), .by=c(strainID2, `carbon source`)) %&gt;% </span></span>
+<span id="cb4-287"><a href="#cb4-287"></a><span class="in">  mutate(strainID2 = factor(strainID2, levels = c("ANC_1287", "EVO_1287", "ANC_1977", "EVO_1977"))) %&gt;% </span></span>
+<span id="cb4-288"><a href="#cb4-288"></a><span class="in">  ggplot(aes(x = strainID2, y = `carbon source`)) +</span></span>
+<span id="cb4-289"><a href="#cb4-289"></a><span class="in">  geom_tile(aes(fill = y)) +</span></span>
+<span id="cb4-290"><a href="#cb4-290"></a><span class="in">  scale_x_discrete(guide = guide_axis(angle = 90)) +</span></span>
+<span id="cb4-291"><a href="#cb4-291"></a><span class="in">  scale_fill_viridis_c() +</span></span>
+<span id="cb4-292"><a href="#cb4-292"></a><span class="in">  scale_color_manual(values = c("white", "black"), guide = "none") +</span></span>
+<span id="cb4-293"><a href="#cb4-293"></a><span class="in">  labs(y = "Carbon substrate", fill = "Area under the\ngrowth curve", x = "") +</span></span>
+<span id="cb4-294"><a href="#cb4-294"></a><span class="in">  coord_fixed() + </span></span>
+<span id="cb4-295"><a href="#cb4-295"></a><span class="in">  ggplot2::theme(panel.grid = element_blank(),</span></span>
+<span id="cb4-296"><a href="#cb4-296"></a><span class="in">                 panel.background = element_blank(), </span></span>
+<span id="cb4-297"><a href="#cb4-297"></a><span class="in">                 strip.background = element_blank(),</span></span>
+<span id="cb4-298"><a href="#cb4-298"></a><span class="in">                 panel.border = element_blank())</span></span>
+<span id="cb4-299"><a href="#cb4-299"></a><span class="in">```</span></span>
+<span id="cb4-300"><a href="#cb4-300"></a><span class="in">As in @fig-03 but for total area under the growth curve.</span></span>
+<span id="cb4-301"><a href="#cb4-301"></a><span class="in">:::</span></span>
+<span id="cb4-302"><a href="#cb4-302"></a></span>
+<span id="cb4-303"><a href="#cb4-303"></a><span class="in"># Plot growth rate</span></span>
+<span id="cb4-304"><a href="#cb4-304"></a></span>
+<span id="cb4-305"><a href="#cb4-305"></a><span class="in">::: {#fig-04}</span></span>
+<span id="cb4-308"><a href="#cb4-308"></a><span class="in">```{r}</span></span>
+<span id="cb4-309"><a href="#cb4-309"></a><span class="in">#| fig.width: 8</span></span>
+<span id="cb4-310"><a href="#cb4-310"></a><span class="in">#| fig.height: 8</span></span>
+<span id="cb4-311"><a href="#cb4-311"></a><span class="in">#| echo: false</span></span>
+<span id="cb4-312"><a href="#cb4-312"></a><span class="in">#| warning: false</span></span>
+<span id="cb4-313"><a href="#cb4-313"></a><span class="in">many_spline_res %&gt;% </span></span>
+<span id="cb4-314"><a href="#cb4-314"></a><span class="in">  mutate(strainID2 = paste0(toupper(evolution), "_", strain)) %&gt;% </span></span>
+<span id="cb4-315"><a href="#cb4-315"></a><span class="in">  summarize(ggplot2::mean_cl_boot(mumax), .by=c(strainID2, `carbon source`)) %&gt;% </span></span>
+<span id="cb4-316"><a href="#cb4-316"></a><span class="in">  mutate(strainID2 = factor(strainID2, levels = c("ANC_1287", "EVO_1287", "ANC_1977", "EVO_1977"))) %&gt;% </span></span>
+<span id="cb4-317"><a href="#cb4-317"></a><span class="in">  ggplot(aes(x = strainID2, y = `carbon source`)) +</span></span>
+<span id="cb4-318"><a href="#cb4-318"></a><span class="in">  geom_tile(aes(fill = y)) +</span></span>
+<span id="cb4-319"><a href="#cb4-319"></a><span class="in">  scale_x_discrete(guide = guide_axis(angle = 90)) +</span></span>
+<span id="cb4-320"><a href="#cb4-320"></a><span class="in">  scale_fill_viridis_c() +</span></span>
+<span id="cb4-321"><a href="#cb4-321"></a><span class="in">  scale_color_manual(values = c("white", "black"), guide = "none") +</span></span>
+<span id="cb4-322"><a href="#cb4-322"></a><span class="in">  labs(y = "Carbon substrate", fill = "Growth rate\n(hr-1)", x = "") +</span></span>
+<span id="cb4-323"><a href="#cb4-323"></a><span class="in">  coord_fixed() + </span></span>
+<span id="cb4-324"><a href="#cb4-324"></a><span class="in">  ggplot2::theme(panel.grid = element_blank(),</span></span>
+<span id="cb4-325"><a href="#cb4-325"></a><span class="in">                 panel.background = element_blank(), </span></span>
+<span id="cb4-326"><a href="#cb4-326"></a><span class="in">                 strip.background = element_blank(),</span></span>
+<span id="cb4-327"><a href="#cb4-327"></a><span class="in">                 panel.border = element_blank())</span></span>
+<span id="cb4-328"><a href="#cb4-328"></a><span class="in">```</span></span>
+<span id="cb4-329"><a href="#cb4-329"></a><span class="in">As in @fig-03 but for growth rate (hr-1)</span></span>
+<span id="cb4-330"><a href="#cb4-330"></a><span class="in">:::</span></span>
+<span id="cb4-331"><a href="#cb4-331"></a></span>
+<span id="cb4-332"><a href="#cb4-332"></a><span class="in"># Save</span></span>
+<span id="cb4-333"><a href="#cb4-333"></a></span>
+<span id="cb4-336"><a href="#cb4-336"></a><span class="in">```{r}</span></span>
+<span id="cb4-337"><a href="#cb4-337"></a><span class="in">#| eval: false</span></span>
+<span id="cb4-338"><a href="#cb4-338"></a><span class="in">ggsave(</span></span>
+<span id="cb4-339"><a href="#cb4-339"></a><span class="in">  here::here("figs", "monoculture_auc_filtrate.svg"),</span></span>
+<span id="cb4-340"><a href="#cb4-340"></a><span class="in">  auc_filtrate,</span></span>
+<span id="cb4-341"><a href="#cb4-341"></a><span class="in">  width = 8,</span></span>
+<span id="cb4-342"><a href="#cb4-342"></a><span class="in">  height = 8,</span></span>
+<span id="cb4-343"><a href="#cb4-343"></a><span class="in">  units = "in",</span></span>
+<span id="cb4-344"><a href="#cb4-344"></a><span class="in">  device = "svg"</span></span>
+<span id="cb4-345"><a href="#cb4-345"></a><span class="in">)</span></span>
+<span id="cb4-346"><a href="#cb4-346"></a><span class="in">```</span></span>
+<span id="cb4-347"><a href="#cb4-347"></a><span class="in">````</span></span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

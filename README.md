@@ -1,17 +1,16 @@
 # MCTdownUnder
 
-MCT = 'modern coexistence theory.' downUnder refers to Australian collaborators. Also because I am stupid
+Etymology: 'MCT' = modern coexistence theory, 'downUnder' referring to Australian collaborators. Also because I am stupid
 
 [Click here to view rendered notebooks of the analysis.](https://slhogle.github.io/MCTdownUnder/)
 
 ## Structure:
-The `_data_raw` directory should never be touched or modified! It includes raw data files obtained from instruments.
+The `_data_raw` directory includes raw data files obtained from instruments and is never modified directly
 
 The `data` directory is where processed data projects should go. Usually, in an analysis workflow you will start with raw data, 
 clean/organize it, perhaps transform it in some way, then save that product in `data` for later branches of the workflow. 
 
-The `R/Py` directories store analysis code/scripts for the project. I prefer to keep a separate directory for each analysis language I am using in the project, but you 
-may, of course, combine all code, regardless of language, into a single directory structure if you prefer.
+The `R` directory store analysis code/scripts for the project.
 
 ## Manuscript:
 

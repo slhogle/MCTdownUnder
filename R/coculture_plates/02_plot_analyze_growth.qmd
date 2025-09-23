@@ -53,18 +53,18 @@ Plot the co-cultures growing on M9 compared to the control (column 1 and 3)
 ::: {#fig-01}
 ```{r}
 #| fig-width: 9
-#| fig-height: 4
+#| fig-height: 6
 gcurves %>% 
-  filter(str_detect(culture_type, "monoculture|diffusion")) %>% 
-  filter(str_detect(strainID, "NANA", negate=TRUE)) %>% 
+  filter(str_detect(culture_type, "double_media|diffusion")) %>% 
+  filter(str_detect(strain, "NANA", negate=TRUE)) %>% 
   ggplot() + 
   ggplot2::geom_line(aes(x = hours, y = OD600_rollmean, lty = replicate, color = culture_type, group = interaction(well, plate_name))) +
   ggplot2::labs(x = "Hours", y = "OD600") +
   ggplot2::scale_x_continuous(breaks = seq(0, 48, 12), labels = seq(0, 48, 12)) +
   labs(y = "Optical density (600 nm)", x = "Hours", title = "Diffusion test") +
-  facet_grid(~strainID)
+  facet_grid(evolution~strain)
 ```
-Growth curves (OD600 over 48 hours) for three replicates (line type) of each strain (plot panels) in monoculture (blue, standard inoculation into R2A growth medium) or with the diffusion test (red). The diffusion test was conducted by inoculating a strain into a well containing M9 salts (no nutrients) that was connected to another well via a 0.22 um membrane containing 100% R2A growth medium but no cells. These experiments were all conducted with no Streptomycin. Strain naming convention: 1287 = Citrobacter koserii 1287, 1977 = Psuedomonas chlororaphis 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant. 
+Growth curves (OD600 over 48 hours) in monoculture for three replicates (line type) of each species (plot panel columns) and evolution status (plot panel rows). Line color indicates experimental conditions: Blue = "Double Media" which is standard inoculation into R2A growth medium with an adjacent well also containing R2A growth medium but with no inoculum. Green = diffusion test where bacteria are inoculated into M9 salts adjacent to a well containing R2A growth medium but with no inoculum. Red  = diffusion test where bacteria are inoculated into R2A medium adjacent to a well containing M9 salts but with no inoculum. On the plate, column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. These experiments were all conducted with no Streptomycin. Strain naming convention: 1287 = Citrobacter koserii 1287, 1977 = Psuedomonas chlororaphis 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant. 
 :::
 
 ## Competition
@@ -72,13 +72,16 @@ Growth curves (OD600 over 48 hours) for three replicates (line type) of each str
 ```{r}
 plot_competing_pair <- function(df, competition_pair){
   strainpairs <- stringr::str_split(competition_pair, "_")[[1]]
-  straincols <- c("1287A" = "orange", "1287E" = "purple", "1977A" = "dodgerblue", "1977E" = "limegreen")
+  straincols <- c("A1287" = "orange", "E1287" = "purple", "A1977" = "dodgerblue", "E1977" = "limegreen")
   
   mc <- df %>%
-    dplyr::filter(str_detect(culture_type, "monoculture", negate=FALSE)) %>% 
-    dplyr::filter(strainID %in% strainpairs)
+    mutate(strainID = paste0(stringr::str_to_upper(stringr::str_sub(evolution, start = 1, end=1)), str_extract(strain, "\\d+"))) %>% 
+    dplyr::filter(str_detect(culture_type, "double_media", negate=FALSE)) %>% 
+    dplyr::filter(strainID %in% strainpairs) %>% 
+    dplyr::mutate(strep_conc = 0)
   
-  cc <- gcurves %>%
+  cc <- df %>%
+    mutate(strainID = paste0(stringr::str_to_upper(stringr::str_sub(evolution, start = 1, end=1)), str_extract(strain, "\\d+"))) %>% 
     dplyr::filter(str_detect(culture_type, "coculture", negate=FALSE)) %>% 
     dplyr::filter(competition_pair == {{ competition_pair }})
   
@@ -89,28 +92,28 @@ plot_competing_pair <- function(df, competition_pair){
     ggplot2::scale_x_continuous(breaks = seq(0, 48, 12), labels = seq(0, 48, 12)) +
     ggplot2::labs(y = "Optical density (600 nm)", x = "Hours", title = paste(strainpairs, collapse=" + ")) +
     ggplot2::scale_color_manual(values = straincols) +
-    ggplot2::facet_grid(~culture_type)
+    ggplot2::facet_grid(strep_conc~culture_type)
 }
 ```
 
 ```{r}
-pairplots <- map(c("1287A_1287E", "1287A_1977E", "1287E_1977E",
-      "1287A_1977A", "1287E_1977A", "1977A_1977E"), ~plot_competing_pair(gcurves, .x))
+pairplots <- map(c("A1287_E1287", "A1287_E1977", "E1287_E1977",
+      "A1287_A1977", "E1287_A1977", "A1977_E1977"), ~plot_competing_pair(gcurves, .x))
 ```
 
 ::: {#fig-02}
 ```{r}
 #| fig-width: 7
-#| fig-height: 4
+#| fig-height: 6
 pairplots[[1]]
 ```
-Growth curves (OD600 over 48 hours) for three replicates (line type) of two strains in a competing pair (denoted by color and plot title). Plot panels depict the pair in adjacent connected wells (coculture, competing over a single pooled growth medium) or in monoculture (single unconnected well).  Experiments were done in 100% R2A with no added streptomycin.Strain naming convention: 1287 = Citrobacter koserii 1287, 1977 = Psuedomonas chlororaphis 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant. 
+Growth curves (OD600 over 48 hours) for six replicates (line type) of two strains in a competing pair (denoted by color and plot title). Plot panel columns depict the pair in adjacent connected wells (coculture, competing over a single pooled growth medium) or each strain in monoculture when it is grown adjacent to an well with 100% growth medium but without inoculum. Plot panel rows depict growth in different streptomycin concentrations (ug/ml). Strain naming convention: 1287 = Citrobacter koserii 1287, 1977 = Psuedomonas chlororaphis 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant. 
 :::
 
 ::: {#fig-03}
 ```{r}
 #| fig-width: 7
-#| fig-height: 4
+#| fig-height: 6
 pairplots[[2]]
 ```
 As in @fig-02 but for 1287A and 1977E.
@@ -119,7 +122,7 @@ As in @fig-02 but for 1287A and 1977E.
 ::: {#fig-04}
 ```{r}
 #| fig-width: 7
-#| fig-height: 4
+#| fig-height: 6
 pairplots[[3]]
 ```
 As in @fig-02 but for 1287E and 1977E.
@@ -128,7 +131,7 @@ As in @fig-02 but for 1287E and 1977E.
 ::: {#fig-05}
 ```{r}
 #| fig-width: 7
-#| fig-height: 4
+#| fig-height: 6
 pairplots[[4]]
 ```
 As in @fig-02 but for 1287A and 1977A.
@@ -137,7 +140,7 @@ As in @fig-02 but for 1287A and 1977A.
 ::: {#fig-06}
 ```{r}
 #| fig-width: 7
-#| fig-height: 4
+#| fig-height: 6
 pairplots[[5]]
 ```
 As in @fig-02 but for 1287E and 1977A.
@@ -146,7 +149,7 @@ As in @fig-02 but for 1287E and 1977A.
 ::: {#fig-07}
 ```{r}
 #| fig-width: 7
-#| fig-height: 4
+#| fig-height: 6
 pairplots[[6]]
 ```
 As in @fig-02 but for 1977A and 1977E.
