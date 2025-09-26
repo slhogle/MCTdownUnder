@@ -81,8 +81,9 @@ plot_competing_pair <- function(df, competition_pair){
     ggplot2::geom_line(aes(x = hours, y = OD600_rollmean, color = strainID, lty = replicate, group = interaction(well, plate_name))) +
     ggplot2::labs(x = "Hours", y = "OD600") +
     ggplot2::scale_x_continuous(breaks = seq(0, 48, 12), labels = seq(0, 48, 12)) +
-    ggplot2::labs(y = "Optical density (600 nm)", x = "Hours", title = paste(strainpairs, collapse=" + ")) +
+    ggplot2::labs(y = "Optical density (600 nm), log scale", x = "Hours", title = paste(strainpairs, collapse=" + ")) +
     ggplot2::scale_color_manual(values = straincols) +
+    ggplot2::scale_y_continuous(trans = "log", breaks = c(0, 0.25, 0.5, 1)) +
     ggplot2::facet_grid(strep_conc~culture_type)
 }
 ```
@@ -95,7 +96,7 @@ pairplots <- map(c("A1287_E1287", "A1287_E1977", "E1287_E1977",
 ::: {#fig-02}
 ```{r}
 #| fig-width: 7
-#| fig-height: 6
+#| fig-height: 12
 pairplots[[1]]
 ```
 Growth curves (OD600 over 48 hours) for six replicates (line type) of two strains in a competing pair (denoted by color and plot title). Plot panel columns depict the pair in adjacent connected wells (coculture, competing over a single pooled growth medium) or each strain in monoculture when it is grown adjacent to an well with 100% growth medium but without inoculum. Plot panel rows depict growth in different streptomycin concentrations (ug/ml). Strain naming convention: 1287 = Citrobacter koserii 1287, 1977 = Psuedomonas chlororaphis 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant. 
@@ -104,7 +105,7 @@ Growth curves (OD600 over 48 hours) for six replicates (line type) of two strain
 ::: {#fig-03}
 ```{r}
 #| fig-width: 7
-#| fig-height: 6
+#| fig-height: 12
 pairplots[[2]]
 ```
 As in @fig-02 but for 1287A and 1977E.
@@ -113,7 +114,7 @@ As in @fig-02 but for 1287A and 1977E.
 ::: {#fig-04}
 ```{r}
 #| fig-width: 7
-#| fig-height: 6
+#| fig-height: 12
 pairplots[[3]]
 ```
 As in @fig-02 but for 1287E and 1977E.
@@ -122,7 +123,7 @@ As in @fig-02 but for 1287E and 1977E.
 ::: {#fig-05}
 ```{r}
 #| fig-width: 7
-#| fig-height: 6
+#| fig-height: 12
 pairplots[[4]]
 ```
 As in @fig-02 but for 1287A and 1977A.
@@ -131,7 +132,7 @@ As in @fig-02 but for 1287A and 1977A.
 ::: {#fig-06}
 ```{r}
 #| fig-width: 7
-#| fig-height: 6
+#| fig-height: 12
 pairplots[[5]]
 ```
 As in @fig-02 but for 1287E and 1977A.
@@ -140,7 +141,7 @@ As in @fig-02 but for 1287E and 1977A.
 ::: {#fig-07}
 ```{r}
 #| fig-width: 7
-#| fig-height: 6
+#| fig-height: 12
 pairplots[[6]]
 ```
 As in @fig-02 but for 1977A and 1977E.

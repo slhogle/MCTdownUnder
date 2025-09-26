@@ -17,3 +17,19 @@ plotplate <- function(df, dfxy, unsmoothed=TRUE, predicted=FALSE, plate, rows, c
       ggplot2::theme(axis.text = element_text(size = 5))
     )
 }
+
+# logphase600 plate reader reading function
+
+read_logphase_xlsx <- function(subdir, filename, sheet, skip){
+  readxl::read_xlsx(here::here(data_raw, subdir, filename), sheet = sheet, skip = skip) %>% 
+    # set interval start to be first cell and make all intervals relative to that
+    # use time_length to just create an hours variable of type numeric
+    mutate(seconds = lubridate::time_length(lubridate::interval(Time[1], Time), unit = "second")) %>% 
+    tidyr::pivot_longer(c(-seconds, -Time), names_to = "well", values_to = "OD600") %>%
+    mutate(hours = lubridate::time_length(seconds, unit = "hours")) %>% 
+    # converting the well format so it matches the samplesheet
+    mutate(well = paste0(str_extract(well, "^[A-H]"), str_pad(str_extract(well, "\\d+"), 
+                                                              width = 2, pad = "0", side = "left"))) %>% 
+    dplyr::select(seconds, hours, well, OD600) %>% 
+    mutate(OD600 = as.numeric(OD600))
+}
