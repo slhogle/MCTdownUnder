@@ -40,36 +40,36 @@ samplesheet_diff_test <- readxl::read_xlsx(here::here(data_raw, batch, "diffusio
 samplesheet_coculture <- readxl::read_xlsx(here::here(data_raw, batch, "coculture_samplesheet.xlsx"))
 
 ##### Read crowth curves
-# Diffusion test plate
-diff_test <- read_logphase_xlsx(batch, "diffusion_test_2_Co-culture_1977_1287AE_12.9_15-syys-2025 09-00-26.xlsx", 2, 1) %>% 
+# Diffusion test plate01
+plate01 <- read_logphase_xlsx(batch, "diffusion_test_2_Co-culture_1977_1287AE_12.9_15-syys-2025 09-00-26.xlsx", 2, 1) %>% 
   # remove rows A and H
   filter(str_detect(well, "^A|^H", negate = TRUE)) %>% 
   left_join(samplesheet_diff_test, by = join_by(well)) %>% 
-  mutate(plate_name = "diffusion_test")
+  mutate(plate_name = "plate01")
 
-# Experiment plate 0 ug/ml streptomycin
-strep_00 <- read_logphase_xlsx(batch, "Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx", 2, 1) %>% 
+# Experiment plate02 - 0 ug/ml streptomycin
+plate02 <- read_logphase_xlsx(batch, "Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx", 2, 1) %>% 
   # rows A and H not collected here so they are NA
   drop_na() %>% 
   left_join(samplesheet_coculture, by = join_by(well)) %>% 
-  mutate(strep_conc = 0) %>% 
-  mutate(plate_name = "str_00")
+  mutate(streptomycin = 0) %>% 
+  mutate(plate_name = "plate02")
 
-# Experiment plate 4 ug/ml streptomycin
-strep_04 <- read_logphase_xlsx(batch, "Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx", 5, 1) %>% 
+# Experiment plate03 -  4 ug/ml streptomycin
+plate03 <- read_logphase_xlsx(batch, "Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx", 5, 1) %>% 
   # rows A and H not collected here so they are NA
   drop_na() %>% 
   left_join(samplesheet_coculture, by = join_by(well)) %>% 
-  mutate(strep_conc = 4) %>% 
-  mutate(plate_name = "str_04")
+  mutate(streptomycin = 4) %>% 
+  mutate(plate_name = "plate03")
 
-# Experiment plate 8 ug/ml streptomycin
-strep_08 <- read_logphase_xlsx(batch, "Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx", 8, 1) %>% 
+# Experiment plate04 - 8 ug/ml streptomycin
+plate04 <- read_logphase_xlsx(batch, "Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx", 8, 1) %>% 
   # rows A and H not collected here so they are NA
   drop_na() %>% 
   left_join(samplesheet_coculture, by = join_by(well)) %>% 
-  mutate(strep_conc = 8) %>% 
-  mutate(plate_name = "str_08")
+  mutate(streptomycin = 8) %>% 
+  mutate(plate_name = "plate04")
 ```
 
 ## Batch 02
@@ -81,38 +81,75 @@ samplesheet_coculture <- readxl::read_xlsx(here::here(data_raw, batch, "cocultur
 
 ##### Read crowth curves
 
-# Experiment plate 12 ug/ml streptomycin
-strep_12 <- read_logphase_xlsx(batch, "Co-culture_12_16_24_ug_plates_25-syys-2025 13-42-42.xlsx", 2, 1) %>% 
+# Experiment plate05 - 12 ug/ml streptomycin
+plate05 <- read_logphase_xlsx(batch, "Co-culture_12_16_24_ug_plates_25-syys-2025 13-42-42.xlsx", 2, 1) %>% 
   # rows A and H not collected here so they are NA
   drop_na() %>% 
   left_join(samplesheet_coculture, by = join_by(well)) %>% 
-  mutate(strep_conc = 12) %>% 
-  mutate(plate_name = "str_12")
+  mutate(streptomycin = 12) %>% 
+  mutate(plate_name = "plate05")
 
-# Experiment plate 16 ug/ml streptomycin
-strep_16 <- read_logphase_xlsx(batch, "Co-culture_12_16_24_ug_plates_25-syys-2025 13-42-42.xlsx", 5, 1) %>% 
+# Experiment plate06 =  16 ug/ml streptomycin
+plate06 <- read_logphase_xlsx(batch, "Co-culture_12_16_24_ug_plates_25-syys-2025 13-42-42.xlsx", 5, 1) %>% 
   # rows A and H not collected here so they are NA
   drop_na() %>% 
   left_join(samplesheet_coculture, by = join_by(well)) %>% 
-  mutate(strep_conc = 16) %>% 
-  mutate(plate_name = "str_16")
+  mutate(streptomycin = 16) %>% 
+  mutate(plate_name = "plate06")
 
-# Experiment plate 24 ug/ml streptomycin
-strep_24 <- read_logphase_xlsx(batch, "Co-culture_12_16_24_ug_plates_25-syys-2025 13-42-42.xlsx", 8, 1) %>% 
+# Experiment plate07 - 24 ug/ml streptomycin
+plate07 <- read_logphase_xlsx(batch, "Co-culture_12_16_24_ug_plates_25-syys-2025 13-42-42.xlsx", 8, 1) %>% 
   # rows A and H not collected here so they are NA
   drop_na() %>% 
   left_join(samplesheet_coculture, by = join_by(well)) %>% 
-  mutate(strep_conc = 24) %>% 
-  mutate(plate_name = "str_24")
+  mutate(streptomycin = 24) %>% 
+  mutate(plate_name = "plate07")
+```
+
+## Batch 03
+
+```{r}
+batch <- "20251006_batch03"
+
+##### Read growth curves
+
+# Experiment plate08
+plate08 <- read_logphase_xlsx(batch, "coculture_plates_8_9_10_11_06-10-2025.xlsx", 2, 1) %>% 
+  # rows A and H not collected here so they are NA
+  drop_na() %>% 
+  left_join(readxl::read_xlsx(here::here(data_raw, batch, "coculture_samplesheet_plate08.xlsx")), by = join_by(well)) %>% 
+  mutate(plate_name = "plate08")
+
+# Experiment plate09
+plate09 <- read_logphase_xlsx(batch, "coculture_plates_8_9_10_11_06-10-2025.xlsx", 5, 1) %>% 
+  # rows A and H not collected here so they are NA
+  drop_na() %>% 
+  left_join(readxl::read_xlsx(here::here(data_raw, batch, "coculture_samplesheet_plate09.xlsx")), by = join_by(well)) %>% 
+  mutate(plate_name = "plate09")
+
+# Experiment plate10
+plate10 <- read_logphase_xlsx(batch, "coculture_plates_8_9_10_11_06-10-2025.xlsx", 8, 1) %>% 
+  # rows A and H not collected here so they are NA
+  drop_na() %>% 
+  left_join(readxl::read_xlsx(here::here(data_raw, batch, "coculture_samplesheet_plate10.xlsx")), by = join_by(well)) %>% 
+  mutate(plate_name = "plate10")
+
+# Experiment plate11
+plate11 <- read_logphase_xlsx(batch, "coculture_plates_8_9_10_11_06-10-2025.xlsx", 11, 1) %>% 
+  # rows A and H not collected here so they are NA
+  drop_na() %>% 
+  left_join(readxl::read_xlsx(here::here(data_raw, batch, "coculture_samplesheet_plate11.xlsx")), by = join_by(well)) %>% 
+  mutate(plate_name = "plate11")
 ```
 
 ## Combine, tidy, format
 
 ```{r}
 # combine all samples, group by plate + well, calculate rolling mean
-coculture_gcurves_sm <- bind_rows(diff_test, 
-                                  strep_00, strep_04, strep_08,
-                                  strep_12, strep_16, strep_24) %>% 
+coculture_gcurves_sm <- bind_rows(plate01, plate02, plate03,
+                                  plate04, plate05, plate06,
+                                  plate07, plate08, plate09,
+                                  plate10, plate11) %>% 
   dplyr::group_by(plate_name, well) %>% 
   arrange(plate_name, well) %>% 
   dplyr::mutate(OD600_rollmean = slider::slide_dbl(OD600, mean, .before = 2, .after = 2)) %>% 
@@ -139,7 +176,7 @@ This plate contains three replicates for the ancestral form of HAMBI_1287
 #| fig.height: 8
 #| echo: false
 #| warning: false
-plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="diffusion_test", rows=6, cols=12, page=1, scales = "fixed")
+plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="plate01", rows=6, cols=12, page=1, scales = "fixed")
 ```
 Growth curves for the "diffusion test" coculture plate. Columns 1, 3, 5, and 7 have only M9 salts. Columns 2, 4, 6, 8, 9, 10, 11, and 12 had R2A medium. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. Bacteria were inoculated into rows B-D, columns 1, 3, 5, and 7 and rows E-F columsn 2, 4, 6, and 8. Columns 9 and 11 were not inoculated with any bacteria. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of 9 points. Orange is non-smoothed. Note that rows A and H are meaningless because of the construction of the plate. Note: rows A and H are blank.
 :::
@@ -152,7 +189,7 @@ Growth curves for the "diffusion test" coculture plate. Columns 1, 3, 5, and 7 h
 #| fig.height: 8
 #| echo: false
 #| warning: false
-plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="str_00", rows=6, cols=12, page=1, scales = "fixed")
+plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="plate02", rows=6, cols=12, page=1, scales = "fixed")
 ```
 Growth curves for the coculture plate with no streptomycin. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of 9 points. Orange is non-smoothed. Note that rows A and H are meaningless because of the construction of the plate. Note: rows A and H are blank.
 :::
@@ -165,7 +202,7 @@ Growth curves for the coculture plate with no streptomycin. Column $n=\{1\dots11
 #| fig.height: 8
 #| echo: false
 #| warning: false
-plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="str_04", rows=6, cols=12, page=1, scales = "fixed")
+plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="plate03", rows=6, cols=12, page=1, scales = "fixed")
 ```
 Growth curves for the coculture plate with 4 ug/ml streptomycin. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of 9 points. Orange is non-smoothed. Note that rows A and H are meaningless because of the construction of the plate. Note: rows A and H are blank.
 :::
@@ -178,7 +215,7 @@ Growth curves for the coculture plate with 4 ug/ml streptomycin. Column $n=\{1\d
 #| fig.height: 8
 #| echo: false
 #| warning: false
-plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="str_08", rows=6, cols=12, page=1, scales = "fixed")
+plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="plate04", rows=6, cols=12, page=1, scales = "fixed")
 ```
 Growth curves for the coculture plate with 8 ug/ml streptomycin. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of 9 points. Orange is non-smoothed. Note that rows A and H are meaningless because of the construction of the plate. Note: rows A and H are blank.
 :::
@@ -193,7 +230,7 @@ E04 before 36 hours
 #| fig.height: 8
 #| echo: false
 #| warning: false
-plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="str_12", rows=6, cols=12, page=1, scales = "fixed")
+plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="plate05", rows=6, cols=12, page=1, scales = "fixed")
 ```
 Growth curves for the coculture plate with 12 ug/ml streptomycin. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of 9 points. Orange is non-smoothed. Note that rows A and H are meaningless because of the construction of the plate. Note: rows A and H are blank.
 :::
@@ -206,7 +243,7 @@ Growth curves for the coculture plate with 12 ug/ml streptomycin. Column $n=\{1\
 #| fig.height: 8
 #| echo: false
 #| warning: false
-plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="str_16", rows=6, cols=12, page=1, scales = "fixed")
+plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="plate06", rows=6, cols=12, page=1, scales = "fixed")
 ```
 Growth curves for the coculture plate with 16 ug/ml streptomycin. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of 9 points. Orange is non-smoothed. Note that rows A and H are meaningless because of the construction of the plate. Note: rows A and H are blank.
 :::
@@ -219,9 +256,61 @@ Growth curves for the coculture plate with 16 ug/ml streptomycin. Column $n=\{1\
 #| fig.height: 8
 #| echo: false
 #| warning: false
-plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="str_24", rows=6, cols=12, page=1, scales = "fixed")
+plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="plate07", rows=6, cols=12, page=1, scales = "fixed")
 ```
 Growth curves for the coculture plate with 24 ug/ml streptomycin. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of 9 points. Orange is non-smoothed. Note that rows A and H are meaningless because of the construction of the plate. Note: rows A and H are blank.
+:::
+
+## plate08 monocultures at 0, 4, 8 strep
+
+::: {#fig-08}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="plate08", rows=6, cols=12, page=1, scales = "fixed")
+```
+Growth curves for the monoculture plate with 0, 4, and 8 ug/ml streptomycin. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of 9 points. Orange is non-smoothed. Note that rows A and H are meaningless because of the construction of the plate. Note: rows A and H are blank.
+:::
+
+## plate09 monocultures at 12, 16, 24 strep
+
+::: {#fig-09}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="plate09", rows=6, cols=12, page=1, scales = "fixed")
+```
+Growth curves for the monoculture plate with 12, 16, and 24 ug/ml streptomycin. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of 9 points. Orange is non-smoothed. Note that rows A and H are meaningless because of the construction of the plate. Note: rows A and H are blank.
+:::
+
+## plate10 cocultures at 64 + 256 strep
+
+::: {#fig-10}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="plate10", rows=6, cols=12, page=1, scales = "fixed")
+```
+Growth curves for the coculture plate with 64 and 256 ug/ml streptomycin. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of 9 points. Orange is non-smoothed. Note that rows A and H are meaningless because of the construction of the plate. Note: rows A and H are blank.
+:::
+
+## plate11 cocultures at 1028 + 4096 and monocultures at 64 + 256
+
+::: {#fig-11}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(coculture_gcurves_sm, dfxy=NULL, unsmoothed=TRUE, predicted=FALSE, plate="plate11", rows=6, cols=12, page=1, scales = "fixed")
+```
+Growth curves for the coculture plate with 1028 + 4096 ug/ml streptomycin with monocultures at 64 and 256 ug/ml streptomycin. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of 9 points. Orange is non-smoothed. Note that rows A and H are meaningless because of the construction of the plate. Note: rows A and H are blank.
 :::
 
 # Growth curve statistics
@@ -282,70 +371,18 @@ many_spline_fitted <- purrr::map(many_spline@fits, \(x) data.frame(x@FUN(x@obs$t
 
 #### plate01 (diffusion test)
 
-::: {#fig-08}
-```{r}
-#| fig.width: 12
-#| fig.height: 8
-#| echo: false
-#| warning: false
-plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="diffusion_test", rows=6, cols=12, page = 1, scales = "fixed")
-```
-As in @fig-01. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
-:::
-
-#### plate02 (0 ug/ml Strep)
-
-::: {#fig-09}
-```{r}
-#| fig.width: 12
-#| fig.height: 8
-#| echo: false
-#| warning: false
-plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="str_00", rows=6, cols=12, page = 1, scales = "fixed")
-```
-As in @fig-02. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
-:::
-
-#### plate03 (4 ug/ml Strep)
-
-::: {#fig-10}
-```{r}
-#| fig.width: 12
-#| fig.height: 8
-#| echo: false
-#| warning: false
-plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="str_04", rows=6, cols=12, page = 1, scales = "fixed")
-```
-As in @fig-03. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
-:::
-
-#### plate04 (8 ug/ml Strep)
-
-::: {#fig-11}
-```{r}
-#| fig.width: 12
-#| fig.height: 8
-#| echo: false
-#| warning: false
-plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="str_08", rows=6, cols=12, page = 1, scales = "fixed")
-```
-As in @fig-04. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
-:::
-
-#### plate05 (12 ug/ml Strep)
-
 ::: {#fig-12}
 ```{r}
 #| fig.width: 12
 #| fig.height: 8
 #| echo: false
 #| warning: false
-plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="str_12", rows=6, cols=12, page = 1, scales = "fixed")
+plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="plate01", rows=6, cols=12, page = 1, scales = "fixed")
 ```
-As in @fig-05. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
+As in @fig-01. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
 :::
 
-#### plate06 (16 ug/ml Strep)
+#### plate02 (0 ug/ml Strep)
 
 ::: {#fig-13}
 ```{r}
@@ -353,12 +390,12 @@ As in @fig-05. Blue line is smoothed with a moving average window of 5 points. O
 #| fig.height: 8
 #| echo: false
 #| warning: false
-plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="str_16", rows=6, cols=12, page = 1, scales = "fixed")
+plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="plate02", rows=6, cols=12, page = 1, scales = "fixed")
 ```
-As in @fig-06. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
+As in @fig-02. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
 :::
 
-#### plate07 (24 ug/ml Strep)
+#### plate03 (4 ug/ml Strep)
 
 ::: {#fig-14}
 ```{r}
@@ -366,9 +403,113 @@ As in @fig-06. Blue line is smoothed with a moving average window of 5 points. O
 #| fig.height: 8
 #| echo: false
 #| warning: false
-plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="str_24", rows=6, cols=12, page = 1, scales = "fixed")
+plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="plate03", rows=6, cols=12, page = 1, scales = "fixed")
+```
+As in @fig-03. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
+:::
+
+#### plate04 (8 ug/ml Strep)
+
+::: {#fig-15}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="plate04", rows=6, cols=12, page = 1, scales = "fixed")
+```
+As in @fig-04. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
+:::
+
+#### plate05 (12 ug/ml Strep)
+
+::: {#fig-17}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="plate05", rows=6, cols=12, page = 1, scales = "fixed")
+```
+As in @fig-05. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
+:::
+
+#### plate06 (16 ug/ml Strep)
+
+::: {#fig-18}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="plate06", rows=6, cols=12, page = 1, scales = "fixed")
+```
+As in @fig-06. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
+:::
+
+#### plate07 (24 ug/ml Strep)
+
+::: {#fig-19}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="plate07", rows=6, cols=12, page = 1, scales = "fixed")
 ```
 As in @fig-07. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
+:::
+
+#### plate08 monocultures at 0, 4, 8 strep
+
+::: {#fig-20}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="plate08", rows=6, cols=12, page = 1, scales = "fixed")
+```
+As in @fig-08. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
+:::
+
+#### plate09 monocultures at 12, 16, 24 strep
+
+::: {#fig-21}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="plate09", rows=6, cols=12, page = 1, scales = "fixed")
+```
+As in @fig-09. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
+:::
+
+#### plate10 cocultures at 64 + 256 strep
+
+::: {#fig-22}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="plate10", rows=6, cols=12, page = 1, scales = "fixed")
+```
+As in @fig-10. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
+:::
+
+#### plate11 cocultures at 1028 + 4096 and monocultures at 64 + 256
+
+::: {#fig-23}
+```{r}
+#| fig.width: 12
+#| fig.height: 8
+#| echo: false
+#| warning: false
+plotplate(many_spline_fitted, dfxy=many_spline_xy, unsmoothed=FALSE, predicted=TRUE, plate="plate11", rows=6, cols=12, page = 1, scales = "fixed")
+```
+As in @fig-11. Blue line is smoothed with a moving average window of 5 points. Orange is slope of max predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
 :::
 
 ## AUC
