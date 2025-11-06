@@ -1,0 +1,35 @@
+---
+title: "Monoculture growth"
+author: "Shane Hogle"
+date: today
+---
+
+Inspect the monoculture growth of both Streptomycin-sensitive (Sens/Anc) and Streptomycin-resistant (Res/Evo) forms of *Citrobacter koseri* 1287 and *Pseudomonas chlororaphis* 1977 at different streptomycin concentrations.
+
+These are high resolution growth curves (every 10 minutes) collected on a very nice instrument (Bioscreen). Here we examine how the monoculture growth changed with respect to evolutionary history and streptomycin concentrations
+
+## Growth curves
+
+
+::: {#fig-01}
+![](/figs/bioscreen_strains/growthcurves_monoculture.svg)
+
+Growth curves of *Citrobacter koseri* 1287 (Left column grid) and *Pseudomonas chlororaphis* 1977 (right column grid) at different streptomycin concentrations (grid rows) and evolutionary histories/sensitivities to streptomycin (colors). Each line is a biological replicate (n=5). Growth (culture turbidity) is measured at 10 minute intervals over 48 hours.
+:::
+
+
+## Growth rates
+
+::: {#fig-02}
+![](/figs/bioscreen_strains/u_streptomycin_monoculture.svg)
+
+Maximum specific growth rate ($\mathrm{\mu_{max}}$ in $\mathrm{hr^{-1}}$) for the four different bacterial species (panels) and their different evolutionary histories (colors) at different streptomycin concentrations (horizontal axis, μg/ml). Points are the mean over five biological replicates and line ranges show the 95% confidence interval from bootstraps. EVO = experimentally evolved to high streptomycin.
+:::
+
+## Maximum carrying capcaity (K, maximum observed OD)
+
+::: {#fig-03}
+![](/figs/bioscreen_strains/k_streptomycin_monoculture.svg)
+
+As in @fig-01 but for maximum carrying capacity (K, maximum observed OD)
+:::

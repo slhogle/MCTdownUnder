@@ -15,7 +15,7 @@ _notrack/
 /.quarto/
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
-# this is in case you are using code with private API key to access a 
+# this is in case you are using code with private API key to access a
 # remove database
 .httr-oauth
 

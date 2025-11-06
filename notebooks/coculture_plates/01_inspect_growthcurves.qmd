@@ -1,0 +1,202 @@
+---
+title: "Formatting co-culture growth curves from Logphase 600 Plate reader"
+author: "Shane Hogle"
+date: today
+link-citations: true
+---
+
+The ancestral (streptomycin sensitive) and evolved (streptomycin resistant) forms of HAMBI_1287 and HAMBI_1977 were grown on adjacent 0.22 μm membrane-separated wells in a Verasys co-culture plate. The membrane allows free diffusion of resources and metabolic byproducts but not cells. Note that due to the unique format of the plate rows A and H do not contain any data. The plates differ by streptomycin concentration as indicated below. Measurements were collected with a Biotek Logphase 600 microplate reader.
+
+## plate01
+
+Growth curves for the "diffusion test" coculture plate. Columns 1, 3, 5, and 7 have only M9 salts. Columns 2, 4, 6, 8, 9, 10, 11, and 12 had R2A medium. Bacteria were inoculated into rows B-D, columns 1, 3, 5, and 7 and rows E-F columns 2, 4, 6, and 8. Columns 9 and 11 were not inoculated with any bacteria.
+
+::: {#fig-01a}
+![](/figs/coculture_plates/plate01.svg)
+
+Plate01 coculture plate growth curves. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 μm membrane allowing free diffusion of resources and metabolic byproducts but not cells. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of five points. Orange is non-smoothed raw data.
+:::
+
+::: {#fig-01b}
+![](/figs/coculture_plates/plate01_fitted.svg)
+
+As in @fig-01a. but only showing smoothed data (blue line, 5ive point moving average). Orange is slope of the maximum predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
+:::
+
+## plate02
+
+Growth curves from bacterial competition at 0 μg/ml Streptomycin
+
+::: {#fig-02a}
+![](/figs/coculture_plates/plate02.svg)
+
+As in @fig-01a but for plate02 with 0 μg/ml streptomycin.
+:::
+
+::: {#fig-02b}
+![](/figs/coculture_plates/plate02_fitted.svg)
+
+As in @fig-01b but for plate02 with 0 μg/ml streptomycin.
+:::
+
+## plate03
+
+Growth curves from bacterial competition at 4 μg/ml Streptomycin
+
+::: {#fig-03a}
+![](/figs/coculture_plates/plate03.svg)
+
+As in @fig-01a but for plate03 with 4 μg/ml streptomycin
+:::
+
+::: {#fig-03b}
+![](/figs/coculture_plates/plate03_fitted.svg)
+
+As in @fig-01b but for plate03 with 4 μg/ml streptomycin
+:::
+
+## plate04
+
+Growth curves from bacterial competition at 8 μg/ml Streptomycin
+
+::: {#fig-04a}
+![](/figs/coculture_plates/plate04.svg)
+
+As in @fig-01a but for plate04 with 8 μg/ml streptomycin
+:::
+
+::: {#fig-04b}
+![](/figs/coculture_plates/plate04_fitted.svg)
+
+As in @fig-01b but for plate04 with 8 μg/ml streptomycin
+:::
+
+## plate05
+
+Growth curves from bacterial competition at 12 μg/ml Streptomycin
+
+::: {#fig-05a}
+![](/figs/coculture_plates/plate05.svg)
+
+As in @fig-01a but for plate05 with 12 μg/ml streptomycin
+:::
+
+::: {#fig-05b}
+![](/figs/coculture_plates/plate05_fitted.svg)
+
+As in @fig-01b but for plate05 with 12 μg/ml streptomycin
+:::
+
+## plate06
+
+Growth curves from bacterial competition at 16 μg/ml Streptomycin
+
+::: {#fig-06a}
+![](/figs/coculture_plates/plate06.svg)
+
+As in @fig-01a but for plate06 with 16 μg/ml streptomycin
+:::
+
+::: {#fig-06b}
+![](/figs/coculture_plates/plate06_fitted.svg)
+
+As in @fig-01b but for plate06 with 16 μg/ml streptomycin
+:::
+
+## plate07
+
+Growth curves from bacterial competition at 24 μg/ml Streptomycin
+
+::: {#fig-07a}
+![](/figs/coculture_plates/plate07.svg)
+
+As in @fig-01a but for plate07 with 24 μg/ml streptomycin
+:::
+
+::: {#fig-07b}
+![](/figs/coculture_plates/plate07_fitted.svg)
+
+As in @fig-01b but for plate07 with 24 μg/ml streptomycin
+:::
+
+## plate08
+
+Growth curves from bacterial monocultures at 0, 4, 8 μg/ml Streptomycin. Here each well pair only contains only one bacterial strain.
+
+::: {#fig-08a}
+![](/figs/coculture_plates/plate08.svg)
+
+As in @fig-01a but for plate08
+:::
+
+::: {#fig-08b}
+![](/figs/coculture_plates/plate08_fitted.svg)
+
+As in @fig-01b but for plate08
+:::
+
+## plate09
+
+Growth curves from bacterial monocultures at 12, 16, 24 μg/ml Streptomycin. Here each well pair only contains only one bacterial strain.
+
+::: {#fig-09a}
+![](/figs/coculture_plates/plate09.svg)
+
+As in @fig-01a but for plate09
+:::
+
+::: {#fig-09b}
+![](/figs/coculture_plates/plate09_fitted.svg)
+
+As in @fig-01b but for plate09
+:::
+
+## plate10
+
+Growth curves from bacterial competition cocultures at 64 and 256 μg/ml Streptomycin
+
+::: {#fig-10a}
+![](/figs/coculture_plates/plate10.svg)
+
+As in @fig-01a but for plate10
+:::
+
+::: {#fig-10b}
+![](/figs/coculture_plates/plate10_fitted.svg)
+
+As in @fig-01b but for plate10
+:::
+
+## plate11
+
+- monocultures at 64 and 256 μg/ml Streptomycin
+- cocultures at 1028 and 4096 μg/ml Streptomycin
+
+::: {#fig-11a}
+![](/figs/coculture_plates/plate11.svg)
+
+As in @fig-01a but for plate11
+:::
+
+::: {#fig-11b}
+![](/figs/coculture_plates/plate11_fitted.svg)
+
+As in @fig-01b but for plate11
+:::
+
+## plate12
+
+- monocultures at 64 and 256 μg/ml Streptomycin
+- cocultures at 8 and 10 μg/ml Streptomycin
+
+::: {#fig-12a}
+![](/figs/coculture_plates/plate12.svg)
+
+As in @fig-01a but for plate12
+:::
+
+::: {#fig-12b}
+![](/figs/coculture_plates/plate12_fitted.svg)
+
+As in @fig-01b but for plate12
+:::

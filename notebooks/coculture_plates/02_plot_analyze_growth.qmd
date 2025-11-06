@@ -1,0 +1,65 @@
+---
+title: "Growth in pairs and monoculture"
+author: "Shane Hogle"
+date: today
+---
+
+Strain naming convention: 1287 = *Citrobacter koserii* 1287, 1977 = *Psuedomonas chlororaphis* 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.
+
+## Difusion test
+
+Plot the co-cultures growing on M9 compared to the control (column 1 and 3). On the plate, column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. These experiments were all conducted with no Streptomycin. Strain naming convention: 1287 = Citrobacter koserii 1287, 1977 = Psuedomonas chlororaphis 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.
+
+::: {#fig-01}
+![](/figs/coculture_plates/coculture_diffusion_test.svg)
+
+Growth curves (OD600 over 48 hours) in monoculture for three replicates (line type) of each species (plot panel columns) and evolution status (plot panel rows). Line color indicates experimental conditions: Red corresponds to inoculation into M9 salts with an adjacent well containing sterile R2A growth medium. Blue corresponds to the inverse where cells are inoculated into sterile R2A with an adjacent well containing sterile M9 salts.
+:::
+
+## Coculture and monoculture growth
+
+::: {#fig-02}
+![](/figs/coculture_plates/A1287_E1287.svg)
+
+Growth curves (OD600 over 48 hours) of two strains in a competing pair (denoted by color and plot title). Columns in the plot grid depict different streptomycin concentrations (ug/ml) under which growth was measured. Grid rows depict whether strains were grown in cocolture (strains inoculated into adjacent wells) or in monocolture (single strain inoculated into well with adjacent well containing sterile media only.) Heavy line corresponds to mean growth while lighter lines correspond to individual replicates. The ribbon around each mean line corresponds to 95% confidence interval (CI) around them mean. Line color corresponds to species/strain identity.
+:::
+
+---
+
+::: {#fig-03}
+![](/figs/coculture_plates/A1977_E1977.svg)
+
+As in @fig-02 but for A1977 and E1977.
+:::
+
+---
+
+::: {#fig-04}
+![](/figs/coculture_plates/A1287_A1977.svg)
+
+As in @fig-02 but for A1287 and A1977.
+:::
+
+---
+
+::: {#fig-05}
+![](/figs/coculture_plates/E1287_A1977.svg)
+
+As in @fig-02 but for E1287 and A1977.
+:::
+
+---
+
+::: {#fig-06}
+![](/figs/coculture_plates/A1287_E1977.svg)
+
+As in @fig-02 but for A1287 and E1977.
+:::
+
+---
+
+::: {#fig-07}
+![](/figs/coculture_plates/E1287_E1977.svg)
+
+As in @fig-02 but for A1287 and E1977.
+:::

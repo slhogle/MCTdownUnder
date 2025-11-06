@@ -1,0 +1,60 @@
+---
+title: "Formatting growth curves from Synergy H1"
+author: "Shane Hogle"
+date: today
+---
+
+The ancestral (streptomycin sensitive) and evolved (streptomycin resistant) forms of HAMBI_1287 and HAMBI_1977 were grown on [Biolog Ecoplates](https://www.biolog.com/products/community-analysis-microplates/ecoplate/). These are basically a set of 32 different carbon compounds in 3 replicated sets on a 96 well plate. Microbial species or communities grown on these carbon compounds respire and reduce some dye to a purple color which is then measured on a Synergy H1 multimode microplate reader.
+
+
+## plate01
+
+This plate contains three replicates for the ancestral form of HAMBI_1287
+
+::: {#fig-01a}
+![](/figs/biolog_ecoplates/plate01.svg)
+
+Growth curves for the first ecolog plate with the ancestral form of HAMBI_1287. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of five points. Orange is non-smoothed
+:::
+
+::: {#fig-01b}
+![](/figs/biolog_ecoplates/plate01_fitted.svg)
+
+As in @fig-01a. but only showing smoothed data (blue line, five point moving average). Orange is slope of the maximum predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
+:::
+
+## plate02
+
+This plate contains EVO_1287 (columns 1-8) and ANC_1977 (columns 9-12)
+
+::: {#fig-02a}
+![](/figs/biolog_ecoplates/plate02.svg)
+
+As in @fig-01a but for EVO_1287 (columns 1-8) and ANC_1977 (columns 9-12)
+:::
+
+::: {#fig-02b}
+![](/figs/biolog_ecoplates/plate02_fitted.svg)
+
+As in @fig-01b but for EVO_1287 (columns 1-8) and ANC_1977 (columns 9-12)
+:::
+
+## plate03
+
+This plate contains ANC_1977 (columns 1-4) and EVO_1977 (columns 5-12)
+
+::: {#fig-03a}
+![](/figs/biolog_ecoplates/plate03.svg)
+
+As in @fig-01a but for ANC_1977 (columns 1-4) and EVO_1977 (columns 5-12)
+:::
+
+::: {#fig-03b}
+![](/figs/biolog_ecoplates/plate03_fitted.svg)
+
+As in @fig-01b but for ANC_1977 (columns 1-4) and EVO_1977 (columns 5-12)
+:::
+
+## Conclusions
+
+Growth curves all look mostly reasonable. For just a couple of the carbon substrates there are some strange features (e.g., L-asparagine for HAMBI_1977). Can proceed with the analysis.

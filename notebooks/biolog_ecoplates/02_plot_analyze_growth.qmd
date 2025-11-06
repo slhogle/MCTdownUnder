@@ -1,0 +1,29 @@
+---
+title: "Strain growth on biolog ecoplates"
+author: "Shane Hogle"
+date: today
+---
+
+The [Biolog Ecoplates](https://www.biolog.com/products/community-analysis-microplates/ecoplate/) utilize tetrazolium reduction to measure the metabolic response of bacterial cells to different carbon substrates.  Oxidized tetrazolium salt is water soluble, colorless in solution, and can freely diffuse into bacterial cells. Once inside the cell, tetrazolium is reduced by reducing agents like NADH an NADPH which are generated via cellular metabolism and catabolism. Once reduced tetrazolium is transformed into pink product. This assay measures the accumulation of reduced tetrazolium (colormetric absorbance at 590 nm) and hence the accumulation and concentration of reducing agents from cellular metabolism. This process will reflect both the concentration of cells in solution and per-capita concentration of reductant from central metabolism. There is a useful overview of the Tetrazolium colorometric procedure [available here.](https://fi.promega.com/resources/pubhub/is-your-mtt-assay-really-the-best-choice/)
+
+In the prior step we imported, smoothed, and calculated summary statistics for the species growth on [Biolog Ecoplates](https://www.biolog.com/products/community-analysis-microplates/ecoplate/). Here we will do some simple plots and analysis of the growth data on different carbon sources from the ecoplates.
+
+# Plot growth curves
+
+::: {#fig-01}
+![](/figs/biolog_ecoplates/H1287_ecoplates_gcurves.svg)
+
+Full growth curves of *Citrobacter koseri* HAMBI_1287 on 31 different carbon substrates and water in Biolog Ecoplates over 48 hours of growth. Metabolic activity via tetrazolium reduction is colorometrically tracked with absorbance at 590 nm. Line type denotes the biological replicate, while line color denotes adaptation to the antibiotic streptomycin: Streptomycin resistant (red) Streptomycin sensitive (blue).
+:::
+
+::: {#fig-02}
+![](/figs/biolog_ecoplates/H1977_ecoplates_gcurves.svg)
+
+Growth of *Pseudomonas chlororaphis* HAMBI_1977 on 31 different carbon substrates and water in Biolog Ecoplates over 48 hours of growth. Metabolic activity via tetrazolium reduction is colorometrically tracked with absorbance at 590 nm. Line type denotes the biological replicate, while line color denotes adaptation to the antibiotic streptomycin: Streptomycin resistant (red) Streptomycin sensitive (blue).
+:::
+
+::: {#fig-03}
+![](/figs/biolog_ecoplates/summary_metabolic_output.svg)
+
+Difference in metabolic performance between streptomycin sensitive and resistant forms of *Citrobacter koseri* 1287 *Pseudomonas chlororaphis* 1977 when grown on 31 carbon substrates. Horizontal axis depicts the difference in maximum absorbance (AU, 590 nm) between the senstive and resistant forms of each species over 48 hours. Point represents the difference in the mean over three biological replicates while the line range depicts the 95% confidence interval. Carbon sources are displayed on the vertical axis and organized by their parent molecular class (shown in color). Point size depicts the sum of the metabolic output of the sensitive and resistant forms.
+:::
