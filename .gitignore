@@ -10,6 +10,9 @@ _notrack/
 *.parquet
 # Netcdf files
 *.nc
+# renv puts documentation of local library in docs but this is used for
+# github pages to work
+/docs/renv
 
 # Quarto documents
 /.quarto/
