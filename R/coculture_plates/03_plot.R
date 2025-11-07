@@ -206,8 +206,6 @@ A1287A1977 <- collect_sp_pairs(
   competition_pair = "A1287_A1977",
   strep_thresh = 24
 ) %>%
-  # no co-cultures for these pairs done at 10 ug/ml
-  filter(streptomycin != 10) %>%
   # filter out the strange streptomycin 8 ug/ml monoculture samples
   filter(
     !(streptomycin == 8 & plate_name == "plate08" & strainID == "A1977")
