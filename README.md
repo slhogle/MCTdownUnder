@@ -8,7 +8,7 @@ Etymology: 'MCT' = modern coexistence theory, 'downUnder' referring to Australia
 
 The `R` directory store analysis code/scripts for the project.
 
-The `_data_raw` directory includes raw data files obtained from instruments and is never modified directly
+The `data_raw` directory includes raw data files obtained from instruments and is never modified directly
 
 The `data` directory is where processed data projects should go. Usually, in an analysis workflow you will start with raw data,  clean/organize it, perhaps transform it in some way, then save that product in `data` for later branches of the workflow. 
 
@@ -18,7 +18,6 @@ The `figs` directory holds figures generated in the analysis.
 
 The `notebooks` directory holds quarto notebooks for rendering the project webpage (hosted with github pages).
 
-`renv` holds the package library for the project.
 
 ## Manuscript:
 
@@ -32,17 +31,5 @@ TBD
 
 ## Availability
 
-Data and code in this GitHub repository (<https://github.com/slhogle/MCTdownUnder>) are provided under [GNU AGPL3](https://www.gnu.org/licenses/agpl-3.0.html). The rendered project site is available at <https://slhogle.github.io/MCTdownUnder/>, which has been produced using [Quarto notebooks](https://quarto.org/). The content on the rendered site is released under the [CC BY 4.0.](https://creativecommons.org/licenses/by/4.0/). This repository hosts all code and data for this project, including the code necessary to fully recreate the rendered webpage.
-
-An archived release of the code is available from Zenodo: <https://zenodo.org/records/EVENTUAL_ZENODO_RECORD>
-
-## Reproducibility
-
-The project uses [`renv`](https://rstudio.github.io/renv/index.html) to create a reproducible environment to execute the code in this project. [See here](https://rstudio.github.io/renv/articles/renv.html#collaboration) for a brief overview on collaboration and reproduction of the entire project. 
-
-To get up and running from an established repository (e.g., this one), you could do:
-
-``` r
-install.packages("renv")
-renv::restore()
-```
+Data and code in this GitHub repository (<https://github.com/slhogle/MCTdownUnder>) are provided under [GNU AGPL3](https://www.gnu.org/licenses/agpl-3.0.html).
+- An archived release of the code here is available from Zenodo: <https://zenodo.org/records/EVENTUAL_ZENODO_RECORD>

@@ -30,6 +30,10 @@ website:
             file: notebooks/coculture_plates/01_inspect_growthcurves.qmd
           - text: "ii) Plotting curves from competition exps"
             file: notebooks/coculture_plates/02_plot_analyze_growth.qmd
+      - section: "4. Coculture serial transfer experiment"
+        contents:
+          - text: "i) 2026-04-17 results"
+            file: notebooks/serial_transfer_coculture.qmd
 
 format:
   html:

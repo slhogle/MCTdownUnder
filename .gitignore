@@ -91,3 +91,5 @@ venv.bak/
 
 # Local History for Visual Studio Code
 .history/
+
+**/*.quarto_ipynb

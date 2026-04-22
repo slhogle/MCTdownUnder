@@ -1,60 +1,5 @@
 [
   {
-    "objectID": "notebooks/biolog_ecoplates/02_plot_analyze_growth.html",
-    "href": "notebooks/biolog_ecoplates/02_plot_analyze_growth.html",
-    "title": "Strain growth on biolog ecoplates",
-    "section": "",
-    "text": "The Biolog Ecoplates utilize tetrazolium reduction to measure the metabolic response of bacterial cells to different carbon substrates. Oxidized tetrazolium salt is water soluble, colorless in solution, and can freely diffuse into bacterial cells. Once inside the cell, tetrazolium is reduced by reducing agents like NADH an NADPH which are generated via cellular metabolism and catabolism. Once reduced tetrazolium is transformed into pink product. This assay measures the accumulation of reduced tetrazolium (colormetric absorbance at 590 nm) and hence the accumulation and concentration of reducing agents from cellular metabolism. This process will reflect both the concentration of cells in solution and per-capita concentration of reductant from central metabolism. There is a useful overview of the Tetrazolium colorometric procedure available here.\nIn the prior step we imported, smoothed, and calculated summary statistics for the species growth on Biolog Ecoplates. Here we will do some simple plots and analysis of the growth data on different carbon sources from the ecoplates.\n\n1 Plot growth curves\n\n\n\n\n\n\nFigure 1: Full growth curves of Citrobacter koseri HAMBI_1287 on 31 different carbon substrates and water in Biolog Ecoplates over 48 hours of growth. Metabolic activity via tetrazolium reduction is colorometrically tracked with absorbance at 590 nm. Line type denotes the biological replicate, while line color denotes adaptation to the antibiotic streptomycin: Streptomycin resistant (red) Streptomycin sensitive (blue).\n\n\n\n\n\n\n\n\n\nFigure 2: Growth of Pseudomonas chlororaphis HAMBI_1977 on 31 different carbon substrates and water in Biolog Ecoplates over 48 hours of growth. Metabolic activity via tetrazolium reduction is colorometrically tracked with absorbance at 590 nm. Line type denotes the biological replicate, while line color denotes adaptation to the antibiotic streptomycin: Streptomycin resistant (red) Streptomycin sensitive (blue).\n\n\n\n\n\n\n\n\n\nFigure 3: Difference in metabolic performance between streptomycin sensitive and resistant forms of Citrobacter koseri 1287 Pseudomonas chlororaphis 1977 when grown on 31 carbon substrates. Horizontal axis depicts the difference in maximum absorbance (AU, 590 nm) between the senstive and resistant forms of each species over 48 hours. Point represents the difference in the mean over three biological replicates while the line range depicts the 95% confidence interval. Carbon sources are displayed on the vertical axis and organized by their parent molecular class (shown in color). Point size depicts the sum of the metabolic output of the sensitive and resistant forms.",
-    "crumbs": [
-      "2. Resource use monoculture: Biolog ecoplates",
-      "ii) Plotting and analyzing growth on different carbon substrates"
-    ]
-  },
-  {
-    "objectID": "notebooks/bioscreen_strains/01_plot_analyze_growth.html",
-    "href": "notebooks/bioscreen_strains/01_plot_analyze_growth.html",
-    "title": "Monoculture growth",
-    "section": "",
-    "text": "Inspect the monoculture growth of both Streptomycin-sensitive (Sens/Anc) and Streptomycin-resistant (Res/Evo) forms of Citrobacter koseri 1287 and Pseudomonas chlororaphis 1977 at different streptomycin concentrations.\nThese are high resolution growth curves (every 10 minutes) collected on a very nice instrument (Bioscreen). Here we examine how the monoculture growth changed with respect to evolutionary history and streptomycin concentrations",
-    "crumbs": [
-      "1. Str resistance monoculture",
-      "i) Growth at different Strep"
-    ]
-  },
-  {
-    "objectID": "notebooks/bioscreen_strains/01_plot_analyze_growth.html#growth-curves",
-    "href": "notebooks/bioscreen_strains/01_plot_analyze_growth.html#growth-curves",
-    "title": "Monoculture growth",
-    "section": "1 Growth curves",
-    "text": "1 Growth curves\n\n\n\n\n\n\nFigure 1: Growth curves of Citrobacter koseri 1287 (Left column grid) and Pseudomonas chlororaphis 1977 (right column grid) at different streptomycin concentrations (grid rows) and evolutionary histories/sensitivities to streptomycin (colors). Each line is a biological replicate (n=5). Growth (culture turbidity) is measured at 10 minute intervals over 48 hours.",
-    "crumbs": [
-      "1. Str resistance monoculture",
-      "i) Growth at different Strep"
-    ]
-  },
-  {
-    "objectID": "notebooks/bioscreen_strains/01_plot_analyze_growth.html#growth-rates",
-    "href": "notebooks/bioscreen_strains/01_plot_analyze_growth.html#growth-rates",
-    "title": "Monoculture growth",
-    "section": "2 Growth rates",
-    "text": "2 Growth rates\n\n\n\n\n\n\nFigure 2: Maximum specific growth rate (\\(\\mathrm{\\mu_{max}}\\) in \\(\\mathrm{hr^{-1}}\\)) for the four different bacterial species (panels) and their different evolutionary histories (colors) at different streptomycin concentrations (horizontal axis, μg/ml). Points are the mean over five biological replicates and line ranges show the 95% confidence interval from bootstraps. EVO = experimentally evolved to high streptomycin.",
-    "crumbs": [
-      "1. Str resistance monoculture",
-      "i) Growth at different Strep"
-    ]
-  },
-  {
-    "objectID": "notebooks/bioscreen_strains/01_plot_analyze_growth.html#maximum-carrying-capcaity-k-maximum-observed-od",
-    "href": "notebooks/bioscreen_strains/01_plot_analyze_growth.html#maximum-carrying-capcaity-k-maximum-observed-od",
-    "title": "Monoculture growth",
-    "section": "3 Maximum carrying capcaity (K, maximum observed OD)",
-    "text": "3 Maximum carrying capcaity (K, maximum observed OD)\n\n\n\n\n\n\nFigure 3: As in Figure 1 but for maximum carrying capacity (K, maximum observed OD)",
-    "crumbs": [
-      "1. Str resistance monoculture",
-      "i) Growth at different Strep"
-    ]
-  },
-  {
     "objectID": "notebooks/coculture_plates/01_inspect_growthcurves.html",
     "href": "notebooks/coculture_plates/01_inspect_growthcurves.html",
     "title": "Formatting co-culture growth curves from Logphase 600 Plate reader",
@@ -198,88 +143,6 @@
     ]
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Data analysis for the project MCTdownUnder",
-    "section": "",
-    "text": "TBD\n\n\n\nTBD"
-  },
-  {
-    "objectID": "index.html#manuscript",
-    "href": "index.html#manuscript",
-    "title": "Data analysis for the project MCTdownUnder",
-    "section": "",
-    "text": "TBD\n\n\n\nTBD"
-  },
-  {
-    "objectID": "index.html#introduction",
-    "href": "index.html#introduction",
-    "title": "Data analysis for the project MCTdownUnder",
-    "section": "2 Introduction",
-    "text": "2 Introduction\nThe goal of this project is to examine how …"
-  },
-  {
-    "objectID": "index.html#experiment-overview",
-    "href": "index.html#experiment-overview",
-    "title": "Data analysis for the project MCTdownUnder",
-    "section": "3 Experiment overview",
-    "text": "3 Experiment overview\nThis is how we did our experiment…"
-  },
-  {
-    "objectID": "index.html#analysis-overview",
-    "href": "index.html#analysis-overview",
-    "title": "Data analysis for the project MCTdownUnder",
-    "section": "4 Analysis overview",
-    "text": "4 Analysis overview\nThis is how we did our data analysis…"
-  },
-  {
-    "objectID": "index.html#availability",
-    "href": "index.html#availability",
-    "title": "Data analysis for the project MCTdownUnder",
-    "section": "5 Availability",
-    "text": "5 Availability\nData and code in this GitHub repository (https://github.com/slhogle/MCTdownUnder) are provided under GNU AGPL3. The rendered project site is available at https://slhogle.github.io/MCTdownUnder/, which has been produced using Quarto notebooks. The content on the rendered site is released under the CC BY 4.0. This repository hosts all code and data for this project, including the code necessary to fully recreate the rendered webpage.\nAn archived release of the code is available from Zenodo: https://zenodo.org/records/EVENTUAL_ZENODO_RECORD"
-  },
-  {
-    "objectID": "index.html#reproducibility",
-    "href": "index.html#reproducibility",
-    "title": "Data analysis for the project MCTdownUnder",
-    "section": "6 Reproducibility",
-    "text": "6 Reproducibility\nThe project uses renv to create a reproducible environment to execute the code in this project. See here for a brief overview on collaboration and reproduction of the entire project. To get up and running from an established repository, you could do:\ninstall.packages(\"renv\")\nrenv::restore()\nTo initiate renv for a new project:\ninstall.packages(\"renv\")\n# initialize\nrenv::init()\n# install some new packages\nrenv::install(\"tidyverse\")\n# record those packages in the lockfile\nrenv::snapshot()"
-  },
-  {
-    "objectID": "notebooks/coculture_plates/02_plot_analyze_growth.html",
-    "href": "notebooks/coculture_plates/02_plot_analyze_growth.html",
-    "title": "Growth in pairs and monoculture",
-    "section": "",
-    "text": "Strain naming convention: 1287 = Citrobacter koserii 1287, 1977 = Psuedomonas chlororaphis 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.",
-    "crumbs": [
-      "3. Competition outcomes from co-culture plates",
-      "ii) Plotting curves from competition exps"
-    ]
-  },
-  {
-    "objectID": "notebooks/coculture_plates/02_plot_analyze_growth.html#difusion-test",
-    "href": "notebooks/coculture_plates/02_plot_analyze_growth.html#difusion-test",
-    "title": "Growth in pairs and monoculture",
-    "section": "1 Difusion test",
-    "text": "1 Difusion test\nPlot the co-cultures growing on M9 compared to the control (column 1 and 3). On the plate, column \\(n=\\{1\\dots11\\}\\) is connected to column \\(n+1\\) with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. These experiments were all conducted with no Streptomycin. Strain naming convention: 1287 = Citrobacter koserii 1287, 1977 = Psuedomonas chlororaphis 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.\n\n\n\n\n\n\nFigure 1: Growth curves (OD600 over 48 hours) in monoculture for three replicates (line type) of each species (plot panel columns) and evolution status (plot panel rows). Line color indicates experimental conditions: Red corresponds to inoculation into M9 salts with an adjacent well containing sterile R2A growth medium. Blue corresponds to the inverse where cells are inoculated into sterile R2A with an adjacent well containing sterile M9 salts.",
-    "crumbs": [
-      "3. Competition outcomes from co-culture plates",
-      "ii) Plotting curves from competition exps"
-    ]
-  },
-  {
-    "objectID": "notebooks/coculture_plates/02_plot_analyze_growth.html#coculture-and-monoculture-growth",
-    "href": "notebooks/coculture_plates/02_plot_analyze_growth.html#coculture-and-monoculture-growth",
-    "title": "Growth in pairs and monoculture",
-    "section": "2 Coculture and monoculture growth",
-    "text": "2 Coculture and monoculture growth\n\n\n\n\n\n\nFigure 2: Growth curves (OD600 over 48 hours) of two strains in a competing pair (denoted by color and plot title). Columns in the plot grid depict different streptomycin concentrations (ug/ml) under which growth was measured. Grid rows depict whether strains were grown in cocolture (strains inoculated into adjacent wells) or in monocolture (single strain inoculated into well with adjacent well containing sterile media only.) Heavy line corresponds to mean growth while lighter lines correspond to individual replicates. The ribbon around each mean line corresponds to 95% confidence interval (CI) around them mean. Line color corresponds to species/strain identity.\n\n\n\n\n\n\n\n\n\n\nFigure 3: As in Figure 2 but for A1977 and E1977.\n\n\n\n\n\n\n\n\n\n\nFigure 4: As in Figure 2 but for A1287 and A1977.\n\n\n\n\n\n\n\n\n\n\nFigure 5: As in Figure 2 but for E1287 and A1977.\n\n\n\n\n\n\n\n\n\n\nFigure 6: As in Figure 2 but for A1287 and E1977.\n\n\n\n\n\n\n\n\n\n\nFigure 7: As in Figure 2 but for A1287 and E1977.",
-    "crumbs": [
-      "3. Competition outcomes from co-culture plates",
-      "ii) Plotting curves from competition exps"
-    ]
-  },
-  {
     "objectID": "notebooks/biolog_ecoplates/01_inspect_growthcurves.html",
     "href": "notebooks/biolog_ecoplates/01_inspect_growthcurves.html",
     "title": "Formatting growth curves from Synergy H1",
@@ -332,6 +195,169 @@
     "crumbs": [
       "2. Resource use monoculture: Biolog ecoplates",
       "i) Reading and formatting data from plate reader"
+    ]
+  },
+  {
+    "objectID": "notebooks/serial_transfer_coculture.html",
+    "href": "notebooks/serial_transfer_coculture.html",
+    "title": "Serial transfer of coculture pairs",
+    "section": "",
+    "text": "Strain naming convention: 1287 = Citrobacter koserii 1287, 1977 = Psuedomonas chlororaphis 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.\nGrowth media convention: M9MM = M9 minimal media with glucose as the sole carbon source and supplemented with casamino acids./R2A = Reasoner’s 2 broth (complex growth medium).\nThis experiment was for a duration of five 48-hour growth cycles (240 hours growth total) where each well was serially diluted to a concentraion of 10-4 (10,000 fold dilution) and then placed back in the incubating plate reader.\nCleaned and formatted data used to produce these figures is available from:",
+    "crumbs": [
+      "4. Coculture serial transfer experiment",
+      "i) 2026-04-17 results"
+    ]
+  },
+  {
+    "objectID": "notebooks/serial_transfer_coculture.html#citrobacter-koseri-1287",
+    "href": "notebooks/serial_transfer_coculture.html#citrobacter-koseri-1287",
+    "title": "Serial transfer of coculture pairs",
+    "section": "1 Citrobacter koseri 1287",
+    "text": "1 Citrobacter koseri 1287\n\n\n\n\n\n\nFigure 1: Serial transfer growth curves (OD600) over five 48 hour grow cycles (240 hours total) for Citrobacter koseri 1287. Columns in the plot grid depict growth in monoculture or co-culture. Grid rows depict the growth medium and streptomycin concentrations. Heavy line corresponds to mean growth while lighter lines correspond to individual replicates. The ribbon around each mean line corresponds to 95% confidence interval (CI) around them mean. Line color corresponds to species/strain identity. Dashed vertical lines depict the serial transfer events. Color depicts the streptomycin resistance status (evo = resistance, anc = streptomycin sensitive).",
+    "crumbs": [
+      "4. Coculture serial transfer experiment",
+      "i) 2026-04-17 results"
+    ]
+  },
+  {
+    "objectID": "notebooks/serial_transfer_coculture.html#pseudomonas-chlororaphis-1977",
+    "href": "notebooks/serial_transfer_coculture.html#pseudomonas-chlororaphis-1977",
+    "title": "Serial transfer of coculture pairs",
+    "section": "2 Pseudomonas chlororaphis 1977",
+    "text": "2 Pseudomonas chlororaphis 1977\n\n\n\n\n\n\nFigure 2: Serial transfer growth curves (OD600) over five 48 hour grow cycles (240 hours total) for Pseudomonas chlororaphis 1977. Columns in the plot grid depict growth in monoculture or co-culture. Grid rows depict the growth medium and streptomycin concentrations. Heavy line corresponds to mean growth while lighter lines correspond to individual replicates. The ribbon around each mean line corresponds to 95% confidence interval (CI) around them mean. Line color corresponds to species/strain identity. Dashed vertical lines depict the serial transfer events. Color depicts the streptomycin resistance status (evo = resistance, anc = streptomycin sensitive).",
+    "crumbs": [
+      "4. Coculture serial transfer experiment",
+      "i) 2026-04-17 results"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Data analysis for the project MCTdownUnder",
+    "section": "",
+    "text": "TBD\n\n\n\nTBD"
+  },
+  {
+    "objectID": "index.html#manuscript",
+    "href": "index.html#manuscript",
+    "title": "Data analysis for the project MCTdownUnder",
+    "section": "",
+    "text": "TBD\n\n\n\nTBD"
+  },
+  {
+    "objectID": "index.html#introduction",
+    "href": "index.html#introduction",
+    "title": "Data analysis for the project MCTdownUnder",
+    "section": "2 Introduction",
+    "text": "2 Introduction\nThe goal of this project is to examine how …"
+  },
+  {
+    "objectID": "index.html#experiment-overview",
+    "href": "index.html#experiment-overview",
+    "title": "Data analysis for the project MCTdownUnder",
+    "section": "3 Experiment overview",
+    "text": "3 Experiment overview\nThis is how we did our experiment…"
+  },
+  {
+    "objectID": "index.html#analysis-overview",
+    "href": "index.html#analysis-overview",
+    "title": "Data analysis for the project MCTdownUnder",
+    "section": "4 Analysis overview",
+    "text": "4 Analysis overview\nThis is how we did our data analysis…"
+  },
+  {
+    "objectID": "index.html#availability",
+    "href": "index.html#availability",
+    "title": "Data analysis for the project MCTdownUnder",
+    "section": "5 Availability",
+    "text": "5 Availability\nData and code in this GitHub repository (https://github.com/slhogle/MCTdownUnder) are provided under GNU AGPL3. - An archived release of the code is available from Zenodo: https://zenodo.org/records/EVENTUAL_ZENODO_RECORD"
+  },
+  {
+    "objectID": "notebooks/bioscreen_strains/01_plot_analyze_growth.html",
+    "href": "notebooks/bioscreen_strains/01_plot_analyze_growth.html",
+    "title": "Monoculture growth",
+    "section": "",
+    "text": "Inspect the monoculture growth of both Streptomycin-sensitive (Sens/Anc) and Streptomycin-resistant (Res/Evo) forms of Citrobacter koseri 1287 and Pseudomonas chlororaphis 1977 at different streptomycin concentrations.\nThese are high resolution growth curves (every 10 minutes) collected on a very nice instrument (Bioscreen). Here we examine how the monoculture growth changed with respect to evolutionary history and streptomycin concentrations",
+    "crumbs": [
+      "1. Str resistance monoculture",
+      "i) Growth at different Strep"
+    ]
+  },
+  {
+    "objectID": "notebooks/bioscreen_strains/01_plot_analyze_growth.html#growth-curves",
+    "href": "notebooks/bioscreen_strains/01_plot_analyze_growth.html#growth-curves",
+    "title": "Monoculture growth",
+    "section": "1 Growth curves",
+    "text": "1 Growth curves\n\n\n\n\n\n\nFigure 1: Growth curves of Citrobacter koseri 1287 (Left column grid) and Pseudomonas chlororaphis 1977 (right column grid) at different streptomycin concentrations (grid rows) and evolutionary histories/sensitivities to streptomycin (colors). Each line is a biological replicate (n=5). Growth (culture turbidity) is measured at 10 minute intervals over 48 hours.",
+    "crumbs": [
+      "1. Str resistance monoculture",
+      "i) Growth at different Strep"
+    ]
+  },
+  {
+    "objectID": "notebooks/bioscreen_strains/01_plot_analyze_growth.html#growth-rates",
+    "href": "notebooks/bioscreen_strains/01_plot_analyze_growth.html#growth-rates",
+    "title": "Monoculture growth",
+    "section": "2 Growth rates",
+    "text": "2 Growth rates\n\n\n\n\n\n\nFigure 2: Maximum specific growth rate (\\(\\mathrm{\\mu_{max}}\\) in \\(\\mathrm{hr^{-1}}\\)) for the four different bacterial species (panels) and their different evolutionary histories (colors) at different streptomycin concentrations (horizontal axis, μg/ml). Points are the mean over five biological replicates and line ranges show the 95% confidence interval from bootstraps. EVO = experimentally evolved to high streptomycin.",
+    "crumbs": [
+      "1. Str resistance monoculture",
+      "i) Growth at different Strep"
+    ]
+  },
+  {
+    "objectID": "notebooks/bioscreen_strains/01_plot_analyze_growth.html#maximum-carrying-capcaity-k-maximum-observed-od",
+    "href": "notebooks/bioscreen_strains/01_plot_analyze_growth.html#maximum-carrying-capcaity-k-maximum-observed-od",
+    "title": "Monoculture growth",
+    "section": "3 Maximum carrying capcaity (K, maximum observed OD)",
+    "text": "3 Maximum carrying capcaity (K, maximum observed OD)\n\n\n\n\n\n\nFigure 3: As in Figure 1 but for maximum carrying capacity (K, maximum observed OD)",
+    "crumbs": [
+      "1. Str resistance monoculture",
+      "i) Growth at different Strep"
+    ]
+  },
+  {
+    "objectID": "notebooks/biolog_ecoplates/02_plot_analyze_growth.html",
+    "href": "notebooks/biolog_ecoplates/02_plot_analyze_growth.html",
+    "title": "Strain growth on biolog ecoplates",
+    "section": "",
+    "text": "The Biolog Ecoplates utilize tetrazolium reduction to measure the metabolic response of bacterial cells to different carbon substrates. Oxidized tetrazolium salt is water soluble, colorless in solution, and can freely diffuse into bacterial cells. Once inside the cell, tetrazolium is reduced by reducing agents like NADH an NADPH which are generated via cellular metabolism and catabolism. Once reduced tetrazolium is transformed into pink product. This assay measures the accumulation of reduced tetrazolium (colormetric absorbance at 590 nm) and hence the accumulation and concentration of reducing agents from cellular metabolism. This process will reflect both the concentration of cells in solution and per-capita concentration of reductant from central metabolism. There is a useful overview of the Tetrazolium colorometric procedure available here.\nIn the prior step we imported, smoothed, and calculated summary statistics for the species growth on Biolog Ecoplates. Here we will do some simple plots and analysis of the growth data on different carbon sources from the ecoplates.\n\n1 Plot growth curves\n\n\n\n\n\n\nFigure 1: Full growth curves of Citrobacter koseri HAMBI_1287 on 31 different carbon substrates and water in Biolog Ecoplates over 48 hours of growth. Metabolic activity via tetrazolium reduction is colorometrically tracked with absorbance at 590 nm. Line type denotes the biological replicate, while line color denotes adaptation to the antibiotic streptomycin: Streptomycin resistant (red) Streptomycin sensitive (blue).\n\n\n\n\n\n\n\n\n\nFigure 2: Growth of Pseudomonas chlororaphis HAMBI_1977 on 31 different carbon substrates and water in Biolog Ecoplates over 48 hours of growth. Metabolic activity via tetrazolium reduction is colorometrically tracked with absorbance at 590 nm. Line type denotes the biological replicate, while line color denotes adaptation to the antibiotic streptomycin: Streptomycin resistant (red) Streptomycin sensitive (blue).\n\n\n\n\n\n\n\n\n\nFigure 3: Difference in metabolic performance between streptomycin sensitive and resistant forms of Citrobacter koseri 1287 Pseudomonas chlororaphis 1977 when grown on 31 carbon substrates. Horizontal axis depicts the difference in maximum absorbance (AU, 590 nm) between the senstive and resistant forms of each species over 48 hours. Point represents the difference in the mean over three biological replicates while the line range depicts the 95% confidence interval. Carbon sources are displayed on the vertical axis and organized by their parent molecular class (shown in color). Point size depicts the sum of the metabolic output of the sensitive and resistant forms.",
+    "crumbs": [
+      "2. Resource use monoculture: Biolog ecoplates",
+      "ii) Plotting and analyzing growth on different carbon substrates"
+    ]
+  },
+  {
+    "objectID": "notebooks/coculture_plates/02_plot_analyze_growth.html",
+    "href": "notebooks/coculture_plates/02_plot_analyze_growth.html",
+    "title": "Growth in pairs and monoculture",
+    "section": "",
+    "text": "Strain naming convention: 1287 = Citrobacter koserii 1287, 1977 = Psuedomonas chlororaphis 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.",
+    "crumbs": [
+      "3. Competition outcomes from co-culture plates",
+      "ii) Plotting curves from competition exps"
+    ]
+  },
+  {
+    "objectID": "notebooks/coculture_plates/02_plot_analyze_growth.html#difusion-test",
+    "href": "notebooks/coculture_plates/02_plot_analyze_growth.html#difusion-test",
+    "title": "Growth in pairs and monoculture",
+    "section": "1 Difusion test",
+    "text": "1 Difusion test\nPlot the co-cultures growing on M9 compared to the control (column 1 and 3). On the plate, column \\(n=\\{1\\dots11\\}\\) is connected to column \\(n+1\\) with a 0.22 um membrane allowing free diffusion of resources and metabolic byproducts but not cells. These experiments were all conducted with no Streptomycin. Strain naming convention: 1287 = Citrobacter koserii 1287, 1977 = Psuedomonas chlororaphis 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.\n\n\n\n\n\n\nFigure 1: Growth curves (OD600 over 48 hours) in monoculture for three replicates (line type) of each species (plot panel columns) and evolution status (plot panel rows). Line color indicates experimental conditions: Red corresponds to inoculation into M9 salts with an adjacent well containing sterile R2A growth medium. Blue corresponds to the inverse where cells are inoculated into sterile R2A with an adjacent well containing sterile M9 salts.",
+    "crumbs": [
+      "3. Competition outcomes from co-culture plates",
+      "ii) Plotting curves from competition exps"
+    ]
+  },
+  {
+    "objectID": "notebooks/coculture_plates/02_plot_analyze_growth.html#coculture-and-monoculture-growth",
+    "href": "notebooks/coculture_plates/02_plot_analyze_growth.html#coculture-and-monoculture-growth",
+    "title": "Growth in pairs and monoculture",
+    "section": "2 Coculture and monoculture growth",
+    "text": "2 Coculture and monoculture growth\n\n\n\n\n\n\nFigure 2: Growth curves (OD600 over 48 hours) of two strains in a competing pair (denoted by color and plot title). Columns in the plot grid depict different streptomycin concentrations (ug/ml) under which growth was measured. Grid rows depict whether strains were grown in cocolture (strains inoculated into adjacent wells) or in monocolture (single strain inoculated into well with adjacent well containing sterile media only.) Heavy line corresponds to mean growth while lighter lines correspond to individual replicates. The ribbon around each mean line corresponds to 95% confidence interval (CI) around them mean. Line color corresponds to species/strain identity.\n\n\n\n\n\n\n\n\n\n\nFigure 3: As in Figure 2 but for A1977 and E1977.\n\n\n\n\n\n\n\n\n\n\nFigure 4: As in Figure 2 but for A1287 and A1977.\n\n\n\n\n\n\n\n\n\n\nFigure 5: As in Figure 2 but for E1287 and A1977.\n\n\n\n\n\n\n\n\n\n\nFigure 6: As in Figure 2 but for A1287 and E1977.\n\n\n\n\n\n\n\n\n\n\nFigure 7: As in Figure 2 but for A1287 and E1977.",
+    "crumbs": [
+      "3. Competition outcomes from co-culture plates",
+      "ii) Plotting curves from competition exps"
     ]
   }
 ]

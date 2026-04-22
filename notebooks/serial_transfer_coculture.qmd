@@ -1,0 +1,32 @@
+---
+title: "Serial transfer of coculture pairs"
+author: "Shane Hogle"
+date: today
+---
+
+Strain naming convention: 1287 = *Citrobacter koserii* 1287, 1977 = *Psuedomonas chlororaphis* 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.
+
+Growth media convention: M9MM = M9 minimal media with glucose as the sole carbon source and supplemented with casamino acids./R2A = Reasoner's 2 broth (complex growth medium).
+
+This experiment was for a duration of five 48-hour growth cycles (240 hours growth total) where each well was serially diluted to a concentraion of 10^-4^ (10,000 fold dilution) and then placed back in the incubating plate reader.
+
+Cleaned and formatted data used to produce these figures is available from:
+
+- [Citrobacter koseri 1287](https://github.com/slhogle/MCTdownUnder/tree/main/data/serial_transfer_coculture/20260410_serial_transfer/1287_coculture_gcurves_smooth.tsv)
+- [Pseudomonas chlororaphis 1977](https://github.com/slhogle/MCTdownUnder/tree/main/data/serial_transfer_coculture/20260410_serial_transfer/1977_coculture_gcurves_smooth.tsv)
+
+## *Citrobacter koseri* 1287
+
+::: {#fig-01}
+![](/figs/serial_transfer_coculture/20260410_serial_transfer/1287_competition_timecourse.svg)
+
+Serial transfer growth curves (OD600) over five 48 hour grow cycles (240 hours total) for *Citrobacter koseri* 1287. Columns in the plot grid depict growth in monoculture or co-culture. Grid rows depict the growth medium and streptomycin concentrations. Heavy line corresponds to mean growth while lighter lines correspond to individual replicates. The ribbon around each mean line corresponds to 95% confidence interval (CI) around them mean. Line color corresponds to species/strain identity. Dashed vertical lines depict the serial transfer events. Color depicts the streptomycin resistance status (evo = resistance, anc = streptomycin sensitive).
+:::
+
+## *Pseudomonas chlororaphis* 1977
+
+::: {#fig-01}
+![](/figs/serial_transfer_coculture/20260410_serial_transfer/1977_competition_timecourse.svg)
+
+Serial transfer growth curves (OD600) over five 48 hour grow cycles (240 hours total) for *Pseudomonas chlororaphis* 1977. Columns in the plot grid depict growth in monoculture or co-culture. Grid rows depict the growth medium and streptomycin concentrations. Heavy line corresponds to mean growth while lighter lines correspond to individual replicates. The ribbon around each mean line corresponds to 95% confidence interval (CI) around them mean. Line color corresponds to species/strain identity. Dashed vertical lines depict the serial transfer events. Color depicts the streptomycin resistance status (evo = resistance, anc = streptomycin sensitive).
+:::
