@@ -92,7 +92,9 @@ cell_value <- function(mats, row, col) {
 ```{r}
 read_merge_ranges <- function(path, mats) {
   wb <- openxlsx::loadWorkbook(path)
-  refs <- stringr::str_match(wb$worksheets[[1]]$mergeCells, 'ref="([^"]+)"')[, 2]
+  refs <- stringr::str_match(wb$worksheets[[1]]$mergeCells, 'ref="([^"]+)"')[,
+    2
+  ]
 
   refs |>
     stringr::str_split(":") |>
@@ -431,27 +433,27 @@ plate_file_maps <- list(
 )
 
 carbon_source_classes <- tibble::tribble(
-  ~carbon_source,          ~class,
-  "4-Hydroxybenzoic acid", "organic_acid",
-  "glucose",               "sugar",
-  "sucrose",               "sugar",
-  "salicylic acid",        "organic_acid",
-  "shikimic acid",         "organic_acid",
-  "L-cysteine",            "amino_acid",
-  "L-valine",              "amino_acid",
-  "taurine",               "amino_acid",
-  "histidine",             "amino_acid",
-  "leucine",               "amino_acid",
-  "phenylalanine",         "amino_acid",
-  "xylose",                "sugar",
-  "starch",                "sugar",
-  "cellobiose",            "sugar",
-  "succinic acid",         "organic_acid",
-  "malate",                "organic_acid",
-  "L-arginine",            "amino_acid",
-  "D-mannitol",            "sugar",
-  "lactic acid",           "organic_acid",
-  "sodium acetate",        "organic_acid"
+  ~carbon_source          , ~class         ,
+  "4-Hydroxybenzoic acid" , "organic_acid" ,
+  "glucose"               , "sugar"        ,
+  "sucrose"               , "sugar"        ,
+  "salicylic acid"        , "organic_acid" ,
+  "shikimic acid"         , "organic_acid" ,
+  "L-cysteine"            , "amino_acid"   ,
+  "L-valine"              , "amino_acid"   ,
+  "taurine"               , "amino_acid"   ,
+  "histidine"             , "amino_acid"   ,
+  "leucine"               , "amino_acid"   ,
+  "phenylalanine"         , "amino_acid"   ,
+  "xylose"                , "sugar"        ,
+  "starch"                , "sugar"        ,
+  "cellobiose"            , "sugar"        ,
+  "succinic acid"         , "organic_acid" ,
+  "malate"                , "organic_acid" ,
+  "asparagine"            , "amino_acid"   ,
+  "D-mannitol"            , "sugar"        ,
+  "lactic acid"           , "organic_acid" ,
+  "sodium acetate"        , "organic_acid"
 )
 
 attach_plate_file <- function(records, plate_file_map) {

@@ -588,46 +588,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <summary>Show/hide code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>read_merge_ranges <span class="ot">&lt;-</span> <span class="cf">function</span>(path, mats) {</span>
 <span id="cb3-2"><a href="#cb3-2"></a>  wb <span class="ot">&lt;-</span> openxlsx<span class="sc">::</span><span class="fu">loadWorkbook</span>(path)</span>
-<span id="cb3-3"><a href="#cb3-3"></a>  refs <span class="ot">&lt;-</span> stringr<span class="sc">::</span><span class="fu">str_match</span>(wb<span class="sc">$</span>worksheets[[<span class="dv">1</span>]]<span class="sc">$</span>mergeCells, <span class="st">'ref="([^"]+)"'</span>)[, <span class="dv">2</span>]</span>
-<span id="cb3-4"><a href="#cb3-4"></a></span>
-<span id="cb3-5"><a href="#cb3-5"></a>  refs <span class="sc">|&gt;</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a>    stringr<span class="sc">::</span><span class="fu">str_split</span>(<span class="st">":"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>    purrr<span class="sc">::</span><span class="fu">map</span>(\(parts) {</span>
-<span id="cb3-8"><a href="#cb3-8"></a>      rows <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(stringr<span class="sc">::</span><span class="fu">str_extract</span>(parts, <span class="st">"[0-9]+"</span>))</span>
-<span id="cb3-9"><a href="#cb3-9"></a>      cols <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_int</span>(</span>
-<span id="cb3-10"><a href="#cb3-10"></a>        stringr<span class="sc">::</span><span class="fu">str_extract</span>(parts, <span class="st">"[A-Z]+"</span>),</span>
-<span id="cb3-11"><a href="#cb3-11"></a>        openxlsx<span class="sc">::</span>convertFromExcelRef</span>
-<span id="cb3-12"><a href="#cb3-12"></a>      )</span>
-<span id="cb3-13"><a href="#cb3-13"></a>      tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb3-14"><a href="#cb3-14"></a>        <span class="at">min_row =</span> <span class="fu">min</span>(rows),</span>
-<span id="cb3-15"><a href="#cb3-15"></a>        <span class="at">max_row =</span> <span class="fu">max</span>(rows),</span>
-<span id="cb3-16"><a href="#cb3-16"></a>        <span class="at">col =</span> <span class="fu">seq</span>(<span class="fu">min</span>(cols), <span class="fu">max</span>(cols)),</span>
-<span id="cb3-17"><a href="#cb3-17"></a>        <span class="at">top_val =</span> <span class="fu">cell_value</span>(mats, <span class="fu">min</span>(rows), <span class="fu">min</span>(cols))</span>
-<span id="cb3-18"><a href="#cb3-18"></a>      )</span>
-<span id="cb3-19"><a href="#cb3-19"></a>    }) <span class="sc">|&gt;</span></span>
-<span id="cb3-20"><a href="#cb3-20"></a>    purrr<span class="sc">::</span><span class="fu">list_rbind</span>()</span>
-<span id="cb3-21"><a href="#cb3-21"></a>}</span>
-<span id="cb3-22"><a href="#cb3-22"></a></span>
-<span id="cb3-23"><a href="#cb3-23"></a><span class="co"># For one sheet row, return the carbon source per well-column, preferring a</span></span>
-<span id="cb3-24"><a href="#cb3-24"></a><span class="co"># merged-block value over the bare cell.</span></span>
-<span id="cb3-25"><a href="#cb3-25"></a>resolve_merged_row <span class="ot">&lt;-</span> <span class="cf">function</span>(mats, merges, row, cols) {</span>
-<span id="cb3-26"><a href="#cb3-26"></a>  merged <span class="ot">&lt;-</span> merges <span class="sc">|&gt;</span></span>
-<span id="cb3-27"><a href="#cb3-27"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(min_row <span class="sc">&lt;=</span> row, row <span class="sc">&lt;=</span> max_row, col <span class="sc">%in%</span> cols) <span class="sc">|&gt;</span></span>
-<span id="cb3-28"><a href="#cb3-28"></a>    dplyr<span class="sc">::</span><span class="fu">distinct</span>(col, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-29"><a href="#cb3-29"></a></span>
-<span id="cb3-30"><a href="#cb3-30"></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">col =</span> cols) <span class="sc">|&gt;</span></span>
-<span id="cb3-31"><a href="#cb3-31"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb3-32"><a href="#cb3-32"></a>      <span class="at">bare_val =</span> purrr<span class="sc">::</span><span class="fu">map_chr</span>(</span>
-<span id="cb3-33"><a href="#cb3-33"></a>        col,</span>
-<span id="cb3-34"><a href="#cb3-34"></a>        \(cl) <span class="fu">as.character</span>(<span class="fu">cell_value</span>(mats, row, cl))</span>
-<span id="cb3-35"><a href="#cb3-35"></a>      )</span>
-<span id="cb3-36"><a href="#cb3-36"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb3-37"><a href="#cb3-37"></a>    dplyr<span class="sc">::</span><span class="fu">left_join</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(merged, col, top_val), <span class="at">by =</span> <span class="st">"col"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb3-38"><a href="#cb3-38"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb3-39"><a href="#cb3-39"></a>      <span class="at">carbon_source =</span> dplyr<span class="sc">::</span><span class="fu">coalesce</span>(<span class="fu">as.character</span>(top_val), bare_val)</span>
-<span id="cb3-40"><a href="#cb3-40"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb3-41"><a href="#cb3-41"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(col, carbon_source)</span>
-<span id="cb3-42"><a href="#cb3-42"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-3"><a href="#cb3-3"></a>  refs <span class="ot">&lt;-</span> stringr<span class="sc">::</span><span class="fu">str_match</span>(wb<span class="sc">$</span>worksheets[[<span class="dv">1</span>]]<span class="sc">$</span>mergeCells, <span class="st">'ref="([^"]+)"'</span>)[,</span>
+<span id="cb3-4"><a href="#cb3-4"></a>    <span class="dv">2</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>  ]</span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a>  refs <span class="sc">|&gt;</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>    stringr<span class="sc">::</span><span class="fu">str_split</span>(<span class="st">":"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>    purrr<span class="sc">::</span><span class="fu">map</span>(\(parts) {</span>
+<span id="cb3-10"><a href="#cb3-10"></a>      rows <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(stringr<span class="sc">::</span><span class="fu">str_extract</span>(parts, <span class="st">"[0-9]+"</span>))</span>
+<span id="cb3-11"><a href="#cb3-11"></a>      cols <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_int</span>(</span>
+<span id="cb3-12"><a href="#cb3-12"></a>        stringr<span class="sc">::</span><span class="fu">str_extract</span>(parts, <span class="st">"[A-Z]+"</span>),</span>
+<span id="cb3-13"><a href="#cb3-13"></a>        openxlsx<span class="sc">::</span>convertFromExcelRef</span>
+<span id="cb3-14"><a href="#cb3-14"></a>      )</span>
+<span id="cb3-15"><a href="#cb3-15"></a>      tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb3-16"><a href="#cb3-16"></a>        <span class="at">min_row =</span> <span class="fu">min</span>(rows),</span>
+<span id="cb3-17"><a href="#cb3-17"></a>        <span class="at">max_row =</span> <span class="fu">max</span>(rows),</span>
+<span id="cb3-18"><a href="#cb3-18"></a>        <span class="at">col =</span> <span class="fu">seq</span>(<span class="fu">min</span>(cols), <span class="fu">max</span>(cols)),</span>
+<span id="cb3-19"><a href="#cb3-19"></a>        <span class="at">top_val =</span> <span class="fu">cell_value</span>(mats, <span class="fu">min</span>(rows), <span class="fu">min</span>(cols))</span>
+<span id="cb3-20"><a href="#cb3-20"></a>      )</span>
+<span id="cb3-21"><a href="#cb3-21"></a>    }) <span class="sc">|&gt;</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a>    purrr<span class="sc">::</span><span class="fu">list_rbind</span>()</span>
+<span id="cb3-23"><a href="#cb3-23"></a>}</span>
+<span id="cb3-24"><a href="#cb3-24"></a></span>
+<span id="cb3-25"><a href="#cb3-25"></a><span class="co"># For one sheet row, return the carbon source per well-column, preferring a</span></span>
+<span id="cb3-26"><a href="#cb3-26"></a><span class="co"># merged-block value over the bare cell.</span></span>
+<span id="cb3-27"><a href="#cb3-27"></a>resolve_merged_row <span class="ot">&lt;-</span> <span class="cf">function</span>(mats, merges, row, cols) {</span>
+<span id="cb3-28"><a href="#cb3-28"></a>  merged <span class="ot">&lt;-</span> merges <span class="sc">|&gt;</span></span>
+<span id="cb3-29"><a href="#cb3-29"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(min_row <span class="sc">&lt;=</span> row, row <span class="sc">&lt;=</span> max_row, col <span class="sc">%in%</span> cols) <span class="sc">|&gt;</span></span>
+<span id="cb3-30"><a href="#cb3-30"></a>    dplyr<span class="sc">::</span><span class="fu">distinct</span>(col, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-31"><a href="#cb3-31"></a></span>
+<span id="cb3-32"><a href="#cb3-32"></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">col =</span> cols) <span class="sc">|&gt;</span></span>
+<span id="cb3-33"><a href="#cb3-33"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb3-34"><a href="#cb3-34"></a>      <span class="at">bare_val =</span> purrr<span class="sc">::</span><span class="fu">map_chr</span>(</span>
+<span id="cb3-35"><a href="#cb3-35"></a>        col,</span>
+<span id="cb3-36"><a href="#cb3-36"></a>        \(cl) <span class="fu">as.character</span>(<span class="fu">cell_value</span>(mats, row, cl))</span>
+<span id="cb3-37"><a href="#cb3-37"></a>      )</span>
+<span id="cb3-38"><a href="#cb3-38"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb3-39"><a href="#cb3-39"></a>    dplyr<span class="sc">::</span><span class="fu">left_join</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(merged, col, top_val), <span class="at">by =</span> <span class="st">"col"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-40"><a href="#cb3-40"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb3-41"><a href="#cb3-41"></a>      <span class="at">carbon_source =</span> dplyr<span class="sc">::</span><span class="fu">coalesce</span>(<span class="fu">as.character</span>(top_val), bare_val)</span>
+<span id="cb3-42"><a href="#cb3-42"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb3-43"><a href="#cb3-43"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(col, carbon_source)</span>
+<span id="cb3-44"><a href="#cb3-44"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
@@ -945,27 +947,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-48"><a href="#cb9-48"></a>)</span>
 <span id="cb9-49"><a href="#cb9-49"></a></span>
 <span id="cb9-50"><a href="#cb9-50"></a>carbon_source_classes <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
-<span id="cb9-51"><a href="#cb9-51"></a>  <span class="sc">~</span>carbon_source,          <span class="sc">~</span>class,</span>
-<span id="cb9-52"><a href="#cb9-52"></a>  <span class="st">"4-Hydroxybenzoic acid"</span>, <span class="st">"organic_acid"</span>,</span>
-<span id="cb9-53"><a href="#cb9-53"></a>  <span class="st">"glucose"</span>,               <span class="st">"sugar"</span>,</span>
-<span id="cb9-54"><a href="#cb9-54"></a>  <span class="st">"sucrose"</span>,               <span class="st">"sugar"</span>,</span>
-<span id="cb9-55"><a href="#cb9-55"></a>  <span class="st">"salicylic acid"</span>,        <span class="st">"organic_acid"</span>,</span>
-<span id="cb9-56"><a href="#cb9-56"></a>  <span class="st">"shikimic acid"</span>,         <span class="st">"organic_acid"</span>,</span>
-<span id="cb9-57"><a href="#cb9-57"></a>  <span class="st">"L-cysteine"</span>,            <span class="st">"amino_acid"</span>,</span>
-<span id="cb9-58"><a href="#cb9-58"></a>  <span class="st">"L-valine"</span>,              <span class="st">"amino_acid"</span>,</span>
-<span id="cb9-59"><a href="#cb9-59"></a>  <span class="st">"taurine"</span>,               <span class="st">"amino_acid"</span>,</span>
-<span id="cb9-60"><a href="#cb9-60"></a>  <span class="st">"histidine"</span>,             <span class="st">"amino_acid"</span>,</span>
-<span id="cb9-61"><a href="#cb9-61"></a>  <span class="st">"leucine"</span>,               <span class="st">"amino_acid"</span>,</span>
-<span id="cb9-62"><a href="#cb9-62"></a>  <span class="st">"phenylalanine"</span>,         <span class="st">"amino_acid"</span>,</span>
-<span id="cb9-63"><a href="#cb9-63"></a>  <span class="st">"xylose"</span>,                <span class="st">"sugar"</span>,</span>
-<span id="cb9-64"><a href="#cb9-64"></a>  <span class="st">"starch"</span>,                <span class="st">"sugar"</span>,</span>
-<span id="cb9-65"><a href="#cb9-65"></a>  <span class="st">"cellobiose"</span>,            <span class="st">"sugar"</span>,</span>
-<span id="cb9-66"><a href="#cb9-66"></a>  <span class="st">"succinic acid"</span>,         <span class="st">"organic_acid"</span>,</span>
-<span id="cb9-67"><a href="#cb9-67"></a>  <span class="st">"malate"</span>,                <span class="st">"organic_acid"</span>,</span>
-<span id="cb9-68"><a href="#cb9-68"></a>  <span class="st">"L-arginine"</span>,            <span class="st">"amino_acid"</span>,</span>
-<span id="cb9-69"><a href="#cb9-69"></a>  <span class="st">"D-mannitol"</span>,            <span class="st">"sugar"</span>,</span>
-<span id="cb9-70"><a href="#cb9-70"></a>  <span class="st">"lactic acid"</span>,           <span class="st">"organic_acid"</span>,</span>
-<span id="cb9-71"><a href="#cb9-71"></a>  <span class="st">"sodium acetate"</span>,        <span class="st">"organic_acid"</span></span>
+<span id="cb9-51"><a href="#cb9-51"></a>  <span class="sc">~</span>carbon_source          , <span class="sc">~</span>class         ,</span>
+<span id="cb9-52"><a href="#cb9-52"></a>  <span class="st">"4-Hydroxybenzoic acid"</span> , <span class="st">"organic_acid"</span> ,</span>
+<span id="cb9-53"><a href="#cb9-53"></a>  <span class="st">"glucose"</span>               , <span class="st">"sugar"</span>        ,</span>
+<span id="cb9-54"><a href="#cb9-54"></a>  <span class="st">"sucrose"</span>               , <span class="st">"sugar"</span>        ,</span>
+<span id="cb9-55"><a href="#cb9-55"></a>  <span class="st">"salicylic acid"</span>        , <span class="st">"organic_acid"</span> ,</span>
+<span id="cb9-56"><a href="#cb9-56"></a>  <span class="st">"shikimic acid"</span>         , <span class="st">"organic_acid"</span> ,</span>
+<span id="cb9-57"><a href="#cb9-57"></a>  <span class="st">"L-cysteine"</span>            , <span class="st">"amino_acid"</span>   ,</span>
+<span id="cb9-58"><a href="#cb9-58"></a>  <span class="st">"L-valine"</span>              , <span class="st">"amino_acid"</span>   ,</span>
+<span id="cb9-59"><a href="#cb9-59"></a>  <span class="st">"taurine"</span>               , <span class="st">"amino_acid"</span>   ,</span>
+<span id="cb9-60"><a href="#cb9-60"></a>  <span class="st">"histidine"</span>             , <span class="st">"amino_acid"</span>   ,</span>
+<span id="cb9-61"><a href="#cb9-61"></a>  <span class="st">"leucine"</span>               , <span class="st">"amino_acid"</span>   ,</span>
+<span id="cb9-62"><a href="#cb9-62"></a>  <span class="st">"phenylalanine"</span>         , <span class="st">"amino_acid"</span>   ,</span>
+<span id="cb9-63"><a href="#cb9-63"></a>  <span class="st">"xylose"</span>                , <span class="st">"sugar"</span>        ,</span>
+<span id="cb9-64"><a href="#cb9-64"></a>  <span class="st">"starch"</span>                , <span class="st">"sugar"</span>        ,</span>
+<span id="cb9-65"><a href="#cb9-65"></a>  <span class="st">"cellobiose"</span>            , <span class="st">"sugar"</span>        ,</span>
+<span id="cb9-66"><a href="#cb9-66"></a>  <span class="st">"succinic acid"</span>         , <span class="st">"organic_acid"</span> ,</span>
+<span id="cb9-67"><a href="#cb9-67"></a>  <span class="st">"malate"</span>                , <span class="st">"organic_acid"</span> ,</span>
+<span id="cb9-68"><a href="#cb9-68"></a>  <span class="st">"asparagine"</span>            , <span class="st">"amino_acid"</span>   ,</span>
+<span id="cb9-69"><a href="#cb9-69"></a>  <span class="st">"D-mannitol"</span>            , <span class="st">"sugar"</span>        ,</span>
+<span id="cb9-70"><a href="#cb9-70"></a>  <span class="st">"lactic acid"</span>           , <span class="st">"organic_acid"</span> ,</span>
+<span id="cb9-71"><a href="#cb9-71"></a>  <span class="st">"sodium acetate"</span>        , <span class="st">"organic_acid"</span></span>
 <span id="cb9-72"><a href="#cb9-72"></a>)</span>
 <span id="cb9-73"><a href="#cb9-73"></a></span>
 <span id="cb9-74"><a href="#cb9-74"></a>attach_plate_file <span class="ot">&lt;-</span> <span class="cf">function</span>(records, plate_file_map) {</span>
@@ -1625,458 +1627,460 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-98"><a href="#cb10-98"></a><span class="in">```{r}</span></span>
 <span id="cb10-99"><a href="#cb10-99"></a>read_merge_ranges <span class="ot">&lt;-</span> <span class="cf">function</span>(path, mats) {</span>
 <span id="cb10-100"><a href="#cb10-100"></a>  wb <span class="ot">&lt;-</span> openxlsx<span class="sc">::</span><span class="fu">loadWorkbook</span>(path)</span>
-<span id="cb10-101"><a href="#cb10-101"></a>  refs <span class="ot">&lt;-</span> stringr<span class="sc">::</span><span class="fu">str_match</span>(wb<span class="sc">$</span>worksheets[[<span class="dv">1</span>]]<span class="sc">$</span>mergeCells, <span class="st">'ref="([^"]+)"'</span>)[, <span class="dv">2</span>]</span>
-<span id="cb10-102"><a href="#cb10-102"></a></span>
-<span id="cb10-103"><a href="#cb10-103"></a>  refs <span class="sc">|&gt;</span></span>
-<span id="cb10-104"><a href="#cb10-104"></a>    stringr<span class="sc">::</span><span class="fu">str_split</span>(<span class="st">":"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb10-105"><a href="#cb10-105"></a>    purrr<span class="sc">::</span><span class="fu">map</span>(\(parts) {</span>
-<span id="cb10-106"><a href="#cb10-106"></a>      rows <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(stringr<span class="sc">::</span><span class="fu">str_extract</span>(parts, <span class="st">"[0-9]+"</span>))</span>
-<span id="cb10-107"><a href="#cb10-107"></a>      cols <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_int</span>(</span>
-<span id="cb10-108"><a href="#cb10-108"></a>        stringr<span class="sc">::</span><span class="fu">str_extract</span>(parts, <span class="st">"[A-Z]+"</span>),</span>
-<span id="cb10-109"><a href="#cb10-109"></a>        openxlsx<span class="sc">::</span>convertFromExcelRef</span>
-<span id="cb10-110"><a href="#cb10-110"></a>      )</span>
-<span id="cb10-111"><a href="#cb10-111"></a>      tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb10-112"><a href="#cb10-112"></a>        <span class="at">min_row =</span> <span class="fu">min</span>(rows),</span>
-<span id="cb10-113"><a href="#cb10-113"></a>        <span class="at">max_row =</span> <span class="fu">max</span>(rows),</span>
-<span id="cb10-114"><a href="#cb10-114"></a>        <span class="at">col =</span> <span class="fu">seq</span>(<span class="fu">min</span>(cols), <span class="fu">max</span>(cols)),</span>
-<span id="cb10-115"><a href="#cb10-115"></a>        <span class="at">top_val =</span> <span class="fu">cell_value</span>(mats, <span class="fu">min</span>(rows), <span class="fu">min</span>(cols))</span>
-<span id="cb10-116"><a href="#cb10-116"></a>      )</span>
-<span id="cb10-117"><a href="#cb10-117"></a>    }) <span class="sc">|&gt;</span></span>
-<span id="cb10-118"><a href="#cb10-118"></a>    purrr<span class="sc">::</span><span class="fu">list_rbind</span>()</span>
-<span id="cb10-119"><a href="#cb10-119"></a>}</span>
-<span id="cb10-120"><a href="#cb10-120"></a></span>
-<span id="cb10-121"><a href="#cb10-121"></a><span class="co"># For one sheet row, return the carbon source per well-column, preferring a</span></span>
-<span id="cb10-122"><a href="#cb10-122"></a><span class="co"># merged-block value over the bare cell.</span></span>
-<span id="cb10-123"><a href="#cb10-123"></a>resolve_merged_row <span class="ot">&lt;-</span> <span class="cf">function</span>(mats, merges, row, cols) {</span>
-<span id="cb10-124"><a href="#cb10-124"></a>  merged <span class="ot">&lt;-</span> merges <span class="sc">|&gt;</span></span>
-<span id="cb10-125"><a href="#cb10-125"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(min_row <span class="sc">&lt;=</span> row, row <span class="sc">&lt;=</span> max_row, col <span class="sc">%in%</span> cols) <span class="sc">|&gt;</span></span>
-<span id="cb10-126"><a href="#cb10-126"></a>    dplyr<span class="sc">::</span><span class="fu">distinct</span>(col, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb10-127"><a href="#cb10-127"></a></span>
-<span id="cb10-128"><a href="#cb10-128"></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">col =</span> cols) <span class="sc">|&gt;</span></span>
-<span id="cb10-129"><a href="#cb10-129"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb10-130"><a href="#cb10-130"></a>      <span class="at">bare_val =</span> purrr<span class="sc">::</span><span class="fu">map_chr</span>(</span>
-<span id="cb10-131"><a href="#cb10-131"></a>        col,</span>
-<span id="cb10-132"><a href="#cb10-132"></a>        \(cl) <span class="fu">as.character</span>(<span class="fu">cell_value</span>(mats, row, cl))</span>
-<span id="cb10-133"><a href="#cb10-133"></a>      )</span>
-<span id="cb10-134"><a href="#cb10-134"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb10-135"><a href="#cb10-135"></a>    dplyr<span class="sc">::</span><span class="fu">left_join</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(merged, col, top_val), <span class="at">by =</span> <span class="st">"col"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb10-136"><a href="#cb10-136"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb10-137"><a href="#cb10-137"></a>      <span class="at">carbon_source =</span> dplyr<span class="sc">::</span><span class="fu">coalesce</span>(<span class="fu">as.character</span>(top_val), bare_val)</span>
-<span id="cb10-138"><a href="#cb10-138"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb10-139"><a href="#cb10-139"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(col, carbon_source)</span>
-<span id="cb10-140"><a href="#cb10-140"></a>}</span>
-<span id="cb10-141"><a href="#cb10-141"></a><span class="in">```</span></span>
-<span id="cb10-142"><a href="#cb10-142"></a></span>
-<span id="cb10-143"><a href="#cb10-143"></a><span class="fu">## Value cleaning</span></span>
+<span id="cb10-101"><a href="#cb10-101"></a>  refs <span class="ot">&lt;-</span> stringr<span class="sc">::</span><span class="fu">str_match</span>(wb<span class="sc">$</span>worksheets[[<span class="dv">1</span>]]<span class="sc">$</span>mergeCells, <span class="st">'ref="([^"]+)"'</span>)[,</span>
+<span id="cb10-102"><a href="#cb10-102"></a>    <span class="dv">2</span></span>
+<span id="cb10-103"><a href="#cb10-103"></a>  ]</span>
+<span id="cb10-104"><a href="#cb10-104"></a></span>
+<span id="cb10-105"><a href="#cb10-105"></a>  refs <span class="sc">|&gt;</span></span>
+<span id="cb10-106"><a href="#cb10-106"></a>    stringr<span class="sc">::</span><span class="fu">str_split</span>(<span class="st">":"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-107"><a href="#cb10-107"></a>    purrr<span class="sc">::</span><span class="fu">map</span>(\(parts) {</span>
+<span id="cb10-108"><a href="#cb10-108"></a>      rows <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(stringr<span class="sc">::</span><span class="fu">str_extract</span>(parts, <span class="st">"[0-9]+"</span>))</span>
+<span id="cb10-109"><a href="#cb10-109"></a>      cols <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_int</span>(</span>
+<span id="cb10-110"><a href="#cb10-110"></a>        stringr<span class="sc">::</span><span class="fu">str_extract</span>(parts, <span class="st">"[A-Z]+"</span>),</span>
+<span id="cb10-111"><a href="#cb10-111"></a>        openxlsx<span class="sc">::</span>convertFromExcelRef</span>
+<span id="cb10-112"><a href="#cb10-112"></a>      )</span>
+<span id="cb10-113"><a href="#cb10-113"></a>      tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb10-114"><a href="#cb10-114"></a>        <span class="at">min_row =</span> <span class="fu">min</span>(rows),</span>
+<span id="cb10-115"><a href="#cb10-115"></a>        <span class="at">max_row =</span> <span class="fu">max</span>(rows),</span>
+<span id="cb10-116"><a href="#cb10-116"></a>        <span class="at">col =</span> <span class="fu">seq</span>(<span class="fu">min</span>(cols), <span class="fu">max</span>(cols)),</span>
+<span id="cb10-117"><a href="#cb10-117"></a>        <span class="at">top_val =</span> <span class="fu">cell_value</span>(mats, <span class="fu">min</span>(rows), <span class="fu">min</span>(cols))</span>
+<span id="cb10-118"><a href="#cb10-118"></a>      )</span>
+<span id="cb10-119"><a href="#cb10-119"></a>    }) <span class="sc">|&gt;</span></span>
+<span id="cb10-120"><a href="#cb10-120"></a>    purrr<span class="sc">::</span><span class="fu">list_rbind</span>()</span>
+<span id="cb10-121"><a href="#cb10-121"></a>}</span>
+<span id="cb10-122"><a href="#cb10-122"></a></span>
+<span id="cb10-123"><a href="#cb10-123"></a><span class="co"># For one sheet row, return the carbon source per well-column, preferring a</span></span>
+<span id="cb10-124"><a href="#cb10-124"></a><span class="co"># merged-block value over the bare cell.</span></span>
+<span id="cb10-125"><a href="#cb10-125"></a>resolve_merged_row <span class="ot">&lt;-</span> <span class="cf">function</span>(mats, merges, row, cols) {</span>
+<span id="cb10-126"><a href="#cb10-126"></a>  merged <span class="ot">&lt;-</span> merges <span class="sc">|&gt;</span></span>
+<span id="cb10-127"><a href="#cb10-127"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(min_row <span class="sc">&lt;=</span> row, row <span class="sc">&lt;=</span> max_row, col <span class="sc">%in%</span> cols) <span class="sc">|&gt;</span></span>
+<span id="cb10-128"><a href="#cb10-128"></a>    dplyr<span class="sc">::</span><span class="fu">distinct</span>(col, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-129"><a href="#cb10-129"></a></span>
+<span id="cb10-130"><a href="#cb10-130"></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">col =</span> cols) <span class="sc">|&gt;</span></span>
+<span id="cb10-131"><a href="#cb10-131"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb10-132"><a href="#cb10-132"></a>      <span class="at">bare_val =</span> purrr<span class="sc">::</span><span class="fu">map_chr</span>(</span>
+<span id="cb10-133"><a href="#cb10-133"></a>        col,</span>
+<span id="cb10-134"><a href="#cb10-134"></a>        \(cl) <span class="fu">as.character</span>(<span class="fu">cell_value</span>(mats, row, cl))</span>
+<span id="cb10-135"><a href="#cb10-135"></a>      )</span>
+<span id="cb10-136"><a href="#cb10-136"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb10-137"><a href="#cb10-137"></a>    dplyr<span class="sc">::</span><span class="fu">left_join</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(merged, col, top_val), <span class="at">by =</span> <span class="st">"col"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-138"><a href="#cb10-138"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb10-139"><a href="#cb10-139"></a>      <span class="at">carbon_source =</span> dplyr<span class="sc">::</span><span class="fu">coalesce</span>(<span class="fu">as.character</span>(top_val), bare_val)</span>
+<span id="cb10-140"><a href="#cb10-140"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb10-141"><a href="#cb10-141"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(col, carbon_source)</span>
+<span id="cb10-142"><a href="#cb10-142"></a>}</span>
+<span id="cb10-143"><a href="#cb10-143"></a><span class="in">```</span></span>
 <span id="cb10-144"><a href="#cb10-144"></a></span>
-<span id="cb10-147"><a href="#cb10-147"></a><span class="in">```{r}</span></span>
-<span id="cb10-148"><a href="#cb10-148"></a>clean_carbon_source <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb10-149"><a href="#cb10-149"></a>  x <span class="ot">&lt;-</span> stringr<span class="sc">::</span><span class="fu">str_trim</span>(<span class="fu">as.character</span>(x))</span>
-<span id="cb10-150"><a href="#cb10-150"></a>  dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb10-151"><a href="#cb10-151"></a>    <span class="fu">is.na</span>(x) <span class="sc">~</span> <span class="st">""</span>,</span>
-<span id="cb10-152"><a href="#cb10-152"></a>    stringr<span class="sc">::</span><span class="fu">str_to_lower</span>(x) <span class="sc">==</span> <span class="st">"control"</span> <span class="sc">~</span> <span class="st">"Control"</span>,</span>
-<span id="cb10-153"><a href="#cb10-153"></a>    <span class="at">.default =</span> x <span class="sc">|&gt;</span></span>
-<span id="cb10-154"><a href="#cb10-154"></a>      stringr<span class="sc">::</span><span class="fu">str_remove_all</span>(stringr<span class="sc">::</span><span class="fu">fixed</span>(<span class="st">"M9MM with "</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb10-155"><a href="#cb10-155"></a>      stringr<span class="sc">::</span><span class="fu">str_remove_all</span>(stringr<span class="sc">::</span><span class="fu">fixed</span>(<span class="st">" + Str"</span>))</span>
-<span id="cb10-156"><a href="#cb10-156"></a>  )</span>
-<span id="cb10-157"><a href="#cb10-157"></a>}</span>
-<span id="cb10-158"><a href="#cb10-158"></a></span>
-<span id="cb10-159"><a href="#cb10-159"></a>format_streptomycin <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb10-160"><a href="#cb10-160"></a>  x <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.numeric</span>(x))</span>
-<span id="cb10-161"><a href="#cb10-161"></a>  dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb10-162"><a href="#cb10-162"></a>    <span class="fu">is.na</span>(x) <span class="sc">~</span> <span class="st">""</span>,</span>
-<span id="cb10-163"><a href="#cb10-163"></a>    x <span class="sc">==</span> <span class="fu">round</span>(x) <span class="sc">~</span> <span class="fu">sprintf</span>(<span class="st">"%.1f"</span>, x),</span>
-<span id="cb10-164"><a href="#cb10-164"></a>    <span class="at">.default =</span> <span class="fu">format</span>(x, <span class="at">trim =</span> <span class="cn">TRUE</span>, <span class="at">scientific =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb10-165"><a href="#cb10-165"></a>  )</span>
-<span id="cb10-166"><a href="#cb10-166"></a>}</span>
-<span id="cb10-167"><a href="#cb10-167"></a></span>
-<span id="cb10-168"><a href="#cb10-168"></a><span class="co"># Strain labels look like "ANC1977" / "EVO1287"; anything else (e.g. "Control")</span></span>
-<span id="cb10-169"><a href="#cb10-169"></a><span class="co"># is passed through as evo_hist with an empty strainID.</span></span>
-<span id="cb10-170"><a href="#cb10-170"></a>parse_evo_hist <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb10-171"><a href="#cb10-171"></a>  dplyr<span class="sc">::</span><span class="fu">coalesce</span>(</span>
-<span id="cb10-172"><a href="#cb10-172"></a>    stringr<span class="sc">::</span><span class="fu">str_extract</span>(<span class="fu">as.character</span>(x), <span class="st">"^(ANC|EVO)"</span>),</span>
-<span id="cb10-173"><a href="#cb10-173"></a>    <span class="fu">as.character</span>(x)</span>
-<span id="cb10-174"><a href="#cb10-174"></a>  )</span>
-<span id="cb10-175"><a href="#cb10-175"></a>}</span>
-<span id="cb10-176"><a href="#cb10-176"></a></span>
-<span id="cb10-177"><a href="#cb10-177"></a>parse_strain_id <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb10-178"><a href="#cb10-178"></a>  dplyr<span class="sc">::</span><span class="fu">coalesce</span>(</span>
-<span id="cb10-179"><a href="#cb10-179"></a>    stringr<span class="sc">::</span><span class="fu">str_match</span>(<span class="fu">as.character</span>(x), <span class="st">"^(?:ANC|EVO)(</span><span class="sc">\\</span><span class="st">d+)"</span>)[, <span class="dv">2</span>],</span>
-<span id="cb10-180"><a href="#cb10-180"></a>    <span class="st">""</span></span>
-<span id="cb10-181"><a href="#cb10-181"></a>  )</span>
-<span id="cb10-182"><a href="#cb10-182"></a>}</span>
-<span id="cb10-183"><a href="#cb10-183"></a><span class="in">```</span></span>
-<span id="cb10-184"><a href="#cb10-184"></a></span>
-<span id="cb10-185"><a href="#cb10-185"></a><span class="fu">## Parsing</span></span>
+<span id="cb10-145"><a href="#cb10-145"></a><span class="fu">## Value cleaning</span></span>
+<span id="cb10-146"><a href="#cb10-146"></a></span>
+<span id="cb10-149"><a href="#cb10-149"></a><span class="in">```{r}</span></span>
+<span id="cb10-150"><a href="#cb10-150"></a>clean_carbon_source <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb10-151"><a href="#cb10-151"></a>  x <span class="ot">&lt;-</span> stringr<span class="sc">::</span><span class="fu">str_trim</span>(<span class="fu">as.character</span>(x))</span>
+<span id="cb10-152"><a href="#cb10-152"></a>  dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb10-153"><a href="#cb10-153"></a>    <span class="fu">is.na</span>(x) <span class="sc">~</span> <span class="st">""</span>,</span>
+<span id="cb10-154"><a href="#cb10-154"></a>    stringr<span class="sc">::</span><span class="fu">str_to_lower</span>(x) <span class="sc">==</span> <span class="st">"control"</span> <span class="sc">~</span> <span class="st">"Control"</span>,</span>
+<span id="cb10-155"><a href="#cb10-155"></a>    <span class="at">.default =</span> x <span class="sc">|&gt;</span></span>
+<span id="cb10-156"><a href="#cb10-156"></a>      stringr<span class="sc">::</span><span class="fu">str_remove_all</span>(stringr<span class="sc">::</span><span class="fu">fixed</span>(<span class="st">"M9MM with "</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb10-157"><a href="#cb10-157"></a>      stringr<span class="sc">::</span><span class="fu">str_remove_all</span>(stringr<span class="sc">::</span><span class="fu">fixed</span>(<span class="st">" + Str"</span>))</span>
+<span id="cb10-158"><a href="#cb10-158"></a>  )</span>
+<span id="cb10-159"><a href="#cb10-159"></a>}</span>
+<span id="cb10-160"><a href="#cb10-160"></a></span>
+<span id="cb10-161"><a href="#cb10-161"></a>format_streptomycin <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb10-162"><a href="#cb10-162"></a>  x <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.numeric</span>(x))</span>
+<span id="cb10-163"><a href="#cb10-163"></a>  dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb10-164"><a href="#cb10-164"></a>    <span class="fu">is.na</span>(x) <span class="sc">~</span> <span class="st">""</span>,</span>
+<span id="cb10-165"><a href="#cb10-165"></a>    x <span class="sc">==</span> <span class="fu">round</span>(x) <span class="sc">~</span> <span class="fu">sprintf</span>(<span class="st">"%.1f"</span>, x),</span>
+<span id="cb10-166"><a href="#cb10-166"></a>    <span class="at">.default =</span> <span class="fu">format</span>(x, <span class="at">trim =</span> <span class="cn">TRUE</span>, <span class="at">scientific =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb10-167"><a href="#cb10-167"></a>  )</span>
+<span id="cb10-168"><a href="#cb10-168"></a>}</span>
+<span id="cb10-169"><a href="#cb10-169"></a></span>
+<span id="cb10-170"><a href="#cb10-170"></a><span class="co"># Strain labels look like "ANC1977" / "EVO1287"; anything else (e.g. "Control")</span></span>
+<span id="cb10-171"><a href="#cb10-171"></a><span class="co"># is passed through as evo_hist with an empty strainID.</span></span>
+<span id="cb10-172"><a href="#cb10-172"></a>parse_evo_hist <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb10-173"><a href="#cb10-173"></a>  dplyr<span class="sc">::</span><span class="fu">coalesce</span>(</span>
+<span id="cb10-174"><a href="#cb10-174"></a>    stringr<span class="sc">::</span><span class="fu">str_extract</span>(<span class="fu">as.character</span>(x), <span class="st">"^(ANC|EVO)"</span>),</span>
+<span id="cb10-175"><a href="#cb10-175"></a>    <span class="fu">as.character</span>(x)</span>
+<span id="cb10-176"><a href="#cb10-176"></a>  )</span>
+<span id="cb10-177"><a href="#cb10-177"></a>}</span>
+<span id="cb10-178"><a href="#cb10-178"></a></span>
+<span id="cb10-179"><a href="#cb10-179"></a>parse_strain_id <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb10-180"><a href="#cb10-180"></a>  dplyr<span class="sc">::</span><span class="fu">coalesce</span>(</span>
+<span id="cb10-181"><a href="#cb10-181"></a>    stringr<span class="sc">::</span><span class="fu">str_match</span>(<span class="fu">as.character</span>(x), <span class="st">"^(?:ANC|EVO)(</span><span class="sc">\\</span><span class="st">d+)"</span>)[, <span class="dv">2</span>],</span>
+<span id="cb10-182"><a href="#cb10-182"></a>    <span class="st">""</span></span>
+<span id="cb10-183"><a href="#cb10-183"></a>  )</span>
+<span id="cb10-184"><a href="#cb10-184"></a>}</span>
+<span id="cb10-185"><a href="#cb10-185"></a><span class="in">```</span></span>
 <span id="cb10-186"><a href="#cb10-186"></a></span>
-<span id="cb10-189"><a href="#cb10-189"></a><span class="in">```{r}</span></span>
-<span id="cb10-190"><a href="#cb10-190"></a>parse_plate_block <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
-<span id="cb10-191"><a href="#cb10-191"></a>  mats,</span>
-<span id="cb10-192"><a href="#cb10-192"></a>  merges,</span>
-<span id="cb10-193"><a href="#cb10-193"></a>  plate,</span>
-<span id="cb10-194"><a href="#cb10-194"></a>  medium_row,</span>
-<span id="cb10-195"><a href="#cb10-195"></a>  well_cols,</span>
-<span id="cb10-196"><a href="#cb10-196"></a>  row_rows,</span>
-<span id="cb10-197"><a href="#cb10-197"></a>  strep_row</span>
-<span id="cb10-198"><a href="#cb10-198"></a>) {</span>
-<span id="cb10-199"><a href="#cb10-199"></a>  carbon_by_col <span class="ot">&lt;-</span> <span class="fu">resolve_merged_row</span>(</span>
-<span id="cb10-200"><a href="#cb10-200"></a>    mats,</span>
-<span id="cb10-201"><a href="#cb10-201"></a>    merges,</span>
-<span id="cb10-202"><a href="#cb10-202"></a>    medium_row,</span>
-<span id="cb10-203"><a href="#cb10-203"></a>    well_cols<span class="sc">$</span>col</span>
-<span id="cb10-204"><a href="#cb10-204"></a>  )</span>
-<span id="cb10-205"><a href="#cb10-205"></a></span>
-<span id="cb10-206"><a href="#cb10-206"></a>  tidyr<span class="sc">::</span><span class="fu">expand_grid</span>(</span>
-<span id="cb10-207"><a href="#cb10-207"></a>    <span class="at">sheet_row =</span> row_rows,</span>
-<span id="cb10-208"><a href="#cb10-208"></a>    <span class="at">col =</span> well_cols<span class="sc">$</span>col</span>
-<span id="cb10-209"><a href="#cb10-209"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb10-210"><a href="#cb10-210"></a>    dplyr<span class="sc">::</span><span class="fu">left_join</span>(well_cols, <span class="at">by =</span> <span class="st">"col"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb10-211"><a href="#cb10-211"></a>    dplyr<span class="sc">::</span><span class="fu">left_join</span>(carbon_by_col, <span class="at">by =</span> <span class="st">"col"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb10-212"><a href="#cb10-212"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb10-213"><a href="#cb10-213"></a>      <span class="at">plate =</span> plate,</span>
-<span id="cb10-214"><a href="#cb10-214"></a>      <span class="at">row =</span> purrr<span class="sc">::</span><span class="fu">map_chr</span>(</span>
-<span id="cb10-215"><a href="#cb10-215"></a>        sheet_row,</span>
-<span id="cb10-216"><a href="#cb10-216"></a>        \(r) <span class="fu">as.character</span>(<span class="fu">cell_value</span>(mats, r, <span class="dv">2</span>))</span>
-<span id="cb10-217"><a href="#cb10-217"></a>      ),</span>
-<span id="cb10-218"><a href="#cb10-218"></a>      <span class="at">strain =</span> purrr<span class="sc">::</span><span class="fu">map2_chr</span>(</span>
-<span id="cb10-219"><a href="#cb10-219"></a>        sheet_row,</span>
-<span id="cb10-220"><a href="#cb10-220"></a>        col,</span>
-<span id="cb10-221"><a href="#cb10-221"></a>        \(r, cl) <span class="fu">as.character</span>(<span class="fu">cell_value</span>(mats, r, cl))</span>
-<span id="cb10-222"><a href="#cb10-222"></a>      ),</span>
-<span id="cb10-223"><a href="#cb10-223"></a>      <span class="at">strep =</span> purrr<span class="sc">::</span><span class="fu">map_chr</span>(</span>
-<span id="cb10-224"><a href="#cb10-224"></a>        col,</span>
-<span id="cb10-225"><a href="#cb10-225"></a>        \(cl) <span class="fu">as.character</span>(<span class="fu">cell_value</span>(mats, strep_row, cl))</span>
-<span id="cb10-226"><a href="#cb10-226"></a>      ),</span>
-<span id="cb10-227"><a href="#cb10-227"></a>      <span class="at">well =</span> stringr<span class="sc">::</span><span class="fu">str_c</span>(row, well_column),</span>
-<span id="cb10-228"><a href="#cb10-228"></a>      <span class="at">evo_hist =</span> <span class="fu">parse_evo_hist</span>(strain),</span>
-<span id="cb10-229"><a href="#cb10-229"></a>      <span class="at">strainID =</span> <span class="fu">parse_strain_id</span>(strain),</span>
-<span id="cb10-230"><a href="#cb10-230"></a>      <span class="at">streptomycin_ug_ml =</span> <span class="fu">format_streptomycin</span>(strep),</span>
-<span id="cb10-231"><a href="#cb10-231"></a>      <span class="at">carbon_source =</span> <span class="fu">clean_carbon_source</span>(carbon_source)</span>
-<span id="cb10-232"><a href="#cb10-232"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb10-233"><a href="#cb10-233"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
-<span id="cb10-234"><a href="#cb10-234"></a>      plate,</span>
-<span id="cb10-235"><a href="#cb10-235"></a>      well,</span>
-<span id="cb10-236"><a href="#cb10-236"></a>      row,</span>
-<span id="cb10-237"><a href="#cb10-237"></a>      <span class="at">column =</span> well_column,</span>
-<span id="cb10-238"><a href="#cb10-238"></a>      evo_hist,</span>
-<span id="cb10-239"><a href="#cb10-239"></a>      strainID,</span>
-<span id="cb10-240"><a href="#cb10-240"></a>      streptomycin_ug_ml,</span>
-<span id="cb10-241"><a href="#cb10-241"></a>      carbon_source</span>
-<span id="cb10-242"><a href="#cb10-242"></a>    )</span>
-<span id="cb10-243"><a href="#cb10-243"></a>}</span>
-<span id="cb10-244"><a href="#cb10-244"></a></span>
-<span id="cb10-245"><a href="#cb10-245"></a><span class="co"># Locate the sheet rows that start each plate block.</span></span>
-<span id="cb10-246"><a href="#cb10-246"></a>find_plate_header_rows <span class="ot">&lt;-</span> <span class="cf">function</span>(mats) {</span>
-<span id="cb10-247"><a href="#cb10-247"></a>  <span class="fu">seq_len</span>(mats<span class="sc">$</span>max_row) <span class="sc">|&gt;</span></span>
-<span id="cb10-248"><a href="#cb10-248"></a>    purrr<span class="sc">::</span><span class="fu">keep</span>(\(r) {</span>
-<span id="cb10-249"><a href="#cb10-249"></a>      v <span class="ot">&lt;-</span> <span class="fu">cell_value</span>(mats, r, <span class="dv">1</span>)</span>
-<span id="cb10-250"><a href="#cb10-250"></a>      <span class="fu">is.character</span>(v) <span class="sc">&amp;&amp;</span></span>
-<span id="cb10-251"><a href="#cb10-251"></a>        <span class="sc">!</span><span class="fu">is.na</span>(v) <span class="sc">&amp;&amp;</span></span>
-<span id="cb10-252"><a href="#cb10-252"></a>        stringr<span class="sc">::</span><span class="fu">str_starts</span>(stringr<span class="sc">::</span><span class="fu">str_trim</span>(v), <span class="st">"Plate"</span>)</span>
-<span id="cb10-253"><a href="#cb10-253"></a>    })</span>
-<span id="cb10-254"><a href="#cb10-254"></a>}</span>
-<span id="cb10-255"><a href="#cb10-255"></a></span>
-<span id="cb10-256"><a href="#cb10-256"></a><span class="co"># The data rows of a block run from just below the header until column B is</span></span>
-<span id="cb10-257"><a href="#cb10-257"></a><span class="co"># empty; the medium and streptomycin rows follow immediately after.</span></span>
-<span id="cb10-258"><a href="#cb10-258"></a>block_layout <span class="ot">&lt;-</span> <span class="cf">function</span>(mats, header_row) {</span>
-<span id="cb10-259"><a href="#cb10-259"></a>  row_rows <span class="ot">&lt;-</span> <span class="fu">integer</span>(<span class="dv">0</span>)</span>
-<span id="cb10-260"><a href="#cb10-260"></a>  rr <span class="ot">&lt;-</span> header_row <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb10-261"><a href="#cb10-261"></a>  <span class="cf">while</span> (rr <span class="sc">&lt;=</span> mats<span class="sc">$</span>max_row <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(<span class="fu">cell_value</span>(mats, rr, <span class="dv">2</span>))) {</span>
-<span id="cb10-262"><a href="#cb10-262"></a>    row_rows <span class="ot">&lt;-</span> <span class="fu">c</span>(row_rows, rr)</span>
-<span id="cb10-263"><a href="#cb10-263"></a>    rr <span class="ot">&lt;-</span> rr <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb10-264"><a href="#cb10-264"></a>  }</span>
-<span id="cb10-265"><a href="#cb10-265"></a>  <span class="fu">list</span>(<span class="at">row_rows =</span> row_rows, <span class="at">medium_row =</span> rr, <span class="at">strep_row =</span> rr <span class="sc">+</span> <span class="dv">1</span>)</span>
-<span id="cb10-266"><a href="#cb10-266"></a>}</span>
-<span id="cb10-267"><a href="#cb10-267"></a></span>
-<span id="cb10-268"><a href="#cb10-268"></a>parse_platemap <span class="ot">&lt;-</span> <span class="cf">function</span>(xlsx_path) {</span>
-<span id="cb10-269"><a href="#cb10-269"></a>  mats <span class="ot">&lt;-</span> <span class="fu">read_cell_matrices</span>(xlsx_path)</span>
-<span id="cb10-270"><a href="#cb10-270"></a>  merges <span class="ot">&lt;-</span> <span class="fu">read_merge_ranges</span>(xlsx_path, mats)</span>
-<span id="cb10-271"><a href="#cb10-271"></a></span>
-<span id="cb10-272"><a href="#cb10-272"></a>  <span class="fu">find_plate_header_rows</span>(mats) <span class="sc">|&gt;</span></span>
-<span id="cb10-273"><a href="#cb10-273"></a>    purrr<span class="sc">::</span><span class="fu">map</span>(\(header_row) {</span>
-<span id="cb10-274"><a href="#cb10-274"></a>      layout <span class="ot">&lt;-</span> <span class="fu">block_layout</span>(mats, header_row)</span>
-<span id="cb10-275"><a href="#cb10-275"></a></span>
-<span id="cb10-276"><a href="#cb10-276"></a>      well_cols <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">col =</span> <span class="fu">seq</span>(<span class="dv">3</span>, mats<span class="sc">$</span>max_col)) <span class="sc">|&gt;</span></span>
-<span id="cb10-277"><a href="#cb10-277"></a>        dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb10-278"><a href="#cb10-278"></a>          <span class="at">well_column =</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(</span>
-<span id="cb10-279"><a href="#cb10-279"></a>            col,</span>
-<span id="cb10-280"><a href="#cb10-280"></a>            \(cl) <span class="fu">suppressWarnings</span>(<span class="fu">as.numeric</span>(<span class="fu">cell_value</span>(mats, header_row, cl)))</span>
-<span id="cb10-281"><a href="#cb10-281"></a>          )</span>
-<span id="cb10-282"><a href="#cb10-282"></a>        ) <span class="sc">|&gt;</span></span>
-<span id="cb10-283"><a href="#cb10-283"></a>        dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(well_column)) <span class="sc">|&gt;</span></span>
-<span id="cb10-284"><a href="#cb10-284"></a>        dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">well_column =</span> <span class="fu">as.integer</span>(well_column))</span>
-<span id="cb10-285"><a href="#cb10-285"></a></span>
-<span id="cb10-286"><a href="#cb10-286"></a>      <span class="fu">parse_plate_block</span>(</span>
-<span id="cb10-287"><a href="#cb10-287"></a>        <span class="at">mats =</span> mats,</span>
-<span id="cb10-288"><a href="#cb10-288"></a>        <span class="at">merges =</span> merges,</span>
-<span id="cb10-289"><a href="#cb10-289"></a>        <span class="at">plate =</span> stringr<span class="sc">::</span><span class="fu">str_trim</span>(<span class="fu">cell_value</span>(mats, header_row, <span class="dv">1</span>)),</span>
-<span id="cb10-290"><a href="#cb10-290"></a>        <span class="at">medium_row =</span> layout<span class="sc">$</span>medium_row,</span>
-<span id="cb10-291"><a href="#cb10-291"></a>        <span class="at">well_cols =</span> well_cols,</span>
-<span id="cb10-292"><a href="#cb10-292"></a>        <span class="at">row_rows =</span> layout<span class="sc">$</span>row_rows,</span>
-<span id="cb10-293"><a href="#cb10-293"></a>        <span class="at">strep_row =</span> layout<span class="sc">$</span>strep_row</span>
-<span id="cb10-294"><a href="#cb10-294"></a>      )</span>
-<span id="cb10-295"><a href="#cb10-295"></a>    }) <span class="sc">|&gt;</span></span>
-<span id="cb10-296"><a href="#cb10-296"></a>    purrr<span class="sc">::</span><span class="fu">list_rbind</span>()</span>
-<span id="cb10-297"><a href="#cb10-297"></a>}</span>
-<span id="cb10-298"><a href="#cb10-298"></a><span class="in">```</span></span>
-<span id="cb10-299"><a href="#cb10-299"></a></span>
-<span id="cb10-300"><a href="#cb10-300"></a><span class="fu">## Per-file correction helpers</span></span>
+<span id="cb10-187"><a href="#cb10-187"></a><span class="fu">## Parsing</span></span>
+<span id="cb10-188"><a href="#cb10-188"></a></span>
+<span id="cb10-191"><a href="#cb10-191"></a><span class="in">```{r}</span></span>
+<span id="cb10-192"><a href="#cb10-192"></a>parse_plate_block <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb10-193"><a href="#cb10-193"></a>  mats,</span>
+<span id="cb10-194"><a href="#cb10-194"></a>  merges,</span>
+<span id="cb10-195"><a href="#cb10-195"></a>  plate,</span>
+<span id="cb10-196"><a href="#cb10-196"></a>  medium_row,</span>
+<span id="cb10-197"><a href="#cb10-197"></a>  well_cols,</span>
+<span id="cb10-198"><a href="#cb10-198"></a>  row_rows,</span>
+<span id="cb10-199"><a href="#cb10-199"></a>  strep_row</span>
+<span id="cb10-200"><a href="#cb10-200"></a>) {</span>
+<span id="cb10-201"><a href="#cb10-201"></a>  carbon_by_col <span class="ot">&lt;-</span> <span class="fu">resolve_merged_row</span>(</span>
+<span id="cb10-202"><a href="#cb10-202"></a>    mats,</span>
+<span id="cb10-203"><a href="#cb10-203"></a>    merges,</span>
+<span id="cb10-204"><a href="#cb10-204"></a>    medium_row,</span>
+<span id="cb10-205"><a href="#cb10-205"></a>    well_cols<span class="sc">$</span>col</span>
+<span id="cb10-206"><a href="#cb10-206"></a>  )</span>
+<span id="cb10-207"><a href="#cb10-207"></a></span>
+<span id="cb10-208"><a href="#cb10-208"></a>  tidyr<span class="sc">::</span><span class="fu">expand_grid</span>(</span>
+<span id="cb10-209"><a href="#cb10-209"></a>    <span class="at">sheet_row =</span> row_rows,</span>
+<span id="cb10-210"><a href="#cb10-210"></a>    <span class="at">col =</span> well_cols<span class="sc">$</span>col</span>
+<span id="cb10-211"><a href="#cb10-211"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-212"><a href="#cb10-212"></a>    dplyr<span class="sc">::</span><span class="fu">left_join</span>(well_cols, <span class="at">by =</span> <span class="st">"col"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-213"><a href="#cb10-213"></a>    dplyr<span class="sc">::</span><span class="fu">left_join</span>(carbon_by_col, <span class="at">by =</span> <span class="st">"col"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-214"><a href="#cb10-214"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb10-215"><a href="#cb10-215"></a>      <span class="at">plate =</span> plate,</span>
+<span id="cb10-216"><a href="#cb10-216"></a>      <span class="at">row =</span> purrr<span class="sc">::</span><span class="fu">map_chr</span>(</span>
+<span id="cb10-217"><a href="#cb10-217"></a>        sheet_row,</span>
+<span id="cb10-218"><a href="#cb10-218"></a>        \(r) <span class="fu">as.character</span>(<span class="fu">cell_value</span>(mats, r, <span class="dv">2</span>))</span>
+<span id="cb10-219"><a href="#cb10-219"></a>      ),</span>
+<span id="cb10-220"><a href="#cb10-220"></a>      <span class="at">strain =</span> purrr<span class="sc">::</span><span class="fu">map2_chr</span>(</span>
+<span id="cb10-221"><a href="#cb10-221"></a>        sheet_row,</span>
+<span id="cb10-222"><a href="#cb10-222"></a>        col,</span>
+<span id="cb10-223"><a href="#cb10-223"></a>        \(r, cl) <span class="fu">as.character</span>(<span class="fu">cell_value</span>(mats, r, cl))</span>
+<span id="cb10-224"><a href="#cb10-224"></a>      ),</span>
+<span id="cb10-225"><a href="#cb10-225"></a>      <span class="at">strep =</span> purrr<span class="sc">::</span><span class="fu">map_chr</span>(</span>
+<span id="cb10-226"><a href="#cb10-226"></a>        col,</span>
+<span id="cb10-227"><a href="#cb10-227"></a>        \(cl) <span class="fu">as.character</span>(<span class="fu">cell_value</span>(mats, strep_row, cl))</span>
+<span id="cb10-228"><a href="#cb10-228"></a>      ),</span>
+<span id="cb10-229"><a href="#cb10-229"></a>      <span class="at">well =</span> stringr<span class="sc">::</span><span class="fu">str_c</span>(row, well_column),</span>
+<span id="cb10-230"><a href="#cb10-230"></a>      <span class="at">evo_hist =</span> <span class="fu">parse_evo_hist</span>(strain),</span>
+<span id="cb10-231"><a href="#cb10-231"></a>      <span class="at">strainID =</span> <span class="fu">parse_strain_id</span>(strain),</span>
+<span id="cb10-232"><a href="#cb10-232"></a>      <span class="at">streptomycin_ug_ml =</span> <span class="fu">format_streptomycin</span>(strep),</span>
+<span id="cb10-233"><a href="#cb10-233"></a>      <span class="at">carbon_source =</span> <span class="fu">clean_carbon_source</span>(carbon_source)</span>
+<span id="cb10-234"><a href="#cb10-234"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb10-235"><a href="#cb10-235"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
+<span id="cb10-236"><a href="#cb10-236"></a>      plate,</span>
+<span id="cb10-237"><a href="#cb10-237"></a>      well,</span>
+<span id="cb10-238"><a href="#cb10-238"></a>      row,</span>
+<span id="cb10-239"><a href="#cb10-239"></a>      <span class="at">column =</span> well_column,</span>
+<span id="cb10-240"><a href="#cb10-240"></a>      evo_hist,</span>
+<span id="cb10-241"><a href="#cb10-241"></a>      strainID,</span>
+<span id="cb10-242"><a href="#cb10-242"></a>      streptomycin_ug_ml,</span>
+<span id="cb10-243"><a href="#cb10-243"></a>      carbon_source</span>
+<span id="cb10-244"><a href="#cb10-244"></a>    )</span>
+<span id="cb10-245"><a href="#cb10-245"></a>}</span>
+<span id="cb10-246"><a href="#cb10-246"></a></span>
+<span id="cb10-247"><a href="#cb10-247"></a><span class="co"># Locate the sheet rows that start each plate block.</span></span>
+<span id="cb10-248"><a href="#cb10-248"></a>find_plate_header_rows <span class="ot">&lt;-</span> <span class="cf">function</span>(mats) {</span>
+<span id="cb10-249"><a href="#cb10-249"></a>  <span class="fu">seq_len</span>(mats<span class="sc">$</span>max_row) <span class="sc">|&gt;</span></span>
+<span id="cb10-250"><a href="#cb10-250"></a>    purrr<span class="sc">::</span><span class="fu">keep</span>(\(r) {</span>
+<span id="cb10-251"><a href="#cb10-251"></a>      v <span class="ot">&lt;-</span> <span class="fu">cell_value</span>(mats, r, <span class="dv">1</span>)</span>
+<span id="cb10-252"><a href="#cb10-252"></a>      <span class="fu">is.character</span>(v) <span class="sc">&amp;&amp;</span></span>
+<span id="cb10-253"><a href="#cb10-253"></a>        <span class="sc">!</span><span class="fu">is.na</span>(v) <span class="sc">&amp;&amp;</span></span>
+<span id="cb10-254"><a href="#cb10-254"></a>        stringr<span class="sc">::</span><span class="fu">str_starts</span>(stringr<span class="sc">::</span><span class="fu">str_trim</span>(v), <span class="st">"Plate"</span>)</span>
+<span id="cb10-255"><a href="#cb10-255"></a>    })</span>
+<span id="cb10-256"><a href="#cb10-256"></a>}</span>
+<span id="cb10-257"><a href="#cb10-257"></a></span>
+<span id="cb10-258"><a href="#cb10-258"></a><span class="co"># The data rows of a block run from just below the header until column B is</span></span>
+<span id="cb10-259"><a href="#cb10-259"></a><span class="co"># empty; the medium and streptomycin rows follow immediately after.</span></span>
+<span id="cb10-260"><a href="#cb10-260"></a>block_layout <span class="ot">&lt;-</span> <span class="cf">function</span>(mats, header_row) {</span>
+<span id="cb10-261"><a href="#cb10-261"></a>  row_rows <span class="ot">&lt;-</span> <span class="fu">integer</span>(<span class="dv">0</span>)</span>
+<span id="cb10-262"><a href="#cb10-262"></a>  rr <span class="ot">&lt;-</span> header_row <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb10-263"><a href="#cb10-263"></a>  <span class="cf">while</span> (rr <span class="sc">&lt;=</span> mats<span class="sc">$</span>max_row <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(<span class="fu">cell_value</span>(mats, rr, <span class="dv">2</span>))) {</span>
+<span id="cb10-264"><a href="#cb10-264"></a>    row_rows <span class="ot">&lt;-</span> <span class="fu">c</span>(row_rows, rr)</span>
+<span id="cb10-265"><a href="#cb10-265"></a>    rr <span class="ot">&lt;-</span> rr <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb10-266"><a href="#cb10-266"></a>  }</span>
+<span id="cb10-267"><a href="#cb10-267"></a>  <span class="fu">list</span>(<span class="at">row_rows =</span> row_rows, <span class="at">medium_row =</span> rr, <span class="at">strep_row =</span> rr <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb10-268"><a href="#cb10-268"></a>}</span>
+<span id="cb10-269"><a href="#cb10-269"></a></span>
+<span id="cb10-270"><a href="#cb10-270"></a>parse_platemap <span class="ot">&lt;-</span> <span class="cf">function</span>(xlsx_path) {</span>
+<span id="cb10-271"><a href="#cb10-271"></a>  mats <span class="ot">&lt;-</span> <span class="fu">read_cell_matrices</span>(xlsx_path)</span>
+<span id="cb10-272"><a href="#cb10-272"></a>  merges <span class="ot">&lt;-</span> <span class="fu">read_merge_ranges</span>(xlsx_path, mats)</span>
+<span id="cb10-273"><a href="#cb10-273"></a></span>
+<span id="cb10-274"><a href="#cb10-274"></a>  <span class="fu">find_plate_header_rows</span>(mats) <span class="sc">|&gt;</span></span>
+<span id="cb10-275"><a href="#cb10-275"></a>    purrr<span class="sc">::</span><span class="fu">map</span>(\(header_row) {</span>
+<span id="cb10-276"><a href="#cb10-276"></a>      layout <span class="ot">&lt;-</span> <span class="fu">block_layout</span>(mats, header_row)</span>
+<span id="cb10-277"><a href="#cb10-277"></a></span>
+<span id="cb10-278"><a href="#cb10-278"></a>      well_cols <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">col =</span> <span class="fu">seq</span>(<span class="dv">3</span>, mats<span class="sc">$</span>max_col)) <span class="sc">|&gt;</span></span>
+<span id="cb10-279"><a href="#cb10-279"></a>        dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb10-280"><a href="#cb10-280"></a>          <span class="at">well_column =</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(</span>
+<span id="cb10-281"><a href="#cb10-281"></a>            col,</span>
+<span id="cb10-282"><a href="#cb10-282"></a>            \(cl) <span class="fu">suppressWarnings</span>(<span class="fu">as.numeric</span>(<span class="fu">cell_value</span>(mats, header_row, cl)))</span>
+<span id="cb10-283"><a href="#cb10-283"></a>          )</span>
+<span id="cb10-284"><a href="#cb10-284"></a>        ) <span class="sc">|&gt;</span></span>
+<span id="cb10-285"><a href="#cb10-285"></a>        dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(well_column)) <span class="sc">|&gt;</span></span>
+<span id="cb10-286"><a href="#cb10-286"></a>        dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">well_column =</span> <span class="fu">as.integer</span>(well_column))</span>
+<span id="cb10-287"><a href="#cb10-287"></a></span>
+<span id="cb10-288"><a href="#cb10-288"></a>      <span class="fu">parse_plate_block</span>(</span>
+<span id="cb10-289"><a href="#cb10-289"></a>        <span class="at">mats =</span> mats,</span>
+<span id="cb10-290"><a href="#cb10-290"></a>        <span class="at">merges =</span> merges,</span>
+<span id="cb10-291"><a href="#cb10-291"></a>        <span class="at">plate =</span> stringr<span class="sc">::</span><span class="fu">str_trim</span>(<span class="fu">cell_value</span>(mats, header_row, <span class="dv">1</span>)),</span>
+<span id="cb10-292"><a href="#cb10-292"></a>        <span class="at">medium_row =</span> layout<span class="sc">$</span>medium_row,</span>
+<span id="cb10-293"><a href="#cb10-293"></a>        <span class="at">well_cols =</span> well_cols,</span>
+<span id="cb10-294"><a href="#cb10-294"></a>        <span class="at">row_rows =</span> layout<span class="sc">$</span>row_rows,</span>
+<span id="cb10-295"><a href="#cb10-295"></a>        <span class="at">strep_row =</span> layout<span class="sc">$</span>strep_row</span>
+<span id="cb10-296"><a href="#cb10-296"></a>      )</span>
+<span id="cb10-297"><a href="#cb10-297"></a>    }) <span class="sc">|&gt;</span></span>
+<span id="cb10-298"><a href="#cb10-298"></a>    purrr<span class="sc">::</span><span class="fu">list_rbind</span>()</span>
+<span id="cb10-299"><a href="#cb10-299"></a>}</span>
+<span id="cb10-300"><a href="#cb10-300"></a><span class="in">```</span></span>
 <span id="cb10-301"><a href="#cb10-301"></a></span>
-<span id="cb10-304"><a href="#cb10-304"></a><span class="in">```{r}</span></span>
-<span id="cb10-305"><a href="#cb10-305"></a><span class="co"># Exchange two blocks of well-columns within a plate. Used where the source</span></span>
-<span id="cb10-306"><a href="#cb10-306"></a><span class="co"># sheet's well-column header labels are transposed relative to the physical</span></span>
-<span id="cb10-307"><a href="#cb10-307"></a><span class="co"># plate: the labels parsed under `from` actually describe the wells in `to` and</span></span>
-<span id="cb10-308"><a href="#cb10-308"></a><span class="co"># vice versa, so the records are relabelled symmetrically.</span></span>
-<span id="cb10-309"><a href="#cb10-309"></a><span class="co">#</span></span>
-<span id="cb10-310"><a href="#cb10-310"></a><span class="co"># `well` is rebuilt from `row` and the corrected column so that it stays</span></span>
-<span id="cb10-311"><a href="#cb10-311"></a><span class="co"># consistent with `column`.</span></span>
-<span id="cb10-312"><a href="#cb10-312"></a>swap_column_blocks <span class="ot">&lt;-</span> <span class="cf">function</span>(records, from, to, <span class="at">plates =</span> <span class="cn">NULL</span>) {</span>
-<span id="cb10-313"><a href="#cb10-313"></a>  <span class="fu">stopifnot</span>(<span class="fu">length</span>(from) <span class="sc">==</span> <span class="fu">length</span>(to))</span>
-<span id="cb10-314"><a href="#cb10-314"></a></span>
-<span id="cb10-315"><a href="#cb10-315"></a>  in_scope <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">is.null</span>(plates)) <span class="cn">TRUE</span> <span class="cf">else</span> records<span class="sc">$</span>plate <span class="sc">%in%</span> plates</span>
+<span id="cb10-302"><a href="#cb10-302"></a><span class="fu">## Per-file correction helpers</span></span>
+<span id="cb10-303"><a href="#cb10-303"></a></span>
+<span id="cb10-306"><a href="#cb10-306"></a><span class="in">```{r}</span></span>
+<span id="cb10-307"><a href="#cb10-307"></a><span class="co"># Exchange two blocks of well-columns within a plate. Used where the source</span></span>
+<span id="cb10-308"><a href="#cb10-308"></a><span class="co"># sheet's well-column header labels are transposed relative to the physical</span></span>
+<span id="cb10-309"><a href="#cb10-309"></a><span class="co"># plate: the labels parsed under `from` actually describe the wells in `to` and</span></span>
+<span id="cb10-310"><a href="#cb10-310"></a><span class="co"># vice versa, so the records are relabelled symmetrically.</span></span>
+<span id="cb10-311"><a href="#cb10-311"></a><span class="co">#</span></span>
+<span id="cb10-312"><a href="#cb10-312"></a><span class="co"># `well` is rebuilt from `row` and the corrected column so that it stays</span></span>
+<span id="cb10-313"><a href="#cb10-313"></a><span class="co"># consistent with `column`.</span></span>
+<span id="cb10-314"><a href="#cb10-314"></a>swap_column_blocks <span class="ot">&lt;-</span> <span class="cf">function</span>(records, from, to, <span class="at">plates =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb10-315"><a href="#cb10-315"></a>  <span class="fu">stopifnot</span>(<span class="fu">length</span>(from) <span class="sc">==</span> <span class="fu">length</span>(to))</span>
 <span id="cb10-316"><a href="#cb10-316"></a></span>
-<span id="cb10-317"><a href="#cb10-317"></a>  records <span class="sc">|&gt;</span></span>
-<span id="cb10-318"><a href="#cb10-318"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb10-319"><a href="#cb10-319"></a>      <span class="at">column =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb10-320"><a href="#cb10-320"></a>        <span class="sc">!</span>in_scope <span class="sc">~</span> column,</span>
-<span id="cb10-321"><a href="#cb10-321"></a>        column <span class="sc">%in%</span> from <span class="sc">~</span> to[<span class="fu">match</span>(column, from)],</span>
-<span id="cb10-322"><a href="#cb10-322"></a>        column <span class="sc">%in%</span> to <span class="sc">~</span> from[<span class="fu">match</span>(column, to)],</span>
-<span id="cb10-323"><a href="#cb10-323"></a>        <span class="at">.default =</span> column</span>
-<span id="cb10-324"><a href="#cb10-324"></a>      ),</span>
-<span id="cb10-325"><a href="#cb10-325"></a>      <span class="at">well =</span> stringr<span class="sc">::</span><span class="fu">str_c</span>(row, column)</span>
-<span id="cb10-326"><a href="#cb10-326"></a>    )</span>
-<span id="cb10-327"><a href="#cb10-327"></a>}</span>
-<span id="cb10-328"><a href="#cb10-328"></a><span class="in">```</span></span>
-<span id="cb10-329"><a href="#cb10-329"></a></span>
-<span id="cb10-330"><a href="#cb10-330"></a><span class="fu">## Read and correct the platemaps</span></span>
+<span id="cb10-317"><a href="#cb10-317"></a>  in_scope <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">is.null</span>(plates)) <span class="cn">TRUE</span> <span class="cf">else</span> records<span class="sc">$</span>plate <span class="sc">%in%</span> plates</span>
+<span id="cb10-318"><a href="#cb10-318"></a></span>
+<span id="cb10-319"><a href="#cb10-319"></a>  records <span class="sc">|&gt;</span></span>
+<span id="cb10-320"><a href="#cb10-320"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb10-321"><a href="#cb10-321"></a>      <span class="at">column =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb10-322"><a href="#cb10-322"></a>        <span class="sc">!</span>in_scope <span class="sc">~</span> column,</span>
+<span id="cb10-323"><a href="#cb10-323"></a>        column <span class="sc">%in%</span> from <span class="sc">~</span> to[<span class="fu">match</span>(column, from)],</span>
+<span id="cb10-324"><a href="#cb10-324"></a>        column <span class="sc">%in%</span> to <span class="sc">~</span> from[<span class="fu">match</span>(column, to)],</span>
+<span id="cb10-325"><a href="#cb10-325"></a>        <span class="at">.default =</span> column</span>
+<span id="cb10-326"><a href="#cb10-326"></a>      ),</span>
+<span id="cb10-327"><a href="#cb10-327"></a>      <span class="at">well =</span> stringr<span class="sc">::</span><span class="fu">str_c</span>(row, column)</span>
+<span id="cb10-328"><a href="#cb10-328"></a>    )</span>
+<span id="cb10-329"><a href="#cb10-329"></a>}</span>
+<span id="cb10-330"><a href="#cb10-330"></a><span class="in">```</span></span>
 <span id="cb10-331"><a href="#cb10-331"></a></span>
-<span id="cb10-334"><a href="#cb10-334"></a><span class="in">```{r}</span></span>
-<span id="cb10-335"><a href="#cb10-335"></a>data_dir <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"20260601_single_carbon_growth"</span>)</span>
-<span id="cb10-336"><a href="#cb10-336"></a></span>
-<span id="cb10-337"><a href="#cb10-337"></a>source_records <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb10-338"><a href="#cb10-338"></a>  <span class="at">carbonsources_12 =</span> <span class="st">"12_carbonsources.xlsx"</span>,</span>
-<span id="cb10-339"><a href="#cb10-339"></a>  <span class="at">hydroxybenzoic_salicylic =</span> <span class="st">"4-hydrobenzoic acid_salicylic acid.xlsx"</span>,</span>
-<span id="cb10-340"><a href="#cb10-340"></a>  <span class="at">platemap_1 =</span> <span class="st">"Carbon_platemap_1.xlsx"</span>,</span>
-<span id="cb10-341"><a href="#cb10-341"></a>  <span class="at">platemap_2 =</span> <span class="st">"Carbon_platemap_2.xlsx"</span>,</span>
-<span id="cb10-342"><a href="#cb10-342"></a>  <span class="at">platemap_3 =</span> <span class="st">"Carbon_platemap_3.xlsx"</span>,</span>
-<span id="cb10-343"><a href="#cb10-343"></a>  <span class="at">platemap_4 =</span> <span class="st">"Carbon_platemap_4.xlsx"</span>,</span>
-<span id="cb10-344"><a href="#cb10-344"></a>  <span class="at">platemap_5 =</span> <span class="st">"Carbon_platemap_5.xlsx"</span>,</span>
-<span id="cb10-345"><a href="#cb10-345"></a>  <span class="at">platemap_7_8 =</span> <span class="st">"Carbon_platemap_7.8.xlsx"</span>,</span>
-<span id="cb10-346"><a href="#cb10-346"></a>  <span class="at">platemap_7_8_2 =</span> <span class="st">"Carbon_platemap_7.8_2.xlsx"</span>,</span>
-<span id="cb10-347"><a href="#cb10-347"></a>  <span class="at">starch_malate =</span> <span class="st">"Starch_malate.xlsx"</span></span>
-<span id="cb10-348"><a href="#cb10-348"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb10-349"><a href="#cb10-349"></a>  purrr<span class="sc">::</span><span class="fu">map</span>(\(f) <span class="fu">parse_platemap</span>(<span class="fu">file.path</span>(data_dir, f)))</span>
-<span id="cb10-350"><a href="#cb10-350"></a><span class="in">```</span></span>
-<span id="cb10-351"><a href="#cb10-351"></a></span>
-<span id="cb10-352"><a href="#cb10-352"></a><span class="fu">## Per-file corrections</span></span>
+<span id="cb10-332"><a href="#cb10-332"></a><span class="fu">## Read and correct the platemaps</span></span>
+<span id="cb10-333"><a href="#cb10-333"></a></span>
+<span id="cb10-336"><a href="#cb10-336"></a><span class="in">```{r}</span></span>
+<span id="cb10-337"><a href="#cb10-337"></a>data_dir <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"20260601_single_carbon_growth"</span>)</span>
+<span id="cb10-338"><a href="#cb10-338"></a></span>
+<span id="cb10-339"><a href="#cb10-339"></a>source_records <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb10-340"><a href="#cb10-340"></a>  <span class="at">carbonsources_12 =</span> <span class="st">"12_carbonsources.xlsx"</span>,</span>
+<span id="cb10-341"><a href="#cb10-341"></a>  <span class="at">hydroxybenzoic_salicylic =</span> <span class="st">"4-hydrobenzoic acid_salicylic acid.xlsx"</span>,</span>
+<span id="cb10-342"><a href="#cb10-342"></a>  <span class="at">platemap_1 =</span> <span class="st">"Carbon_platemap_1.xlsx"</span>,</span>
+<span id="cb10-343"><a href="#cb10-343"></a>  <span class="at">platemap_2 =</span> <span class="st">"Carbon_platemap_2.xlsx"</span>,</span>
+<span id="cb10-344"><a href="#cb10-344"></a>  <span class="at">platemap_3 =</span> <span class="st">"Carbon_platemap_3.xlsx"</span>,</span>
+<span id="cb10-345"><a href="#cb10-345"></a>  <span class="at">platemap_4 =</span> <span class="st">"Carbon_platemap_4.xlsx"</span>,</span>
+<span id="cb10-346"><a href="#cb10-346"></a>  <span class="at">platemap_5 =</span> <span class="st">"Carbon_platemap_5.xlsx"</span>,</span>
+<span id="cb10-347"><a href="#cb10-347"></a>  <span class="at">platemap_7_8 =</span> <span class="st">"Carbon_platemap_7.8.xlsx"</span>,</span>
+<span id="cb10-348"><a href="#cb10-348"></a>  <span class="at">platemap_7_8_2 =</span> <span class="st">"Carbon_platemap_7.8_2.xlsx"</span>,</span>
+<span id="cb10-349"><a href="#cb10-349"></a>  <span class="at">starch_malate =</span> <span class="st">"Starch_malate.xlsx"</span></span>
+<span id="cb10-350"><a href="#cb10-350"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb10-351"><a href="#cb10-351"></a>  purrr<span class="sc">::</span><span class="fu">map</span>(\(f) <span class="fu">parse_platemap</span>(<span class="fu">file.path</span>(data_dir, f)))</span>
+<span id="cb10-352"><a href="#cb10-352"></a><span class="in">```</span></span>
 <span id="cb10-353"><a href="#cb10-353"></a></span>
-<span id="cb10-356"><a href="#cb10-356"></a><span class="in">```{r}</span></span>
-<span id="cb10-357"><a href="#cb10-357"></a><span class="co"># Not reproducible from the spreadsheets themselves (see header note).</span></span>
-<span id="cb10-358"><a href="#cb10-358"></a></span>
-<span id="cb10-359"><a href="#cb10-359"></a><span class="co"># (1) Carbon_platemap_2: source spreadsheet typo</span></span>
-<span id="cb10-360"><a href="#cb10-360"></a>source_records<span class="sc">$</span>platemap_2 <span class="ot">&lt;-</span> source_records<span class="sc">$</span>platemap_2 <span class="sc">|&gt;</span></span>
-<span id="cb10-361"><a href="#cb10-361"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb10-362"><a href="#cb10-362"></a>    <span class="at">carbon_source =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(</span>
-<span id="cb10-363"><a href="#cb10-363"></a>      carbon_source,</span>
-<span id="cb10-364"><a href="#cb10-364"></a>      <span class="st">"^shicimic acid$"</span>,</span>
-<span id="cb10-365"><a href="#cb10-365"></a>      <span class="st">"shikimic acid"</span></span>
-<span id="cb10-366"><a href="#cb10-366"></a>    )</span>
-<span id="cb10-367"><a href="#cb10-367"></a>  )</span>
-<span id="cb10-368"><a href="#cb10-368"></a></span>
-<span id="cb10-369"><a href="#cb10-369"></a><span class="co"># (2) Carbon_platemap_4: Streptomycin row is all zeros, including in the "+Str"</span></span>
-<span id="cb10-370"><a href="#cb10-370"></a><span class="co"># well-columns (9-10 = ANC/EVO 1977, 11-12 = ANC/EVO 1287)</span></span>
-<span id="cb10-371"><a href="#cb10-371"></a>source_records<span class="sc">$</span>platemap_4 <span class="ot">&lt;-</span> source_records<span class="sc">$</span>platemap_4 <span class="sc">|&gt;</span></span>
-<span id="cb10-372"><a href="#cb10-372"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb10-373"><a href="#cb10-373"></a>    <span class="at">streptomycin_ug_ml =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb10-374"><a href="#cb10-374"></a>      column <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">9</span>, <span class="dv">10</span>) <span class="sc">~</span> <span class="st">"10.0"</span>,</span>
-<span id="cb10-375"><a href="#cb10-375"></a>      column <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">11</span>, <span class="dv">12</span>) <span class="sc">~</span> <span class="st">"512.0"</span>,</span>
-<span id="cb10-376"><a href="#cb10-376"></a>      <span class="at">.default =</span> streptomycin_ug_ml</span>
-<span id="cb10-377"><a href="#cb10-377"></a>    )</span>
-<span id="cb10-378"><a href="#cb10-378"></a>  )</span>
-<span id="cb10-379"><a href="#cb10-379"></a></span>
-<span id="cb10-380"><a href="#cb10-380"></a><span class="co"># (3) Carbon_platemap_5: the well-column labels of the "+Str" block and the</span></span>
-<span id="cb10-381"><a href="#cb10-381"></a><span class="co"># uninoculated "Control" block are transposed in the source sheet. As parsed,</span></span>
-<span id="cb10-382"><a href="#cb10-382"></a><span class="co"># columns 5-8 come out as Control and columns 9-12 as the "+Str" strain wells.</span></span>
-<span id="cb10-383"><a href="#cb10-383"></a><span class="co"># The reads show the opposite, unambiguously:</span></span>
-<span id="cb10-384"><a href="#cb10-384"></a><span class="co">#</span></span>
-<span id="cb10-385"><a href="#cb10-385"></a><span class="co">#   * columns 9-12 are empty across all 8 rows -- never inoculated, i.e. the</span></span>
-<span id="cb10-386"><a href="#cb10-386"></a><span class="co">#     Control block;</span></span>
-<span id="cb10-387"><a href="#cb10-387"></a><span class="co">#   * columns 5-8 grew, and their per-column growth mirrors the strep-0 block</span></span>
-<span id="cb10-388"><a href="#cb10-388"></a><span class="co">#     in columns 1-4 strain for strain (1977 ANC/EVO, then 1287 ANC/EVO), which</span></span>
-<span id="cb10-389"><a href="#cb10-389"></a><span class="co">#     is exactly the "+Str" block layout.</span></span>
-<span id="cb10-390"><a href="#cb10-390"></a><span class="co">#</span></span>
-<span id="cb10-391"><a href="#cb10-391"></a><span class="co"># So the two blocks are exchanged: 5&lt;-&gt;9, 6&lt;-&gt;10, 7&lt;-&gt;11, 8&lt;-&gt;12. Columns 1-4</span></span>
-<span id="cb10-392"><a href="#cb10-392"></a><span class="co"># (the streptomycin-free wells this project actually analyses) are untouched.</span></span>
-<span id="cb10-393"><a href="#cb10-393"></a>source_records<span class="sc">$</span>platemap_5 <span class="ot">&lt;-</span> source_records<span class="sc">$</span>platemap_5 <span class="sc">|&gt;</span></span>
-<span id="cb10-394"><a href="#cb10-394"></a>  <span class="fu">swap_column_blocks</span>(<span class="at">from =</span> <span class="dv">5</span><span class="sc">:</span><span class="dv">8</span>, <span class="at">to =</span> <span class="dv">9</span><span class="sc">:</span><span class="dv">12</span>)</span>
-<span id="cb10-395"><a href="#cb10-395"></a><span class="in">```</span></span>
-<span id="cb10-396"><a href="#cb10-396"></a></span>
-<span id="cb10-397"><a href="#cb10-397"></a><span class="fu">## Output</span></span>
+<span id="cb10-354"><a href="#cb10-354"></a><span class="fu">## Per-file corrections</span></span>
+<span id="cb10-355"><a href="#cb10-355"></a></span>
+<span id="cb10-358"><a href="#cb10-358"></a><span class="in">```{r}</span></span>
+<span id="cb10-359"><a href="#cb10-359"></a><span class="co"># Not reproducible from the spreadsheets themselves (see header note).</span></span>
+<span id="cb10-360"><a href="#cb10-360"></a></span>
+<span id="cb10-361"><a href="#cb10-361"></a><span class="co"># (1) Carbon_platemap_2: source spreadsheet typo</span></span>
+<span id="cb10-362"><a href="#cb10-362"></a>source_records<span class="sc">$</span>platemap_2 <span class="ot">&lt;-</span> source_records<span class="sc">$</span>platemap_2 <span class="sc">|&gt;</span></span>
+<span id="cb10-363"><a href="#cb10-363"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb10-364"><a href="#cb10-364"></a>    <span class="at">carbon_source =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(</span>
+<span id="cb10-365"><a href="#cb10-365"></a>      carbon_source,</span>
+<span id="cb10-366"><a href="#cb10-366"></a>      <span class="st">"^shicimic acid$"</span>,</span>
+<span id="cb10-367"><a href="#cb10-367"></a>      <span class="st">"shikimic acid"</span></span>
+<span id="cb10-368"><a href="#cb10-368"></a>    )</span>
+<span id="cb10-369"><a href="#cb10-369"></a>  )</span>
+<span id="cb10-370"><a href="#cb10-370"></a></span>
+<span id="cb10-371"><a href="#cb10-371"></a><span class="co"># (2) Carbon_platemap_4: Streptomycin row is all zeros, including in the "+Str"</span></span>
+<span id="cb10-372"><a href="#cb10-372"></a><span class="co"># well-columns (9-10 = ANC/EVO 1977, 11-12 = ANC/EVO 1287)</span></span>
+<span id="cb10-373"><a href="#cb10-373"></a>source_records<span class="sc">$</span>platemap_4 <span class="ot">&lt;-</span> source_records<span class="sc">$</span>platemap_4 <span class="sc">|&gt;</span></span>
+<span id="cb10-374"><a href="#cb10-374"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb10-375"><a href="#cb10-375"></a>    <span class="at">streptomycin_ug_ml =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb10-376"><a href="#cb10-376"></a>      column <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">9</span>, <span class="dv">10</span>) <span class="sc">~</span> <span class="st">"10.0"</span>,</span>
+<span id="cb10-377"><a href="#cb10-377"></a>      column <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">11</span>, <span class="dv">12</span>) <span class="sc">~</span> <span class="st">"512.0"</span>,</span>
+<span id="cb10-378"><a href="#cb10-378"></a>      <span class="at">.default =</span> streptomycin_ug_ml</span>
+<span id="cb10-379"><a href="#cb10-379"></a>    )</span>
+<span id="cb10-380"><a href="#cb10-380"></a>  )</span>
+<span id="cb10-381"><a href="#cb10-381"></a></span>
+<span id="cb10-382"><a href="#cb10-382"></a><span class="co"># (3) Carbon_platemap_5: the well-column labels of the "+Str" block and the</span></span>
+<span id="cb10-383"><a href="#cb10-383"></a><span class="co"># uninoculated "Control" block are transposed in the source sheet. As parsed,</span></span>
+<span id="cb10-384"><a href="#cb10-384"></a><span class="co"># columns 5-8 come out as Control and columns 9-12 as the "+Str" strain wells.</span></span>
+<span id="cb10-385"><a href="#cb10-385"></a><span class="co"># The reads show the opposite, unambiguously:</span></span>
+<span id="cb10-386"><a href="#cb10-386"></a><span class="co">#</span></span>
+<span id="cb10-387"><a href="#cb10-387"></a><span class="co">#   * columns 9-12 are empty across all 8 rows -- never inoculated, i.e. the</span></span>
+<span id="cb10-388"><a href="#cb10-388"></a><span class="co">#     Control block;</span></span>
+<span id="cb10-389"><a href="#cb10-389"></a><span class="co">#   * columns 5-8 grew, and their per-column growth mirrors the strep-0 block</span></span>
+<span id="cb10-390"><a href="#cb10-390"></a><span class="co">#     in columns 1-4 strain for strain (1977 ANC/EVO, then 1287 ANC/EVO), which</span></span>
+<span id="cb10-391"><a href="#cb10-391"></a><span class="co">#     is exactly the "+Str" block layout.</span></span>
+<span id="cb10-392"><a href="#cb10-392"></a><span class="co">#</span></span>
+<span id="cb10-393"><a href="#cb10-393"></a><span class="co"># So the two blocks are exchanged: 5&lt;-&gt;9, 6&lt;-&gt;10, 7&lt;-&gt;11, 8&lt;-&gt;12. Columns 1-4</span></span>
+<span id="cb10-394"><a href="#cb10-394"></a><span class="co"># (the streptomycin-free wells this project actually analyses) are untouched.</span></span>
+<span id="cb10-395"><a href="#cb10-395"></a>source_records<span class="sc">$</span>platemap_5 <span class="ot">&lt;-</span> source_records<span class="sc">$</span>platemap_5 <span class="sc">|&gt;</span></span>
+<span id="cb10-396"><a href="#cb10-396"></a>  <span class="fu">swap_column_blocks</span>(<span class="at">from =</span> <span class="dv">5</span><span class="sc">:</span><span class="dv">8</span>, <span class="at">to =</span> <span class="dv">9</span><span class="sc">:</span><span class="dv">12</span>)</span>
+<span id="cb10-397"><a href="#cb10-397"></a><span class="in">```</span></span>
 <span id="cb10-398"><a href="#cb10-398"></a></span>
-<span id="cb10-401"><a href="#cb10-401"></a><span class="in">```{r}</span></span>
-<span id="cb10-402"><a href="#cb10-402"></a>plate_file_maps <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb10-403"><a href="#cb10-403"></a>  <span class="at">carbonsources_12 =</span> <span class="fu">c</span>(</span>
-<span id="cb10-404"><a href="#cb10-404"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_5_1_06-heinä-2026 09-01-04.txt"</span>,</span>
-<span id="cb10-405"><a href="#cb10-405"></a>    <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_5_2_06-heinä-2026 09-01-04.txt"</span>,</span>
-<span id="cb10-406"><a href="#cb10-406"></a>    <span class="st">"3"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_5_3_06-heinä-2026 09-01-04.txt"</span>,</span>
-<span id="cb10-407"><a href="#cb10-407"></a>    <span class="st">"4"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_5_4_06-heinä-2026 09-01-04.txt"</span></span>
-<span id="cb10-408"><a href="#cb10-408"></a>  ),</span>
-<span id="cb10-409"><a href="#cb10-409"></a>  <span class="at">hydroxybenzoic_salicylic =</span> <span class="fu">c</span>(</span>
-<span id="cb10-410"><a href="#cb10-410"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_9_2_09-heinä-2026 14-42-47.txt"</span>,</span>
-<span id="cb10-411"><a href="#cb10-411"></a>    <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_9_3_09-heinä-2026 14-42-47.txt"</span></span>
-<span id="cb10-412"><a href="#cb10-412"></a>  ),</span>
-<span id="cb10-413"><a href="#cb10-413"></a>  <span class="at">platemap_1 =</span> <span class="fu">c</span>(</span>
-<span id="cb10-414"><a href="#cb10-414"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_1_1_08-kesä-2026 12-51-22.txt"</span>,</span>
-<span id="cb10-415"><a href="#cb10-415"></a>    <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_1_2_08-kesä-2026 12-51-22.txt"</span>,</span>
-<span id="cb10-416"><a href="#cb10-416"></a>    <span class="st">"3"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_1_3_08-kesä-2026 12-51-22.txt"</span>,</span>
-<span id="cb10-417"><a href="#cb10-417"></a>    <span class="st">"4"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_1_4_08-kesä-2026 12-51-22.txt"</span></span>
-<span id="cb10-418"><a href="#cb10-418"></a>  ),</span>
-<span id="cb10-419"><a href="#cb10-419"></a>  <span class="at">platemap_2 =</span> <span class="fu">c</span>(</span>
-<span id="cb10-420"><a href="#cb10-420"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_2_1_22-kesä-2026 08-41-34.txt"</span>,</span>
-<span id="cb10-421"><a href="#cb10-421"></a>    <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_2_2_22-kesä-2026 08-41-34.txt"</span>,</span>
-<span id="cb10-422"><a href="#cb10-422"></a>    <span class="st">"3"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_2_3_22-kesä-2026 08-41-34.txt"</span>,</span>
-<span id="cb10-423"><a href="#cb10-423"></a>    <span class="st">"4"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_2_4_22-kesä-2026 08-41-34.txt"</span></span>
-<span id="cb10-424"><a href="#cb10-424"></a>  ),</span>
-<span id="cb10-425"><a href="#cb10-425"></a>  <span class="at">platemap_3 =</span> <span class="fu">c</span>(</span>
-<span id="cb10-426"><a href="#cb10-426"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_3_1_26-kesä-2026 12-49-10.txt"</span>,</span>
-<span id="cb10-427"><a href="#cb10-427"></a>    <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_3_2_26-kesä-2026 12-49-10.txt"</span>,</span>
-<span id="cb10-428"><a href="#cb10-428"></a>    <span class="st">"3"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_3_3_26-kesä-2026 12-49-10.txt"</span>,</span>
-<span id="cb10-429"><a href="#cb10-429"></a>    <span class="st">"4"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_3_4_26-kesä-2026 12-49-10.txt"</span></span>
-<span id="cb10-430"><a href="#cb10-430"></a>  ),</span>
-<span id="cb10-431"><a href="#cb10-431"></a>  <span class="at">platemap_4 =</span> <span class="fu">c</span>(</span>
-<span id="cb10-432"><a href="#cb10-432"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_4_1_30-kesä-2026 10-07-18.txt"</span>,</span>
-<span id="cb10-433"><a href="#cb10-433"></a>    <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_4_2_30-kesä-2026 10-07-18.txt"</span></span>
-<span id="cb10-434"><a href="#cb10-434"></a>  ),</span>
-<span id="cb10-435"><a href="#cb10-435"></a>  <span class="at">platemap_5 =</span> <span class="fu">c</span>(</span>
-<span id="cb10-436"><a href="#cb10-436"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_9_1_09-heinä-2026 14-42-47.txt"</span></span>
-<span id="cb10-437"><a href="#cb10-437"></a>  ),</span>
-<span id="cb10-438"><a href="#cb10-438"></a>  <span class="at">platemap_7_8 =</span> <span class="fu">c</span>(</span>
-<span id="cb10-439"><a href="#cb10-439"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_10_1_10-elo-2026 09-09-08.txt"</span>,</span>
-<span id="cb10-440"><a href="#cb10-440"></a>    <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_10_2_10-elo-2026 09-09-08.txt"</span></span>
-<span id="cb10-441"><a href="#cb10-441"></a>  ),</span>
-<span id="cb10-442"><a href="#cb10-442"></a>  <span class="at">platemap_7_8_2 =</span> <span class="fu">c</span>(</span>
-<span id="cb10-443"><a href="#cb10-443"></a>    <span class="st">"3"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_10_3_10-elo-2026 09-09-08.txt"</span>,</span>
-<span id="cb10-444"><a href="#cb10-444"></a>    <span class="st">"4"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_10_4_10-elo-2026 09-09-08.txt"</span></span>
-<span id="cb10-445"><a href="#cb10-445"></a>  ),</span>
-<span id="cb10-446"><a href="#cb10-446"></a>  <span class="at">starch_malate =</span> <span class="fu">c</span>(</span>
-<span id="cb10-447"><a href="#cb10-447"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_7_1_06-heinä-2026 09-01-31.txt"</span></span>
-<span id="cb10-448"><a href="#cb10-448"></a>  )</span>
-<span id="cb10-449"><a href="#cb10-449"></a>)</span>
-<span id="cb10-450"><a href="#cb10-450"></a></span>
-<span id="cb10-451"><a href="#cb10-451"></a>carbon_source_classes <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
-<span id="cb10-452"><a href="#cb10-452"></a>  <span class="sc">~</span>carbon_source,          <span class="sc">~</span>class,</span>
-<span id="cb10-453"><a href="#cb10-453"></a>  <span class="st">"4-Hydroxybenzoic acid"</span>, <span class="st">"organic_acid"</span>,</span>
-<span id="cb10-454"><a href="#cb10-454"></a>  <span class="st">"glucose"</span>,               <span class="st">"sugar"</span>,</span>
-<span id="cb10-455"><a href="#cb10-455"></a>  <span class="st">"sucrose"</span>,               <span class="st">"sugar"</span>,</span>
-<span id="cb10-456"><a href="#cb10-456"></a>  <span class="st">"salicylic acid"</span>,        <span class="st">"organic_acid"</span>,</span>
-<span id="cb10-457"><a href="#cb10-457"></a>  <span class="st">"shikimic acid"</span>,         <span class="st">"organic_acid"</span>,</span>
-<span id="cb10-458"><a href="#cb10-458"></a>  <span class="st">"L-cysteine"</span>,            <span class="st">"amino_acid"</span>,</span>
-<span id="cb10-459"><a href="#cb10-459"></a>  <span class="st">"L-valine"</span>,              <span class="st">"amino_acid"</span>,</span>
-<span id="cb10-460"><a href="#cb10-460"></a>  <span class="st">"taurine"</span>,               <span class="st">"amino_acid"</span>,</span>
-<span id="cb10-461"><a href="#cb10-461"></a>  <span class="st">"histidine"</span>,             <span class="st">"amino_acid"</span>,</span>
-<span id="cb10-462"><a href="#cb10-462"></a>  <span class="st">"leucine"</span>,               <span class="st">"amino_acid"</span>,</span>
-<span id="cb10-463"><a href="#cb10-463"></a>  <span class="st">"phenylalanine"</span>,         <span class="st">"amino_acid"</span>,</span>
-<span id="cb10-464"><a href="#cb10-464"></a>  <span class="st">"xylose"</span>,                <span class="st">"sugar"</span>,</span>
-<span id="cb10-465"><a href="#cb10-465"></a>  <span class="st">"starch"</span>,                <span class="st">"sugar"</span>,</span>
-<span id="cb10-466"><a href="#cb10-466"></a>  <span class="st">"cellobiose"</span>,            <span class="st">"sugar"</span>,</span>
-<span id="cb10-467"><a href="#cb10-467"></a>  <span class="st">"succinic acid"</span>,         <span class="st">"organic_acid"</span>,</span>
-<span id="cb10-468"><a href="#cb10-468"></a>  <span class="st">"malate"</span>,                <span class="st">"organic_acid"</span>,</span>
-<span id="cb10-469"><a href="#cb10-469"></a>  <span class="st">"L-arginine"</span>,            <span class="st">"amino_acid"</span>,</span>
-<span id="cb10-470"><a href="#cb10-470"></a>  <span class="st">"D-mannitol"</span>,            <span class="st">"sugar"</span>,</span>
-<span id="cb10-471"><a href="#cb10-471"></a>  <span class="st">"lactic acid"</span>,           <span class="st">"organic_acid"</span>,</span>
-<span id="cb10-472"><a href="#cb10-472"></a>  <span class="st">"sodium acetate"</span>,        <span class="st">"organic_acid"</span></span>
-<span id="cb10-473"><a href="#cb10-473"></a>)</span>
-<span id="cb10-474"><a href="#cb10-474"></a></span>
-<span id="cb10-475"><a href="#cb10-475"></a>attach_plate_file <span class="ot">&lt;-</span> <span class="cf">function</span>(records, plate_file_map) {</span>
-<span id="cb10-476"><a href="#cb10-476"></a>  records <span class="sc">|&gt;</span></span>
-<span id="cb10-477"><a href="#cb10-477"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb10-478"><a href="#cb10-478"></a>      <span class="at">plate_file =</span> plate_file_map[stringr<span class="sc">::</span><span class="fu">str_extract</span>(plate, <span class="st">"[0-9]+"</span>)]</span>
-<span id="cb10-479"><a href="#cb10-479"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb10-480"><a href="#cb10-480"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
-<span id="cb10-481"><a href="#cb10-481"></a>      plate,</span>
-<span id="cb10-482"><a href="#cb10-482"></a>      well,</span>
-<span id="cb10-483"><a href="#cb10-483"></a>      row,</span>
-<span id="cb10-484"><a href="#cb10-484"></a>      column,</span>
-<span id="cb10-485"><a href="#cb10-485"></a>      evo_hist,</span>
-<span id="cb10-486"><a href="#cb10-486"></a>      strainID,</span>
-<span id="cb10-487"><a href="#cb10-487"></a>      streptomycin_ug_ml,</span>
-<span id="cb10-488"><a href="#cb10-488"></a>      carbon_source,</span>
-<span id="cb10-489"><a href="#cb10-489"></a>      plate_file</span>
-<span id="cb10-490"><a href="#cb10-490"></a>    )</span>
-<span id="cb10-491"><a href="#cb10-491"></a>}</span>
-<span id="cb10-492"><a href="#cb10-492"></a></span>
-<span id="cb10-493"><a href="#cb10-493"></a>master_tidy <span class="ot">&lt;-</span> source_records <span class="sc">|&gt;</span></span>
-<span id="cb10-494"><a href="#cb10-494"></a>  purrr<span class="sc">::</span><span class="fu">imap</span>(</span>
-<span id="cb10-495"><a href="#cb10-495"></a>    \(records, nm) <span class="fu">attach_plate_file</span>(records, plate_file_maps[[nm]])</span>
-<span id="cb10-496"><a href="#cb10-496"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb10-497"><a href="#cb10-497"></a>  purrr<span class="sc">::</span><span class="fu">list_rbind</span>() <span class="sc">|&gt;</span></span>
-<span id="cb10-498"><a href="#cb10-498"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb10-499"><a href="#cb10-499"></a>    <span class="co"># well format must match the samplesheet, e.g. "A01" not "A1"</span></span>
-<span id="cb10-500"><a href="#cb10-500"></a>    <span class="at">well =</span> stringr<span class="sc">::</span><span class="fu">str_c</span>(</span>
-<span id="cb10-501"><a href="#cb10-501"></a>      stringr<span class="sc">::</span><span class="fu">str_extract</span>(well, <span class="st">"^[A-H]"</span>),</span>
-<span id="cb10-502"><a href="#cb10-502"></a>      stringr<span class="sc">::</span><span class="fu">str_pad</span>(</span>
-<span id="cb10-503"><a href="#cb10-503"></a>        stringr<span class="sc">::</span><span class="fu">str_extract</span>(well, <span class="st">"</span><span class="sc">\\</span><span class="st">d+"</span>),</span>
-<span id="cb10-504"><a href="#cb10-504"></a>        <span class="at">width =</span> <span class="dv">2</span>,</span>
-<span id="cb10-505"><a href="#cb10-505"></a>        <span class="at">pad =</span> <span class="st">"0"</span>,</span>
-<span id="cb10-506"><a href="#cb10-506"></a>        <span class="at">side =</span> <span class="st">"left"</span></span>
-<span id="cb10-507"><a href="#cb10-507"></a>      )</span>
-<span id="cb10-508"><a href="#cb10-508"></a>    ),</span>
-<span id="cb10-509"><a href="#cb10-509"></a>    <span class="at">strainID =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(</span>
-<span id="cb10-510"><a href="#cb10-510"></a>      strainID <span class="sc">!=</span> <span class="st">""</span>,</span>
-<span id="cb10-511"><a href="#cb10-511"></a>      stringr<span class="sc">::</span><span class="fu">str_c</span>(</span>
-<span id="cb10-512"><a href="#cb10-512"></a>        <span class="st">"H"</span>,</span>
-<span id="cb10-513"><a href="#cb10-513"></a>        stringr<span class="sc">::</span><span class="fu">str_pad</span>(strainID, <span class="at">width =</span> <span class="dv">4</span>, <span class="at">pad =</span> <span class="st">"0"</span>, <span class="at">side =</span> <span class="st">"left"</span>)</span>
-<span id="cb10-514"><a href="#cb10-514"></a>      ),</span>
-<span id="cb10-515"><a href="#cb10-515"></a>      strainID</span>
-<span id="cb10-516"><a href="#cb10-516"></a>    ),</span>
-<span id="cb10-517"><a href="#cb10-517"></a>    <span class="at">streptomycin_ug_ml =</span> stringr<span class="sc">::</span><span class="fu">str_remove</span>(streptomycin_ug_ml, <span class="st">"</span><span class="sc">\\</span><span class="st">.0"</span>)</span>
-<span id="cb10-518"><a href="#cb10-518"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb10-519"><a href="#cb10-519"></a>  <span class="co"># uninoculated wells are flagged "blank" across every descriptive column.</span></span>
-<span id="cb10-520"><a href="#cb10-520"></a>  <span class="co"># Most sheets label these wells "Control" in the strain cell;</span></span>
-<span id="cb10-521"><a href="#cb10-521"></a>  <span class="co"># Carbon_platemap_7.8 and _2 instead leave the strain cell empty, hence the</span></span>
-<span id="cb10-522"><a href="#cb10-522"></a>  <span class="co"># is.na() check.</span></span>
-<span id="cb10-523"><a href="#cb10-523"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb10-524"><a href="#cb10-524"></a>    dplyr<span class="sc">::</span><span class="fu">across</span>(</span>
-<span id="cb10-525"><a href="#cb10-525"></a>      <span class="fu">c</span>(evo_hist, strainID, streptomycin_ug_ml, carbon_source),</span>
-<span id="cb10-526"><a href="#cb10-526"></a>      \(x) {</span>
-<span id="cb10-527"><a href="#cb10-527"></a>        dplyr<span class="sc">::</span><span class="fu">if_else</span>(</span>
-<span id="cb10-528"><a href="#cb10-528"></a>          <span class="fu">is.na</span>(evo_hist) <span class="sc">|</span> evo_hist <span class="sc">==</span> <span class="st">"Control"</span> <span class="sc">|</span> carbon_source <span class="sc">==</span> <span class="st">"Control"</span>,</span>
-<span id="cb10-529"><a href="#cb10-529"></a>          <span class="st">"blank"</span>,</span>
-<span id="cb10-530"><a href="#cb10-530"></a>          x</span>
-<span id="cb10-531"><a href="#cb10-531"></a>        )</span>
-<span id="cb10-532"><a href="#cb10-532"></a>      }</span>
-<span id="cb10-533"><a href="#cb10-533"></a>    )</span>
-<span id="cb10-534"><a href="#cb10-534"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb10-535"><a href="#cb10-535"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb10-536"><a href="#cb10-536"></a>    <span class="at">streptomycin_ug_ml =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(</span>
-<span id="cb10-537"><a href="#cb10-537"></a>      streptomycin_ug_ml <span class="sc">==</span> <span class="st">""</span>,</span>
-<span id="cb10-538"><a href="#cb10-538"></a>      <span class="st">"0"</span>,</span>
-<span id="cb10-539"><a href="#cb10-539"></a>      streptomycin_ug_ml</span>
-<span id="cb10-540"><a href="#cb10-540"></a>    ),</span>
-<span id="cb10-541"><a href="#cb10-541"></a>    <span class="co"># fixing inconsistent carbon source names across sheets</span></span>
-<span id="cb10-542"><a href="#cb10-542"></a>    <span class="at">carbon_source =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb10-543"><a href="#cb10-543"></a>      carbon_source <span class="sc">==</span> <span class="st">"valine"</span> <span class="sc">~</span> <span class="st">"L-valine"</span>,</span>
-<span id="cb10-544"><a href="#cb10-544"></a>      carbon_source <span class="sc">==</span> <span class="st">"malic acid (malate)"</span> <span class="sc">~</span> <span class="st">"malate"</span>,</span>
-<span id="cb10-545"><a href="#cb10-545"></a>      carbon_source <span class="sc">==</span> <span class="st">"4-hydrobenzoic acid"</span> <span class="sc">~</span> <span class="st">"4-Hydroxybenzoic acid"</span>,</span>
-<span id="cb10-546"><a href="#cb10-546"></a>      carbon_source <span class="sc">==</span> <span class="st">"cysteine"</span> <span class="sc">~</span> <span class="st">"L-cysteine"</span>,</span>
-<span id="cb10-547"><a href="#cb10-547"></a>      carbon_source <span class="sc">==</span> <span class="st">"arginine"</span> <span class="sc">~</span> <span class="st">"L-arginine"</span>,</span>
-<span id="cb10-548"><a href="#cb10-548"></a>      <span class="at">.default =</span> carbon_source</span>
-<span id="cb10-549"><a href="#cb10-549"></a>    )</span>
-<span id="cb10-550"><a href="#cb10-550"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb10-551"><a href="#cb10-551"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(carbon_source_classes, <span class="at">by =</span> dplyr<span class="sc">::</span><span class="fu">join_by</span>(carbon_source))</span>
-<span id="cb10-552"><a href="#cb10-552"></a></span>
-<span id="cb10-553"><a href="#cb10-553"></a><span class="co"># Written to data/interim rather than alongside the source spreadsheets: this is</span></span>
-<span id="cb10-554"><a href="#cb10-554"></a><span class="co"># a derived file, and nothing under data/raw should be modified.</span></span>
-<span id="cb10-555"><a href="#cb10-555"></a>data_interim <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"interim"</span>, <span class="st">"05_one_carbon_gcurves"</span>)</span>
-<span id="cb10-556"><a href="#cb10-556"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(data_interim)</span>
-<span id="cb10-557"><a href="#cb10-557"></a></span>
-<span id="cb10-558"><a href="#cb10-558"></a>readr<span class="sc">::</span><span class="fu">write_tsv</span>(</span>
-<span id="cb10-559"><a href="#cb10-559"></a>  master_tidy,</span>
-<span id="cb10-560"><a href="#cb10-560"></a>  here<span class="sc">::</span><span class="fu">here</span>(data_interim, <span class="st">"platemap_master_tidy.tsv"</span>),</span>
-<span id="cb10-561"><a href="#cb10-561"></a>  <span class="at">na =</span> <span class="st">""</span>,</span>
-<span id="cb10-562"><a href="#cb10-562"></a>  <span class="at">eol =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span></span>
-<span id="cb10-563"><a href="#cb10-563"></a>)</span>
-<span id="cb10-564"><a href="#cb10-564"></a><span class="in">```</span></span>
+<span id="cb10-399"><a href="#cb10-399"></a><span class="fu">## Output</span></span>
+<span id="cb10-400"><a href="#cb10-400"></a></span>
+<span id="cb10-403"><a href="#cb10-403"></a><span class="in">```{r}</span></span>
+<span id="cb10-404"><a href="#cb10-404"></a>plate_file_maps <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb10-405"><a href="#cb10-405"></a>  <span class="at">carbonsources_12 =</span> <span class="fu">c</span>(</span>
+<span id="cb10-406"><a href="#cb10-406"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_5_1_06-heinä-2026 09-01-04.txt"</span>,</span>
+<span id="cb10-407"><a href="#cb10-407"></a>    <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_5_2_06-heinä-2026 09-01-04.txt"</span>,</span>
+<span id="cb10-408"><a href="#cb10-408"></a>    <span class="st">"3"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_5_3_06-heinä-2026 09-01-04.txt"</span>,</span>
+<span id="cb10-409"><a href="#cb10-409"></a>    <span class="st">"4"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_5_4_06-heinä-2026 09-01-04.txt"</span></span>
+<span id="cb10-410"><a href="#cb10-410"></a>  ),</span>
+<span id="cb10-411"><a href="#cb10-411"></a>  <span class="at">hydroxybenzoic_salicylic =</span> <span class="fu">c</span>(</span>
+<span id="cb10-412"><a href="#cb10-412"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_9_2_09-heinä-2026 14-42-47.txt"</span>,</span>
+<span id="cb10-413"><a href="#cb10-413"></a>    <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_9_3_09-heinä-2026 14-42-47.txt"</span></span>
+<span id="cb10-414"><a href="#cb10-414"></a>  ),</span>
+<span id="cb10-415"><a href="#cb10-415"></a>  <span class="at">platemap_1 =</span> <span class="fu">c</span>(</span>
+<span id="cb10-416"><a href="#cb10-416"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_1_1_08-kesä-2026 12-51-22.txt"</span>,</span>
+<span id="cb10-417"><a href="#cb10-417"></a>    <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_1_2_08-kesä-2026 12-51-22.txt"</span>,</span>
+<span id="cb10-418"><a href="#cb10-418"></a>    <span class="st">"3"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_1_3_08-kesä-2026 12-51-22.txt"</span>,</span>
+<span id="cb10-419"><a href="#cb10-419"></a>    <span class="st">"4"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_1_4_08-kesä-2026 12-51-22.txt"</span></span>
+<span id="cb10-420"><a href="#cb10-420"></a>  ),</span>
+<span id="cb10-421"><a href="#cb10-421"></a>  <span class="at">platemap_2 =</span> <span class="fu">c</span>(</span>
+<span id="cb10-422"><a href="#cb10-422"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_2_1_22-kesä-2026 08-41-34.txt"</span>,</span>
+<span id="cb10-423"><a href="#cb10-423"></a>    <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_2_2_22-kesä-2026 08-41-34.txt"</span>,</span>
+<span id="cb10-424"><a href="#cb10-424"></a>    <span class="st">"3"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_2_3_22-kesä-2026 08-41-34.txt"</span>,</span>
+<span id="cb10-425"><a href="#cb10-425"></a>    <span class="st">"4"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_2_4_22-kesä-2026 08-41-34.txt"</span></span>
+<span id="cb10-426"><a href="#cb10-426"></a>  ),</span>
+<span id="cb10-427"><a href="#cb10-427"></a>  <span class="at">platemap_3 =</span> <span class="fu">c</span>(</span>
+<span id="cb10-428"><a href="#cb10-428"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_3_1_26-kesä-2026 12-49-10.txt"</span>,</span>
+<span id="cb10-429"><a href="#cb10-429"></a>    <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_3_2_26-kesä-2026 12-49-10.txt"</span>,</span>
+<span id="cb10-430"><a href="#cb10-430"></a>    <span class="st">"3"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_3_3_26-kesä-2026 12-49-10.txt"</span>,</span>
+<span id="cb10-431"><a href="#cb10-431"></a>    <span class="st">"4"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_3_4_26-kesä-2026 12-49-10.txt"</span></span>
+<span id="cb10-432"><a href="#cb10-432"></a>  ),</span>
+<span id="cb10-433"><a href="#cb10-433"></a>  <span class="at">platemap_4 =</span> <span class="fu">c</span>(</span>
+<span id="cb10-434"><a href="#cb10-434"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_4_1_30-kesä-2026 10-07-18.txt"</span>,</span>
+<span id="cb10-435"><a href="#cb10-435"></a>    <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_4_2_30-kesä-2026 10-07-18.txt"</span></span>
+<span id="cb10-436"><a href="#cb10-436"></a>  ),</span>
+<span id="cb10-437"><a href="#cb10-437"></a>  <span class="at">platemap_5 =</span> <span class="fu">c</span>(</span>
+<span id="cb10-438"><a href="#cb10-438"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_9_1_09-heinä-2026 14-42-47.txt"</span></span>
+<span id="cb10-439"><a href="#cb10-439"></a>  ),</span>
+<span id="cb10-440"><a href="#cb10-440"></a>  <span class="at">platemap_7_8 =</span> <span class="fu">c</span>(</span>
+<span id="cb10-441"><a href="#cb10-441"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_10_1_10-elo-2026 09-09-08.txt"</span>,</span>
+<span id="cb10-442"><a href="#cb10-442"></a>    <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_10_2_10-elo-2026 09-09-08.txt"</span></span>
+<span id="cb10-443"><a href="#cb10-443"></a>  ),</span>
+<span id="cb10-444"><a href="#cb10-444"></a>  <span class="at">platemap_7_8_2 =</span> <span class="fu">c</span>(</span>
+<span id="cb10-445"><a href="#cb10-445"></a>    <span class="st">"3"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_10_3_10-elo-2026 09-09-08.txt"</span>,</span>
+<span id="cb10-446"><a href="#cb10-446"></a>    <span class="st">"4"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_10_4_10-elo-2026 09-09-08.txt"</span></span>
+<span id="cb10-447"><a href="#cb10-447"></a>  ),</span>
+<span id="cb10-448"><a href="#cb10-448"></a>  <span class="at">starch_malate =</span> <span class="fu">c</span>(</span>
+<span id="cb10-449"><a href="#cb10-449"></a>    <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Carbon_sources_7_1_06-heinä-2026 09-01-31.txt"</span></span>
+<span id="cb10-450"><a href="#cb10-450"></a>  )</span>
+<span id="cb10-451"><a href="#cb10-451"></a>)</span>
+<span id="cb10-452"><a href="#cb10-452"></a></span>
+<span id="cb10-453"><a href="#cb10-453"></a>carbon_source_classes <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
+<span id="cb10-454"><a href="#cb10-454"></a>  <span class="sc">~</span>carbon_source          , <span class="sc">~</span>class         ,</span>
+<span id="cb10-455"><a href="#cb10-455"></a>  <span class="st">"4-Hydroxybenzoic acid"</span> , <span class="st">"organic_acid"</span> ,</span>
+<span id="cb10-456"><a href="#cb10-456"></a>  <span class="st">"glucose"</span>               , <span class="st">"sugar"</span>        ,</span>
+<span id="cb10-457"><a href="#cb10-457"></a>  <span class="st">"sucrose"</span>               , <span class="st">"sugar"</span>        ,</span>
+<span id="cb10-458"><a href="#cb10-458"></a>  <span class="st">"salicylic acid"</span>        , <span class="st">"organic_acid"</span> ,</span>
+<span id="cb10-459"><a href="#cb10-459"></a>  <span class="st">"shikimic acid"</span>         , <span class="st">"organic_acid"</span> ,</span>
+<span id="cb10-460"><a href="#cb10-460"></a>  <span class="st">"L-cysteine"</span>            , <span class="st">"amino_acid"</span>   ,</span>
+<span id="cb10-461"><a href="#cb10-461"></a>  <span class="st">"L-valine"</span>              , <span class="st">"amino_acid"</span>   ,</span>
+<span id="cb10-462"><a href="#cb10-462"></a>  <span class="st">"taurine"</span>               , <span class="st">"amino_acid"</span>   ,</span>
+<span id="cb10-463"><a href="#cb10-463"></a>  <span class="st">"histidine"</span>             , <span class="st">"amino_acid"</span>   ,</span>
+<span id="cb10-464"><a href="#cb10-464"></a>  <span class="st">"leucine"</span>               , <span class="st">"amino_acid"</span>   ,</span>
+<span id="cb10-465"><a href="#cb10-465"></a>  <span class="st">"phenylalanine"</span>         , <span class="st">"amino_acid"</span>   ,</span>
+<span id="cb10-466"><a href="#cb10-466"></a>  <span class="st">"xylose"</span>                , <span class="st">"sugar"</span>        ,</span>
+<span id="cb10-467"><a href="#cb10-467"></a>  <span class="st">"starch"</span>                , <span class="st">"sugar"</span>        ,</span>
+<span id="cb10-468"><a href="#cb10-468"></a>  <span class="st">"cellobiose"</span>            , <span class="st">"sugar"</span>        ,</span>
+<span id="cb10-469"><a href="#cb10-469"></a>  <span class="st">"succinic acid"</span>         , <span class="st">"organic_acid"</span> ,</span>
+<span id="cb10-470"><a href="#cb10-470"></a>  <span class="st">"malate"</span>                , <span class="st">"organic_acid"</span> ,</span>
+<span id="cb10-471"><a href="#cb10-471"></a>  <span class="st">"asparagine"</span>            , <span class="st">"amino_acid"</span>   ,</span>
+<span id="cb10-472"><a href="#cb10-472"></a>  <span class="st">"D-mannitol"</span>            , <span class="st">"sugar"</span>        ,</span>
+<span id="cb10-473"><a href="#cb10-473"></a>  <span class="st">"lactic acid"</span>           , <span class="st">"organic_acid"</span> ,</span>
+<span id="cb10-474"><a href="#cb10-474"></a>  <span class="st">"sodium acetate"</span>        , <span class="st">"organic_acid"</span></span>
+<span id="cb10-475"><a href="#cb10-475"></a>)</span>
+<span id="cb10-476"><a href="#cb10-476"></a></span>
+<span id="cb10-477"><a href="#cb10-477"></a>attach_plate_file <span class="ot">&lt;-</span> <span class="cf">function</span>(records, plate_file_map) {</span>
+<span id="cb10-478"><a href="#cb10-478"></a>  records <span class="sc">|&gt;</span></span>
+<span id="cb10-479"><a href="#cb10-479"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb10-480"><a href="#cb10-480"></a>      <span class="at">plate_file =</span> plate_file_map[stringr<span class="sc">::</span><span class="fu">str_extract</span>(plate, <span class="st">"[0-9]+"</span>)]</span>
+<span id="cb10-481"><a href="#cb10-481"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb10-482"><a href="#cb10-482"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
+<span id="cb10-483"><a href="#cb10-483"></a>      plate,</span>
+<span id="cb10-484"><a href="#cb10-484"></a>      well,</span>
+<span id="cb10-485"><a href="#cb10-485"></a>      row,</span>
+<span id="cb10-486"><a href="#cb10-486"></a>      column,</span>
+<span id="cb10-487"><a href="#cb10-487"></a>      evo_hist,</span>
+<span id="cb10-488"><a href="#cb10-488"></a>      strainID,</span>
+<span id="cb10-489"><a href="#cb10-489"></a>      streptomycin_ug_ml,</span>
+<span id="cb10-490"><a href="#cb10-490"></a>      carbon_source,</span>
+<span id="cb10-491"><a href="#cb10-491"></a>      plate_file</span>
+<span id="cb10-492"><a href="#cb10-492"></a>    )</span>
+<span id="cb10-493"><a href="#cb10-493"></a>}</span>
+<span id="cb10-494"><a href="#cb10-494"></a></span>
+<span id="cb10-495"><a href="#cb10-495"></a>master_tidy <span class="ot">&lt;-</span> source_records <span class="sc">|&gt;</span></span>
+<span id="cb10-496"><a href="#cb10-496"></a>  purrr<span class="sc">::</span><span class="fu">imap</span>(</span>
+<span id="cb10-497"><a href="#cb10-497"></a>    \(records, nm) <span class="fu">attach_plate_file</span>(records, plate_file_maps[[nm]])</span>
+<span id="cb10-498"><a href="#cb10-498"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-499"><a href="#cb10-499"></a>  purrr<span class="sc">::</span><span class="fu">list_rbind</span>() <span class="sc">|&gt;</span></span>
+<span id="cb10-500"><a href="#cb10-500"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb10-501"><a href="#cb10-501"></a>    <span class="co"># well format must match the samplesheet, e.g. "A01" not "A1"</span></span>
+<span id="cb10-502"><a href="#cb10-502"></a>    <span class="at">well =</span> stringr<span class="sc">::</span><span class="fu">str_c</span>(</span>
+<span id="cb10-503"><a href="#cb10-503"></a>      stringr<span class="sc">::</span><span class="fu">str_extract</span>(well, <span class="st">"^[A-H]"</span>),</span>
+<span id="cb10-504"><a href="#cb10-504"></a>      stringr<span class="sc">::</span><span class="fu">str_pad</span>(</span>
+<span id="cb10-505"><a href="#cb10-505"></a>        stringr<span class="sc">::</span><span class="fu">str_extract</span>(well, <span class="st">"</span><span class="sc">\\</span><span class="st">d+"</span>),</span>
+<span id="cb10-506"><a href="#cb10-506"></a>        <span class="at">width =</span> <span class="dv">2</span>,</span>
+<span id="cb10-507"><a href="#cb10-507"></a>        <span class="at">pad =</span> <span class="st">"0"</span>,</span>
+<span id="cb10-508"><a href="#cb10-508"></a>        <span class="at">side =</span> <span class="st">"left"</span></span>
+<span id="cb10-509"><a href="#cb10-509"></a>      )</span>
+<span id="cb10-510"><a href="#cb10-510"></a>    ),</span>
+<span id="cb10-511"><a href="#cb10-511"></a>    <span class="at">strainID =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(</span>
+<span id="cb10-512"><a href="#cb10-512"></a>      strainID <span class="sc">!=</span> <span class="st">""</span>,</span>
+<span id="cb10-513"><a href="#cb10-513"></a>      stringr<span class="sc">::</span><span class="fu">str_c</span>(</span>
+<span id="cb10-514"><a href="#cb10-514"></a>        <span class="st">"H"</span>,</span>
+<span id="cb10-515"><a href="#cb10-515"></a>        stringr<span class="sc">::</span><span class="fu">str_pad</span>(strainID, <span class="at">width =</span> <span class="dv">4</span>, <span class="at">pad =</span> <span class="st">"0"</span>, <span class="at">side =</span> <span class="st">"left"</span>)</span>
+<span id="cb10-516"><a href="#cb10-516"></a>      ),</span>
+<span id="cb10-517"><a href="#cb10-517"></a>      strainID</span>
+<span id="cb10-518"><a href="#cb10-518"></a>    ),</span>
+<span id="cb10-519"><a href="#cb10-519"></a>    <span class="at">streptomycin_ug_ml =</span> stringr<span class="sc">::</span><span class="fu">str_remove</span>(streptomycin_ug_ml, <span class="st">"</span><span class="sc">\\</span><span class="st">.0"</span>)</span>
+<span id="cb10-520"><a href="#cb10-520"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-521"><a href="#cb10-521"></a>  <span class="co"># uninoculated wells are flagged "blank" across every descriptive column.</span></span>
+<span id="cb10-522"><a href="#cb10-522"></a>  <span class="co"># Most sheets label these wells "Control" in the strain cell;</span></span>
+<span id="cb10-523"><a href="#cb10-523"></a>  <span class="co"># Carbon_platemap_7.8 and _2 instead leave the strain cell empty, hence the</span></span>
+<span id="cb10-524"><a href="#cb10-524"></a>  <span class="co"># is.na() check.</span></span>
+<span id="cb10-525"><a href="#cb10-525"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb10-526"><a href="#cb10-526"></a>    dplyr<span class="sc">::</span><span class="fu">across</span>(</span>
+<span id="cb10-527"><a href="#cb10-527"></a>      <span class="fu">c</span>(evo_hist, strainID, streptomycin_ug_ml, carbon_source),</span>
+<span id="cb10-528"><a href="#cb10-528"></a>      \(x) {</span>
+<span id="cb10-529"><a href="#cb10-529"></a>        dplyr<span class="sc">::</span><span class="fu">if_else</span>(</span>
+<span id="cb10-530"><a href="#cb10-530"></a>          <span class="fu">is.na</span>(evo_hist) <span class="sc">|</span> evo_hist <span class="sc">==</span> <span class="st">"Control"</span> <span class="sc">|</span> carbon_source <span class="sc">==</span> <span class="st">"Control"</span>,</span>
+<span id="cb10-531"><a href="#cb10-531"></a>          <span class="st">"blank"</span>,</span>
+<span id="cb10-532"><a href="#cb10-532"></a>          x</span>
+<span id="cb10-533"><a href="#cb10-533"></a>        )</span>
+<span id="cb10-534"><a href="#cb10-534"></a>      }</span>
+<span id="cb10-535"><a href="#cb10-535"></a>    )</span>
+<span id="cb10-536"><a href="#cb10-536"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-537"><a href="#cb10-537"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb10-538"><a href="#cb10-538"></a>    <span class="at">streptomycin_ug_ml =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(</span>
+<span id="cb10-539"><a href="#cb10-539"></a>      streptomycin_ug_ml <span class="sc">==</span> <span class="st">""</span>,</span>
+<span id="cb10-540"><a href="#cb10-540"></a>      <span class="st">"0"</span>,</span>
+<span id="cb10-541"><a href="#cb10-541"></a>      streptomycin_ug_ml</span>
+<span id="cb10-542"><a href="#cb10-542"></a>    ),</span>
+<span id="cb10-543"><a href="#cb10-543"></a>    <span class="co"># fixing inconsistent carbon source names across sheets</span></span>
+<span id="cb10-544"><a href="#cb10-544"></a>    <span class="at">carbon_source =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb10-545"><a href="#cb10-545"></a>      carbon_source <span class="sc">==</span> <span class="st">"valine"</span> <span class="sc">~</span> <span class="st">"L-valine"</span>,</span>
+<span id="cb10-546"><a href="#cb10-546"></a>      carbon_source <span class="sc">==</span> <span class="st">"malic acid (malate)"</span> <span class="sc">~</span> <span class="st">"malate"</span>,</span>
+<span id="cb10-547"><a href="#cb10-547"></a>      carbon_source <span class="sc">==</span> <span class="st">"4-hydrobenzoic acid"</span> <span class="sc">~</span> <span class="st">"4-Hydroxybenzoic acid"</span>,</span>
+<span id="cb10-548"><a href="#cb10-548"></a>      carbon_source <span class="sc">==</span> <span class="st">"cysteine"</span> <span class="sc">~</span> <span class="st">"L-cysteine"</span>,</span>
+<span id="cb10-549"><a href="#cb10-549"></a>      carbon_source <span class="sc">==</span> <span class="st">"arginine"</span> <span class="sc">~</span> <span class="st">"L-arginine"</span>,</span>
+<span id="cb10-550"><a href="#cb10-550"></a>      <span class="at">.default =</span> carbon_source</span>
+<span id="cb10-551"><a href="#cb10-551"></a>    )</span>
+<span id="cb10-552"><a href="#cb10-552"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-553"><a href="#cb10-553"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(carbon_source_classes, <span class="at">by =</span> dplyr<span class="sc">::</span><span class="fu">join_by</span>(carbon_source))</span>
+<span id="cb10-554"><a href="#cb10-554"></a></span>
+<span id="cb10-555"><a href="#cb10-555"></a><span class="co"># Written to data/interim rather than alongside the source spreadsheets: this is</span></span>
+<span id="cb10-556"><a href="#cb10-556"></a><span class="co"># a derived file, and nothing under data/raw should be modified.</span></span>
+<span id="cb10-557"><a href="#cb10-557"></a>data_interim <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"interim"</span>, <span class="st">"05_one_carbon_gcurves"</span>)</span>
+<span id="cb10-558"><a href="#cb10-558"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(data_interim)</span>
+<span id="cb10-559"><a href="#cb10-559"></a></span>
+<span id="cb10-560"><a href="#cb10-560"></a>readr<span class="sc">::</span><span class="fu">write_tsv</span>(</span>
+<span id="cb10-561"><a href="#cb10-561"></a>  master_tidy,</span>
+<span id="cb10-562"><a href="#cb10-562"></a>  here<span class="sc">::</span><span class="fu">here</span>(data_interim, <span class="st">"platemap_master_tidy.tsv"</span>),</span>
+<span id="cb10-563"><a href="#cb10-563"></a>  <span class="at">na =</span> <span class="st">""</span>,</span>
+<span id="cb10-564"><a href="#cb10-564"></a>  <span class="at">eol =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span></span>
+<span id="cb10-565"><a href="#cb10-565"></a>)</span>
+<span id="cb10-566"><a href="#cb10-566"></a><span class="in">```</span></span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

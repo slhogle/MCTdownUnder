@@ -9,6 +9,7 @@ date: today
 
 Ancestral (streptomycin sensitive) and evolved (streptomycin resistant) forms of *Citrobacter koseri* HAMBI_1287 and *Pseudomonas chlororaphis* HAMBI_1977 were grown on 20 single carbon sources in M9 minimal medium, with and without streptomycin.
 
+<!-- 
 This analysis is ported from `scripts/10_one_carbon_gcurves_logphase/03_analyze_gcurves.qmd` in [hambiEvoEnvCoexist](https://github.com/slhogle/hambiEvoEnvCoexist), which restricted itself to the streptomycin-free wells. Here we keep every streptomycin concentration.
 
 ::: {.callout-note}
@@ -17,7 +18,7 @@ This analysis is ported from `scripts/10_one_carbon_gcurves_logphase/03_analyze_
 Dosing is per species: HAMBI_1977 wells were dosed at 10 μg/ml and HAMBI_1287 wells at 512 μg/ml. There is no concentration at which both species were tested, so the streptomycin panels below compare ANC against EVO *within* a species, never one species against the other at matched dose.
 
 Four carbon sources — D-mannitol, L-arginine, lactic acid and sodium acetate — were only ever run without streptomycin. They appear as gaps in the +Str panels rather than being dropped, so that rows stay aligned across panels.
-:::
+::: -->
 
 # Setup
 
@@ -290,7 +291,7 @@ carbon_levels <- rev(c(
   "L-cysteine",
   "phenylalanine",
   "taurine",
-  "L-arginine"
+  "asparagine"
 ))
 ```
 

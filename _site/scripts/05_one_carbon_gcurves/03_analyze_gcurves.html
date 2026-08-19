@@ -492,21 +492,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="introduction" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
 <p>Ancestral (streptomycin sensitive) and evolved (streptomycin resistant) forms of <em>Citrobacter koseri</em> HAMBI_1287 and <em>Pseudomonas chlororaphis</em> HAMBI_1977 were grown on 20 single carbon sources in M9 minimal medium, with and without streptomycin.</p>
-<p>This analysis is ported from <code>scripts/10_one_carbon_gcurves_logphase/03_analyze_gcurves.qmd</code> in <a href="https://github.com/slhogle/hambiEvoEnvCoexist">hambiEvoEnvCoexist</a>, which restricted itself to the streptomycin-free wells. Here we keep every streptomycin concentration.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>The streptomycin design is nested inside species, not crossed with it
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Dosing is per species: HAMBI_1977 wells were dosed at 10 μg/ml and HAMBI_1287 wells at 512 μg/ml. There is no concentration at which both species were tested, so the streptomycin panels below compare ANC against EVO <em>within</em> a species, never one species against the other at matched dose.</p>
-<p>Four carbon sources — D-mannitol, L-arginine, lactic acid and sodium acetate — were only ever run without streptomycin. They appear as gaps in the +Str panels rather than being dropped, so that rows stay aligned across panels.</p>
-</div>
-</div>
+<!-- 
+This analysis is ported from `scripts/10_one_carbon_gcurves_logphase/03_analyze_gcurves.qmd` in [hambiEvoEnvCoexist](https://github.com/slhogle/hambiEvoEnvCoexist), which restricted itself to the streptomycin-free wells. Here we keep every streptomycin concentration.
+
+::: {.callout-note}
+## The streptomycin design is nested inside species, not crossed with it
+
+Dosing is per species: HAMBI_1977 wells were dosed at 10 μg/ml and HAMBI_1287 wells at 512 μg/ml. There is no concentration at which both species were tested, so the streptomycin panels below compare ANC against EVO *within* a species, never one species against the other at matched dose.
+
+Four carbon sources — D-mannitol, L-arginine, lactic acid and sodium acetate — were only ever run without streptomycin. They appear as gaps in the +Str panels rather than being dropped, so that rows stay aligned across panels.
+::: -->
 </section>
 <section id="setup" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Setup</h1>
@@ -782,7 +777,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-19"><a href="#cb11-19"></a>  <span class="st">"L-cysteine"</span>,</span>
 <span id="cb11-20"><a href="#cb11-20"></a>  <span class="st">"phenylalanine"</span>,</span>
 <span id="cb11-21"><a href="#cb11-21"></a>  <span class="st">"taurine"</span>,</span>
-<span id="cb11-22"><a href="#cb11-22"></a>  <span class="st">"L-arginine"</span></span>
+<span id="cb11-22"><a href="#cb11-22"></a>  <span class="st">"asparagine"</span></span>
 <span id="cb11-23"><a href="#cb11-23"></a>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
@@ -1472,472 +1467,473 @@ Figure&nbsp;3: As in <a href="#fig-01" class="quarto-xref">Figure&nbsp;1</a> but
 <span id="cb18-9"><a href="#cb18-9"></a></span>
 <span id="cb18-10"><a href="#cb18-10"></a>Ancestral (streptomycin sensitive) and evolved (streptomycin resistant) forms of *Citrobacter koseri* HAMBI_1287 and *Pseudomonas chlororaphis* HAMBI_1977 were grown on 20 single carbon sources in M9 minimal medium, with and without streptomycin.</span>
 <span id="cb18-11"><a href="#cb18-11"></a></span>
-<span id="cb18-12"><a href="#cb18-12"></a>This analysis is ported from <span class="in">`scripts/10_one_carbon_gcurves_logphase/03_analyze_gcurves.qmd`</span> in <span class="co">[</span><span class="ot">hambiEvoEnvCoexist</span><span class="co">](https://github.com/slhogle/hambiEvoEnvCoexist)</span>, which restricted itself to the streptomycin-free wells. Here we keep every streptomycin concentration.</span>
-<span id="cb18-13"><a href="#cb18-13"></a></span>
-<span id="cb18-14"><a href="#cb18-14"></a>::: {.callout-note}</span>
-<span id="cb18-15"><a href="#cb18-15"></a><span class="fu">## The streptomycin design is nested inside species, not crossed with it</span></span>
-<span id="cb18-16"><a href="#cb18-16"></a></span>
-<span id="cb18-17"><a href="#cb18-17"></a>Dosing is per species: HAMBI_1977 wells were dosed at 10 μg/ml and HAMBI_1287 wells at 512 μg/ml. There is no concentration at which both species were tested, so the streptomycin panels below compare ANC against EVO *within* a species, never one species against the other at matched dose.</span>
-<span id="cb18-18"><a href="#cb18-18"></a></span>
-<span id="cb18-19"><a href="#cb18-19"></a>Four carbon sources — D-mannitol, L-arginine, lactic acid and sodium acetate — were only ever run without streptomycin. They appear as gaps in the +Str panels rather than being dropped, so that rows stay aligned across panels.</span>
-<span id="cb18-20"><a href="#cb18-20"></a>:::</span>
-<span id="cb18-21"><a href="#cb18-21"></a></span>
-<span id="cb18-22"><a href="#cb18-22"></a><span class="fu"># Setup</span></span>
-<span id="cb18-23"><a href="#cb18-23"></a></span>
-<span id="cb18-24"><a href="#cb18-24"></a><span class="fu">## Libraries</span></span>
-<span id="cb18-25"><a href="#cb18-25"></a></span>
-<span id="cb18-28"><a href="#cb18-28"></a><span class="in">```{r}</span></span>
-<span id="cb18-29"><a href="#cb18-29"></a><span class="fu">library</span>(here)</span>
-<span id="cb18-30"><a href="#cb18-30"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb18-31"><a href="#cb18-31"></a><span class="fu">library</span>(growthrates)</span>
-<span id="cb18-32"><a href="#cb18-32"></a><span class="fu">library</span>(fs)</span>
-<span id="cb18-33"><a href="#cb18-33"></a><span class="fu">library</span>(glue)</span>
-<span id="cb18-34"><a href="#cb18-34"></a><span class="fu">library</span>(marquee)</span>
-<span id="cb18-35"><a href="#cb18-35"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"gcurves.R"</span>))</span>
-<span id="cb18-36"><a href="#cb18-36"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"generic.R"</span>))</span>
-<span id="cb18-37"><a href="#cb18-37"></a><span class="in">```</span></span>
-<span id="cb18-38"><a href="#cb18-38"></a></span>
-<span id="cb18-39"><a href="#cb18-39"></a><span class="fu">## Global variables</span></span>
-<span id="cb18-40"><a href="#cb18-40"></a></span>
-<span id="cb18-43"><a href="#cb18-43"></a><span class="in">```{r}</span></span>
-<span id="cb18-44"><a href="#cb18-44"></a>data_interim <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"interim"</span>, <span class="st">"05_one_carbon_gcurves"</span>)</span>
-<span id="cb18-45"><a href="#cb18-45"></a>data_processed <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"processed"</span>, <span class="st">"05_one_carbon_gcurves"</span>)</span>
-<span id="cb18-46"><a href="#cb18-46"></a>figs <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"output"</span>, <span class="st">"figures"</span>)</span>
-<span id="cb18-47"><a href="#cb18-47"></a></span>
-<span id="cb18-48"><a href="#cb18-48"></a><span class="co"># make output directories if they don't exist</span></span>
-<span id="cb18-49"><a href="#cb18-49"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(data_interim)</span>
-<span id="cb18-50"><a href="#cb18-50"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(data_processed)</span>
-<span id="cb18-51"><a href="#cb18-51"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(figs)</span>
-<span id="cb18-52"><a href="#cb18-52"></a><span class="in">```</span></span>
-<span id="cb18-53"><a href="#cb18-53"></a></span>
-<span id="cb18-54"><a href="#cb18-54"></a><span class="fu"># Load data</span></span>
-<span id="cb18-55"><a href="#cb18-55"></a></span>
-<span id="cb18-58"><a href="#cb18-58"></a><span class="in">```{r}</span></span>
-<span id="cb18-59"><a href="#cb18-59"></a>df <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(</span>
-<span id="cb18-60"><a href="#cb18-60"></a>  data_processed,</span>
-<span id="cb18-61"><a href="#cb18-61"></a>  <span class="st">"one_carbon_gcurves_logphase.tsv"</span></span>
-<span id="cb18-62"><a href="#cb18-62"></a>)) <span class="sc">|&gt;</span></span>
-<span id="cb18-63"><a href="#cb18-63"></a>  <span class="fu">mutate</span>(<span class="at">plate_name =</span> <span class="fu">as.character</span>(plate_name))</span>
-<span id="cb18-64"><a href="#cb18-64"></a><span class="in">```</span></span>
-<span id="cb18-65"><a href="#cb18-65"></a></span>
-<span id="cb18-66"><a href="#cb18-66"></a><span class="fu"># Processing</span></span>
-<span id="cb18-67"><a href="#cb18-67"></a></span>
-<span id="cb18-68"><a href="#cb18-68"></a><span class="fu">## Growth rates per well (spline based estimate)</span></span>
-<span id="cb18-69"><a href="#cb18-69"></a></span>
-<span id="cb18-70"><a href="#cb18-70"></a>Using the tool <span class="co">[</span><span class="ot">`growthrates`</span><span class="co">](https://cran.r-project.org/web/packages/growthrates/index.html)</span> to estimate mu_max. I have found this works a lot better than gcplyr and is more convenient than using another tool outside of R. Nonparametric estimate growth rates by spline is very fast. Fitting to a model takes more time resources. <span class="co">[</span><span class="ot">Generally it is best to try multiple approaches and to visualize/check the data to make sure it makes sense.</span><span class="co">](https://www.frontiersin.org/journals/ecology-and-evolution/articles/10.3389/fevo.2023.1313500/full)</span></span>
-<span id="cb18-71"><a href="#cb18-71"></a></span>
-<span id="cb18-72"><a href="#cb18-72"></a>Unlike upstream, the streptomycin-dosed wells are kept here.</span>
-<span id="cb18-73"><a href="#cb18-73"></a></span>
-<span id="cb18-76"><a href="#cb18-76"></a><span class="in">```{r}</span></span>
-<span id="cb18-77"><a href="#cb18-77"></a>gcurves_thin_sm <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
-<span id="cb18-78"><a href="#cb18-78"></a>  <span class="co"># exclude blanks, but keep every streptomycin concentration</span></span>
-<span id="cb18-79"><a href="#cb18-79"></a>  <span class="fu">filter</span>(strainID <span class="sc">!=</span> <span class="st">"blank"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb18-80"><a href="#cb18-80"></a>  <span class="co"># need to add a small floor for numerical stability for the spline fit</span></span>
-<span id="cb18-81"><a href="#cb18-81"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb18-82"><a href="#cb18-82"></a>    <span class="at">OD600_rollmean_spline =</span> <span class="fu">if_else</span>(OD600_rollmean <span class="sc">==</span> <span class="dv">0</span>, <span class="fl">1e-3</span>, OD600_rollmean)</span>
-<span id="cb18-83"><a href="#cb18-83"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb18-84"><a href="#cb18-84"></a>  <span class="co"># make uniq id</span></span>
-<span id="cb18-85"><a href="#cb18-85"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">paste0</span>(plate_name, <span class="st">"|"</span>, well))</span>
-<span id="cb18-86"><a href="#cb18-86"></a><span class="in">```</span></span>
-<span id="cb18-87"><a href="#cb18-87"></a></span>
-<span id="cb18-88"><a href="#cb18-88"></a>Smoothing splines are a quick method to estimate maximum growth. The method is</span>
-<span id="cb18-89"><a href="#cb18-89"></a>called nonparametric, because the growth rate is directly estimated from the</span>
-<span id="cb18-90"><a href="#cb18-90"></a>smoothed data without being restricted to a specific model formula. From</span>
-<span id="cb18-91"><a href="#cb18-91"></a><span class="co">[</span><span class="ot">growthrates documentation:</span><span class="co">](https://cran.r-project.org/web/packages/growthrates/growthrates.pdf)</span></span>
-<span id="cb18-92"><a href="#cb18-92"></a></span>
-<span id="cb18-93"><a href="#cb18-93"></a><span class="at">&gt; The method was inspired by an algorithm of [Kahm et al.</span></span>
-<span id="cb18-94"><a href="#cb18-94"></a><span class="at">&gt; (2010)](https://www.jstatsoft.org/article/view/v033i07), with different</span></span>
-<span id="cb18-95"><a href="#cb18-95"></a><span class="at">&gt; settings and assumptions. In the moment, spline fitting is always done with</span></span>
-<span id="cb18-96"><a href="#cb18-96"></a><span class="at">&gt; log-transformed data, assuming exponential growth at the time point of the</span></span>
-<span id="cb18-97"><a href="#cb18-97"></a><span class="at">&gt; maximum of the first derivative of the spline fit. All the hard work is done</span></span>
-<span id="cb18-98"><a href="#cb18-98"></a><span class="at">&gt; by function smooth.spline from package stats, that is highly user</span></span>
-<span id="cb18-99"><a href="#cb18-99"></a><span class="at">&gt; configurable. Normally, smoothness is automatically determined via</span></span>
-<span id="cb18-100"><a href="#cb18-100"></a><span class="at">&gt; cross-validation. This works well in many cases, whereas manual adjustment</span></span>
-<span id="cb18-101"><a href="#cb18-101"></a><span class="at">&gt; is required otherwise, e.g. by setting spar to a fixed value </span><span class="sc">\[</span><span class="at">0, 1</span><span class="sc">\]</span><span class="at"> that</span></span>
-<span id="cb18-102"><a href="#cb18-102"></a><span class="at">&gt; also disables cross-validation.</span></span>
-<span id="cb18-103"><a href="#cb18-103"></a></span>
-<span id="cb18-106"><a href="#cb18-106"></a><span class="in">```{r}</span></span>
-<span id="cb18-107"><a href="#cb18-107"></a><span class="fu">set.seed</span>(<span class="dv">45278</span>)</span>
-<span id="cb18-108"><a href="#cb18-108"></a>many_spline <span class="ot">&lt;-</span> growthrates<span class="sc">::</span><span class="fu">all_splines</span>(</span>
-<span id="cb18-109"><a href="#cb18-109"></a>  OD600_rollmean_spline <span class="sc">~</span> hours <span class="sc">|</span> id,</span>
-<span id="cb18-110"><a href="#cb18-110"></a>  <span class="at">data =</span> gcurves_thin_sm,</span>
-<span id="cb18-111"><a href="#cb18-111"></a>  <span class="at">spar =</span> <span class="fl">0.5</span></span>
-<span id="cb18-112"><a href="#cb18-112"></a>)</span>
-<span id="cb18-113"><a href="#cb18-113"></a></span>
-<span id="cb18-114"><a href="#cb18-114"></a>readr<span class="sc">::</span><span class="fu">write_rds</span>(</span>
-<span id="cb18-115"><a href="#cb18-115"></a>  many_spline,</span>
-<span id="cb18-116"><a href="#cb18-116"></a>  here<span class="sc">::</span><span class="fu">here</span>(data_interim, <span class="st">"one_carbon_spline_fits.rds"</span>)</span>
-<span id="cb18-117"><a href="#cb18-117"></a>)</span>
-<span id="cb18-118"><a href="#cb18-118"></a><span class="in">```</span></span>
-<span id="cb18-119"><a href="#cb18-119"></a></span>
-<span id="cb18-122"><a href="#cb18-122"></a><span class="in">```{r}</span></span>
-<span id="cb18-123"><a href="#cb18-123"></a><span class="co"># get results</span></span>
-<span id="cb18-124"><a href="#cb18-124"></a>gr_per_well <span class="ot">&lt;-</span> growthrates<span class="sc">::</span><span class="fu">results</span>(many_spline) <span class="sc">|&gt;</span></span>
-<span id="cb18-125"><a href="#cb18-125"></a>  tidyr<span class="sc">::</span><span class="fu">separate</span>(<span class="st">'id'</span>, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"plate_name"</span>, <span class="st">"well"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb18-126"><a href="#cb18-126"></a>  <span class="fu">left_join</span>(<span class="fu">distinct</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
-<span id="cb18-127"><a href="#cb18-127"></a>    df,</span>
-<span id="cb18-128"><a href="#cb18-128"></a>    <span class="sc">-</span>seconds,</span>
-<span id="cb18-129"><a href="#cb18-129"></a>    <span class="sc">-</span>hours,</span>
-<span id="cb18-130"><a href="#cb18-130"></a>    <span class="sc">-</span>OD600,</span>
-<span id="cb18-131"><a href="#cb18-131"></a>    <span class="sc">-</span>OD600_rollmean</span>
-<span id="cb18-132"><a href="#cb18-132"></a>  )))</span>
-<span id="cb18-133"><a href="#cb18-133"></a><span class="in">```</span></span>
-<span id="cb18-134"><a href="#cb18-134"></a></span>
-<span id="cb18-135"><a href="#cb18-135"></a><span class="fu">## Compute K per well</span></span>
-<span id="cb18-136"><a href="#cb18-136"></a></span>
-<span id="cb18-137"><a href="#cb18-137"></a>Simply take the maximum observed OD600 value to get a "dumb" empirical estimate of the carrying capacity.</span>
-<span id="cb18-138"><a href="#cb18-138"></a></span>
-<span id="cb18-141"><a href="#cb18-141"></a><span class="in">```{r}</span></span>
-<span id="cb18-142"><a href="#cb18-142"></a>k_per_well <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
-<span id="cb18-143"><a href="#cb18-143"></a>  <span class="fu">filter</span>(strainID <span class="sc">!=</span> <span class="st">"blank"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb18-144"><a href="#cb18-144"></a>  <span class="fu">arrange</span>(plate_file, well, hours) <span class="sc">|&gt;</span></span>
-<span id="cb18-145"><a href="#cb18-145"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb18-146"><a href="#cb18-146"></a>    <span class="at">max_od =</span> <span class="fu">max</span>(OD600_rollmean),</span>
-<span id="cb18-147"><a href="#cb18-147"></a>    <span class="at">.by =</span> <span class="fu">c</span>(</span>
-<span id="cb18-148"><a href="#cb18-148"></a>      plate_name,</span>
-<span id="cb18-149"><a href="#cb18-149"></a>      well,</span>
-<span id="cb18-150"><a href="#cb18-150"></a>      strainID,</span>
-<span id="cb18-151"><a href="#cb18-151"></a>      evo_hist,</span>
-<span id="cb18-152"><a href="#cb18-152"></a>      streptomycin_ug_ml,</span>
-<span id="cb18-153"><a href="#cb18-153"></a>      carbon_source,</span>
-<span id="cb18-154"><a href="#cb18-154"></a>      class</span>
-<span id="cb18-155"><a href="#cb18-155"></a>    )</span>
-<span id="cb18-156"><a href="#cb18-156"></a>  )</span>
-<span id="cb18-157"><a href="#cb18-157"></a><span class="in">```</span></span>
-<span id="cb18-158"><a href="#cb18-158"></a></span>
-<span id="cb18-159"><a href="#cb18-159"></a><span class="fu">## Compute AUC per well</span></span>
-<span id="cb18-160"><a href="#cb18-160"></a></span>
-<span id="cb18-161"><a href="#cb18-161"></a>Area under the growth curve (AUC) is computed per unique well using the</span>
-<span id="cb18-162"><a href="#cb18-162"></a>trapezoidal rule over time in hours. <span class="in">`OD600_rollmean`</span> values are used to reduce noise.</span>
-<span id="cb18-163"><a href="#cb18-163"></a></span>
-<span id="cb18-166"><a href="#cb18-166"></a><span class="in">```{r}</span></span>
-<span id="cb18-167"><a href="#cb18-167"></a>auc_per_well <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
-<span id="cb18-168"><a href="#cb18-168"></a>  <span class="fu">filter</span>(strainID <span class="sc">!=</span> <span class="st">"blank"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb18-169"><a href="#cb18-169"></a>  <span class="fu">arrange</span>(plate_file, well, hours) <span class="sc">|&gt;</span></span>
-<span id="cb18-170"><a href="#cb18-170"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb18-171"><a href="#cb18-171"></a>    <span class="at">auc =</span> <span class="fu">trap_auc</span>(hours, OD600_rollmean),</span>
-<span id="cb18-172"><a href="#cb18-172"></a>    <span class="at">.by =</span> <span class="fu">c</span>(</span>
-<span id="cb18-173"><a href="#cb18-173"></a>      plate_name,</span>
-<span id="cb18-174"><a href="#cb18-174"></a>      well,</span>
-<span id="cb18-175"><a href="#cb18-175"></a>      strainID,</span>
-<span id="cb18-176"><a href="#cb18-176"></a>      evo_hist,</span>
-<span id="cb18-177"><a href="#cb18-177"></a>      streptomycin_ug_ml,</span>
-<span id="cb18-178"><a href="#cb18-178"></a>      carbon_source,</span>
-<span id="cb18-179"><a href="#cb18-179"></a>      class</span>
-<span id="cb18-180"><a href="#cb18-180"></a>    )</span>
-<span id="cb18-181"><a href="#cb18-181"></a>  )</span>
-<span id="cb18-182"><a href="#cb18-182"></a><span class="in">```</span></span>
-<span id="cb18-183"><a href="#cb18-183"></a></span>
-<span id="cb18-184"><a href="#cb18-184"></a><span class="fu">## Write growth summaries to disc</span></span>
-<span id="cb18-185"><a href="#cb18-185"></a></span>
-<span id="cb18-186"><a href="#cb18-186"></a><span class="in">`streptomycin_ug_ml`</span> is carried into the summary table here — upstream it was a</span>
-<span id="cb18-187"><a href="#cb18-187"></a>constant 0 and could be dropped.</span>
-<span id="cb18-188"><a href="#cb18-188"></a></span>
-<span id="cb18-191"><a href="#cb18-191"></a><span class="in">```{r}</span></span>
-<span id="cb18-192"><a href="#cb18-192"></a>myformatter <span class="ot">&lt;-</span> <span class="cf">function</span>(df, grvar) {</span>
-<span id="cb18-193"><a href="#cb18-193"></a>  df <span class="sc">|&gt;</span></span>
-<span id="cb18-194"><a href="#cb18-194"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
-<span id="cb18-195"><a href="#cb18-195"></a>      <span class="at">species =</span> strainID,</span>
-<span id="cb18-196"><a href="#cb18-196"></a>      evo_hist,</span>
-<span id="cb18-197"><a href="#cb18-197"></a>      streptomycin_ug_ml,</span>
-<span id="cb18-198"><a href="#cb18-198"></a>      carbon_source,</span>
-<span id="cb18-199"><a href="#cb18-199"></a>      <span class="at">carbon_class =</span> class,</span>
-<span id="cb18-200"><a href="#cb18-200"></a>      {{ grvar }}</span>
-<span id="cb18-201"><a href="#cb18-201"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb18-202"><a href="#cb18-202"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb18-203"><a href="#cb18-203"></a>      <span class="at">genotype =</span> <span class="fu">str_sub</span>(evo_hist, <span class="dv">1</span>, <span class="dv">1</span>),</span>
-<span id="cb18-204"><a href="#cb18-204"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb18-205"><a href="#cb18-205"></a>    <span class="fu">arrange</span>(</span>
-<span id="cb18-206"><a href="#cb18-206"></a>      species,</span>
-<span id="cb18-207"><a href="#cb18-207"></a>      genotype,</span>
-<span id="cb18-208"><a href="#cb18-208"></a>      streptomycin_ug_ml,</span>
-<span id="cb18-209"><a href="#cb18-209"></a>      carbon_source,</span>
-<span id="cb18-210"><a href="#cb18-210"></a>      carbon_class</span>
-<span id="cb18-211"><a href="#cb18-211"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb18-212"><a href="#cb18-212"></a>    <span class="fu">group_by</span>(</span>
-<span id="cb18-213"><a href="#cb18-213"></a>      species,</span>
-<span id="cb18-214"><a href="#cb18-214"></a>      genotype,</span>
-<span id="cb18-215"><a href="#cb18-215"></a>      streptomycin_ug_ml,</span>
-<span id="cb18-216"><a href="#cb18-216"></a>      carbon_source,</span>
-<span id="cb18-217"><a href="#cb18-217"></a>      carbon_class</span>
-<span id="cb18-218"><a href="#cb18-218"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb18-219"><a href="#cb18-219"></a>    <span class="fu">mutate</span>(<span class="at">replicate =</span> LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()]) <span class="sc">|&gt;</span></span>
-<span id="cb18-220"><a href="#cb18-220"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
-<span id="cb18-221"><a href="#cb18-221"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
-<span id="cb18-222"><a href="#cb18-222"></a>      species,</span>
-<span id="cb18-223"><a href="#cb18-223"></a>      genotype,</span>
-<span id="cb18-224"><a href="#cb18-224"></a>      streptomycin_ug_ml,</span>
-<span id="cb18-225"><a href="#cb18-225"></a>      carbon_source,</span>
-<span id="cb18-226"><a href="#cb18-226"></a>      carbon_class,</span>
-<span id="cb18-227"><a href="#cb18-227"></a>      replicate,</span>
-<span id="cb18-228"><a href="#cb18-228"></a>      {{ grvar }}</span>
-<span id="cb18-229"><a href="#cb18-229"></a>    )</span>
-<span id="cb18-230"><a href="#cb18-230"></a>}</span>
-<span id="cb18-231"><a href="#cb18-231"></a></span>
-<span id="cb18-232"><a href="#cb18-232"></a><span class="fu">left_join</span>(<span class="fu">myformatter</span>(gr_per_well, mumax), <span class="fu">myformatter</span>(k_per_well, max_od)) <span class="sc">|&gt;</span></span>
-<span id="cb18-233"><a href="#cb18-233"></a>  <span class="fu">left_join</span>(<span class="fu">myformatter</span>(auc_per_well, auc)) <span class="sc">|&gt;</span></span>
-<span id="cb18-234"><a href="#cb18-234"></a>  <span class="fu">rename</span>(</span>
-<span id="cb18-235"><a href="#cb18-235"></a>    <span class="at">growth_rate =</span> mumax,</span>
-<span id="cb18-236"><a href="#cb18-236"></a>    <span class="at">carrying_capacity =</span> max_od,</span>
-<span id="cb18-237"><a href="#cb18-237"></a>    <span class="at">area_under_growth_curve =</span> auc</span>
-<span id="cb18-238"><a href="#cb18-238"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb18-239"><a href="#cb18-239"></a>  <span class="fu">write_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(data_processed, <span class="st">"growth_summaries_carbon.tsv"</span>))</span>
-<span id="cb18-240"><a href="#cb18-240"></a><span class="in">```</span></span>
-<span id="cb18-241"><a href="#cb18-241"></a></span>
-<span id="cb18-242"><a href="#cb18-242"></a><span class="fu">## Bootstrap summary by strainID, evo_hist, streptomycin_ug_ml, carbon_source</span></span>
-<span id="cb18-243"><a href="#cb18-243"></a></span>
-<span id="cb18-246"><a href="#cb18-246"></a><span class="in">```{r}</span></span>
-<span id="cb18-247"><a href="#cb18-247"></a><span class="co">#| output: false</span></span>
-<span id="cb18-248"><a href="#cb18-248"></a><span class="co">#| warning: false</span></span>
-<span id="cb18-249"><a href="#cb18-249"></a><span class="fu">set.seed</span>(<span class="dv">7391</span>)</span>
-<span id="cb18-250"><a href="#cb18-250"></a>N_BOOT <span class="ot">&lt;-</span> <span class="dv">2000</span></span>
-<span id="cb18-251"><a href="#cb18-251"></a></span>
-<span id="cb18-252"><a href="#cb18-252"></a>auc_summary <span class="ot">&lt;-</span> auc_per_well <span class="sc">|&gt;</span></span>
-<span id="cb18-253"><a href="#cb18-253"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb18-254"><a href="#cb18-254"></a>    <span class="fu">boot_mean_ci</span>(auc),</span>
-<span id="cb18-255"><a href="#cb18-255"></a>    <span class="at">.by =</span> <span class="fu">c</span>(strainID, evo_hist, streptomycin_ug_ml, carbon_source, class)</span>
-<span id="cb18-256"><a href="#cb18-256"></a>  )</span>
-<span id="cb18-257"><a href="#cb18-257"></a></span>
-<span id="cb18-258"><a href="#cb18-258"></a>k_summary <span class="ot">&lt;-</span> k_per_well <span class="sc">|&gt;</span></span>
-<span id="cb18-259"><a href="#cb18-259"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb18-260"><a href="#cb18-260"></a>    <span class="fu">boot_mean_ci</span>(max_od),</span>
-<span id="cb18-261"><a href="#cb18-261"></a>    <span class="at">.by =</span> <span class="fu">c</span>(strainID, evo_hist, streptomycin_ug_ml, carbon_source, class)</span>
-<span id="cb18-262"><a href="#cb18-262"></a>  )</span>
-<span id="cb18-263"><a href="#cb18-263"></a></span>
-<span id="cb18-264"><a href="#cb18-264"></a>gr_summary <span class="ot">&lt;-</span> gr_per_well <span class="sc">|&gt;</span></span>
-<span id="cb18-265"><a href="#cb18-265"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb18-266"><a href="#cb18-266"></a>    <span class="fu">boot_mean_ci</span>(mumax),</span>
-<span id="cb18-267"><a href="#cb18-267"></a>    <span class="at">.by =</span> <span class="fu">c</span>(strainID, evo_hist, streptomycin_ug_ml, carbon_source, class)</span>
-<span id="cb18-268"><a href="#cb18-268"></a>  )</span>
-<span id="cb18-269"><a href="#cb18-269"></a><span class="in">```</span></span>
-<span id="cb18-270"><a href="#cb18-270"></a></span>
-<span id="cb18-271"><a href="#cb18-271"></a>Replicate counts per point, so the figure captions do not have to assert one.</span>
-<span id="cb18-272"><a href="#cb18-272"></a></span>
-<span id="cb18-275"><a href="#cb18-275"></a><span class="in">```{r}</span></span>
-<span id="cb18-276"><a href="#cb18-276"></a><span class="co">#| echo: false</span></span>
-<span id="cb18-277"><a href="#cb18-277"></a><span class="co">#| output: true</span></span>
-<span id="cb18-278"><a href="#cb18-278"></a>auc_per_well <span class="sc">|&gt;</span></span>
-<span id="cb18-279"><a href="#cb18-279"></a>  <span class="fu">count</span>(strainID, streptomycin_ug_ml, <span class="at">name =</span> <span class="st">"wells"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb18-280"><a href="#cb18-280"></a>  <span class="fu">left_join</span>(</span>
-<span id="cb18-281"><a href="#cb18-281"></a>    auc_per_well <span class="sc">|&gt;</span></span>
-<span id="cb18-282"><a href="#cb18-282"></a>      <span class="fu">count</span>(strainID, streptomycin_ug_ml, evo_hist, carbon_source) <span class="sc">|&gt;</span></span>
-<span id="cb18-283"><a href="#cb18-283"></a>      <span class="fu">summarize</span>(</span>
-<span id="cb18-284"><a href="#cb18-284"></a>        <span class="at">reps_per_point =</span> <span class="fu">paste</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(n)), <span class="at">collapse =</span> <span class="st">", "</span>),</span>
-<span id="cb18-285"><a href="#cb18-285"></a>        <span class="at">.by =</span> <span class="fu">c</span>(strainID, streptomycin_ug_ml)</span>
-<span id="cb18-286"><a href="#cb18-286"></a>      ),</span>
-<span id="cb18-287"><a href="#cb18-287"></a>    <span class="at">by =</span> <span class="fu">join_by</span>(strainID, streptomycin_ug_ml)</span>
-<span id="cb18-288"><a href="#cb18-288"></a>  )</span>
-<span id="cb18-289"><a href="#cb18-289"></a><span class="in">```</span></span>
-<span id="cb18-290"><a href="#cb18-290"></a></span>
-<span id="cb18-291"><a href="#cb18-291"></a><span class="fu"># Plot results</span></span>
-<span id="cb18-292"><a href="#cb18-292"></a></span>
-<span id="cb18-295"><a href="#cb18-295"></a><span class="in">```{r}</span></span>
-<span id="cb18-296"><a href="#cb18-296"></a><span class="co"># order of the carbon sources</span></span>
-<span id="cb18-297"><a href="#cb18-297"></a>carbon_levels <span class="ot">&lt;-</span> <span class="fu">rev</span>(<span class="fu">c</span>(</span>
-<span id="cb18-298"><a href="#cb18-298"></a>  <span class="st">"glucose"</span>,</span>
-<span id="cb18-299"><a href="#cb18-299"></a>  <span class="st">"xylose"</span>,</span>
-<span id="cb18-300"><a href="#cb18-300"></a>  <span class="st">"sucrose"</span>,</span>
-<span id="cb18-301"><a href="#cb18-301"></a>  <span class="st">"cellobiose"</span>,</span>
-<span id="cb18-302"><a href="#cb18-302"></a>  <span class="st">"starch"</span>,</span>
-<span id="cb18-303"><a href="#cb18-303"></a>  <span class="st">"D-mannitol"</span>,</span>
-<span id="cb18-304"><a href="#cb18-304"></a>  <span class="st">"succinic acid"</span>,</span>
-<span id="cb18-305"><a href="#cb18-305"></a>  <span class="st">"malate"</span>,</span>
-<span id="cb18-306"><a href="#cb18-306"></a>  <span class="st">"4-Hydroxybenzoic acid"</span>,</span>
-<span id="cb18-307"><a href="#cb18-307"></a>  <span class="st">"shikimic acid"</span>,</span>
-<span id="cb18-308"><a href="#cb18-308"></a>  <span class="st">"salicylic acid"</span>,</span>
-<span id="cb18-309"><a href="#cb18-309"></a>  <span class="st">"lactic acid"</span>,</span>
-<span id="cb18-310"><a href="#cb18-310"></a>  <span class="st">"sodium acetate"</span>,</span>
-<span id="cb18-311"><a href="#cb18-311"></a>  <span class="st">"histidine"</span>,</span>
-<span id="cb18-312"><a href="#cb18-312"></a>  <span class="st">"leucine"</span>,</span>
-<span id="cb18-313"><a href="#cb18-313"></a>  <span class="st">"L-valine"</span>,</span>
-<span id="cb18-314"><a href="#cb18-314"></a>  <span class="st">"L-cysteine"</span>,</span>
-<span id="cb18-315"><a href="#cb18-315"></a>  <span class="st">"phenylalanine"</span>,</span>
-<span id="cb18-316"><a href="#cb18-316"></a>  <span class="st">"taurine"</span>,</span>
-<span id="cb18-317"><a href="#cb18-317"></a>  <span class="st">"L-arginine"</span></span>
-<span id="cb18-318"><a href="#cb18-318"></a>))</span>
-<span id="cb18-319"><a href="#cb18-319"></a><span class="in">```</span></span>
-<span id="cb18-320"><a href="#cb18-320"></a></span>
-<span id="cb18-321"><a href="#cb18-321"></a>Upstream the axis-label colours were a hard-coded run of 7/7/6. Here they are</span>
-<span id="cb18-322"><a href="#cb18-322"></a>looked up from the <span class="in">`class`</span> column instead, so the colouring cannot silently</span>
-<span id="cb18-323"><a href="#cb18-323"></a>drift out of step with <span class="in">`carbon_levels`</span>.</span>
-<span id="cb18-324"><a href="#cb18-324"></a></span>
-<span id="cb18-327"><a href="#cb18-327"></a><span class="in">```{r}</span></span>
-<span id="cb18-328"><a href="#cb18-328"></a>class_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb18-329"><a href="#cb18-329"></a>  <span class="st">"sugar"</span> <span class="ot">=</span> <span class="st">"#17A769"</span>,</span>
-<span id="cb18-330"><a href="#cb18-330"></a>  <span class="st">"organic_acid"</span> <span class="ot">=</span> <span class="st">"#E8351E"</span>,</span>
-<span id="cb18-331"><a href="#cb18-331"></a>  <span class="st">"amino_acid"</span> <span class="ot">=</span> <span class="st">"#852F88"</span></span>
-<span id="cb18-332"><a href="#cb18-332"></a>)</span>
-<span id="cb18-333"><a href="#cb18-333"></a></span>
-<span id="cb18-334"><a href="#cb18-334"></a>carbon_class_lookup <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(auc_per_well, k_per_well) <span class="sc">|&gt;</span></span>
-<span id="cb18-335"><a href="#cb18-335"></a>  <span class="fu">distinct</span>(carbon_source, class) <span class="sc">|&gt;</span></span>
-<span id="cb18-336"><a href="#cb18-336"></a>  <span class="fu">deframe</span>()</span>
-<span id="cb18-337"><a href="#cb18-337"></a></span>
-<span id="cb18-338"><a href="#cb18-338"></a>label_colors <span class="ot">&lt;-</span> <span class="fu">unname</span>(class_colors[carbon_class_lookup[carbon_levels]])</span>
-<span id="cb18-339"><a href="#cb18-339"></a><span class="in">```</span></span>
-<span id="cb18-340"><a href="#cb18-340"></a></span>
-<span id="cb18-341"><a href="#cb18-341"></a>Each panel is one species at one streptomycin concentration. Species are never</span>
-<span id="cb18-342"><a href="#cb18-342"></a>compared across panels at matched dose, because no such dose exists.</span>
-<span id="cb18-343"><a href="#cb18-343"></a></span>
-<span id="cb18-346"><a href="#cb18-346"></a><span class="in">```{r}</span></span>
-<span id="cb18-347"><a href="#cb18-347"></a>panel_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb18-348"><a href="#cb18-348"></a>  <span class="st">"HAMBI_1287</span><span class="sc">\n</span><span class="st">0 μg/ml Str"</span>,</span>
-<span id="cb18-349"><a href="#cb18-349"></a>  <span class="st">"HAMBI_1287</span><span class="sc">\n</span><span class="st">512 μg/ml Str"</span>,</span>
-<span id="cb18-350"><a href="#cb18-350"></a>  <span class="st">"HAMBI_1977</span><span class="sc">\n</span><span class="st">0 μg/ml Str"</span>,</span>
-<span id="cb18-351"><a href="#cb18-351"></a>  <span class="st">"HAMBI_1977</span><span class="sc">\n</span><span class="st">10 μg/ml Str"</span></span>
-<span id="cb18-352"><a href="#cb18-352"></a>)</span>
-<span id="cb18-353"><a href="#cb18-353"></a></span>
-<span id="cb18-354"><a href="#cb18-354"></a>add_panel <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
-<span id="cb18-355"><a href="#cb18-355"></a>  df <span class="sc">|&gt;</span></span>
-<span id="cb18-356"><a href="#cb18-356"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb18-357"><a href="#cb18-357"></a>      <span class="at">panel =</span> <span class="fu">factor</span>(</span>
-<span id="cb18-358"><a href="#cb18-358"></a>        <span class="fu">paste0</span>(</span>
-<span id="cb18-359"><a href="#cb18-359"></a>          <span class="fu">str_replace</span>(strainID, <span class="st">"^H"</span>, <span class="st">"HAMBI_"</span>),</span>
-<span id="cb18-360"><a href="#cb18-360"></a>          <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>,</span>
-<span id="cb18-361"><a href="#cb18-361"></a>          streptomycin_ug_ml,</span>
-<span id="cb18-362"><a href="#cb18-362"></a>          <span class="st">" μg/ml Str"</span></span>
-<span id="cb18-363"><a href="#cb18-363"></a>        ),</span>
-<span id="cb18-364"><a href="#cb18-364"></a>        <span class="at">levels =</span> panel_levels</span>
-<span id="cb18-365"><a href="#cb18-365"></a>      )</span>
-<span id="cb18-366"><a href="#cb18-366"></a>    )</span>
-<span id="cb18-367"><a href="#cb18-367"></a>}</span>
-<span id="cb18-368"><a href="#cb18-368"></a><span class="in">```</span></span>
-<span id="cb18-369"><a href="#cb18-369"></a></span>
-<span id="cb18-372"><a href="#cb18-372"></a><span class="in">```{r}</span></span>
-<span id="cb18-373"><a href="#cb18-373"></a>plotter <span class="ot">&lt;-</span> <span class="cf">function</span>(df, lab) {</span>
-<span id="cb18-374"><a href="#cb18-374"></a>  dw <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
-<span id="cb18-375"><a href="#cb18-375"></a>  psize <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb18-376"><a href="#cb18-376"></a>  lsize <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb18-377"><a href="#cb18-377"></a></span>
-<span id="cb18-378"><a href="#cb18-378"></a>  df <span class="sc">|&gt;</span></span>
-<span id="cb18-379"><a href="#cb18-379"></a>    <span class="fu">add_panel</span>() <span class="sc">|&gt;</span></span>
-<span id="cb18-380"><a href="#cb18-380"></a>    <span class="fu">mutate</span>(<span class="at">carbon_source =</span> <span class="fu">factor</span>(carbon_source, <span class="at">levels =</span> carbon_levels)) <span class="sc">|&gt;</span></span>
-<span id="cb18-381"><a href="#cb18-381"></a>    <span class="co"># fill in the untested species/streptomycin/carbon combinations as explicit</span></span>
-<span id="cb18-382"><a href="#cb18-382"></a>    <span class="co"># NA rows. Without this the connecting line is drawn straight across the</span></span>
-<span id="cb18-383"><a href="#cb18-383"></a>    <span class="co"># four carbon sources that were never run with streptomycin, which reads as</span></span>
-<span id="cb18-384"><a href="#cb18-384"></a>    <span class="co"># an interpolated value rather than a gap.</span></span>
-<span id="cb18-385"><a href="#cb18-385"></a>    tidyr<span class="sc">::</span><span class="fu">complete</span>(panel, evo_hist, carbon_source) <span class="sc">|&gt;</span></span>
-<span id="cb18-386"><a href="#cb18-386"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> mn, <span class="at">x =</span> carbon_source, <span class="at">color =</span> evo_hist)) <span class="sc">+</span></span>
-<span id="cb18-387"><a href="#cb18-387"></a>    <span class="fu">geom_linerange</span>(</span>
-<span id="cb18-388"><a href="#cb18-388"></a>      <span class="fu">aes</span>(<span class="at">ymin =</span> ci_lo, <span class="at">ymax =</span> ci_hi),</span>
-<span id="cb18-389"><a href="#cb18-389"></a>      <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> dw),</span>
-<span id="cb18-390"><a href="#cb18-390"></a>      <span class="at">size =</span> lsize</span>
-<span id="cb18-391"><a href="#cb18-391"></a>    ) <span class="sc">+</span></span>
-<span id="cb18-392"><a href="#cb18-392"></a>    <span class="fu">geom_point</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> dw), <span class="at">size =</span> psize) <span class="sc">+</span></span>
-<span id="cb18-393"><a href="#cb18-393"></a>    <span class="fu">geom_line</span>(</span>
-<span id="cb18-394"><a href="#cb18-394"></a>      <span class="fu">aes</span>(<span class="at">group =</span> evo_hist),</span>
-<span id="cb18-395"><a href="#cb18-395"></a>      <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
-<span id="cb18-396"><a href="#cb18-396"></a>      <span class="at">size =</span> lsize <span class="sc">-</span> <span class="fl">0.5</span>,</span>
-<span id="cb18-397"><a href="#cb18-397"></a>      <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> dw),</span>
-<span id="cb18-398"><a href="#cb18-398"></a>    ) <span class="sc">+</span></span>
-<span id="cb18-399"><a href="#cb18-399"></a>    <span class="co"># fixed rather than free_x: the +Str panels are missing four carbon</span></span>
-<span id="cb18-400"><a href="#cb18-400"></a>    <span class="co"># sources, and free scales would misalign the rows across panels</span></span>
-<span id="cb18-401"><a href="#cb18-401"></a>    <span class="fu">facet_grid</span>(<span class="sc">~</span>panel) <span class="sc">+</span></span>
-<span id="cb18-402"><a href="#cb18-402"></a>    <span class="fu">labs</span>(</span>
-<span id="cb18-403"><a href="#cb18-403"></a>      <span class="at">y =</span> lab,</span>
-<span id="cb18-404"><a href="#cb18-404"></a>      <span class="at">x =</span> <span class="cn">NULL</span>,</span>
-<span id="cb18-405"><a href="#cb18-405"></a>      <span class="at">color =</span> <span class="st">"Str Resistance"</span>,</span>
-<span id="cb18-406"><a href="#cb18-406"></a>    ) <span class="sc">+</span></span>
-<span id="cb18-407"><a href="#cb18-407"></a>    <span class="fu">scale_x_discrete</span>(</span>
-<span id="cb18-408"><a href="#cb18-408"></a>      <span class="at">labels =</span> <span class="cf">function</span>(x) {</span>
-<span id="cb18-409"><a href="#cb18-409"></a>        glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"{{.{label_colors} {x}}}"</span>)</span>
-<span id="cb18-410"><a href="#cb18-410"></a>      }</span>
-<span id="cb18-411"><a href="#cb18-411"></a>    ) <span class="sc">+</span></span>
-<span id="cb18-412"><a href="#cb18-412"></a>    <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#333333"</span>, <span class="st">"#EB990C"</span>)) <span class="sc">+</span></span>
-<span id="cb18-413"><a href="#cb18-413"></a>    <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb18-414"><a href="#cb18-414"></a>    <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
-<span id="cb18-415"><a href="#cb18-415"></a>    <span class="fu">theme</span>(</span>
-<span id="cb18-416"><a href="#cb18-416"></a>      <span class="at">axis.text.y =</span> marquee<span class="sc">::</span><span class="fu">element_marquee</span>(<span class="at">size =</span> <span class="dv">11</span>),</span>
-<span id="cb18-417"><a href="#cb18-417"></a>      <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
-<span id="cb18-418"><a href="#cb18-418"></a>      <span class="at">panel.grid.major =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"grey90"</span>),</span>
-<span id="cb18-419"><a href="#cb18-419"></a>      <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb18-420"><a href="#cb18-420"></a>      <span class="at">strip.placement =</span> <span class="st">"outside"</span>,</span>
-<span id="cb18-421"><a href="#cb18-421"></a>      <span class="at">strip.background =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb18-422"><a href="#cb18-422"></a>      <span class="co"># upstream this legend sat inside the panel at (0.95, 0.95). With four</span></span>
-<span id="cb18-423"><a href="#cb18-423"></a>      <span class="co"># panels instead of two it lands on top of the right-hand panel's points,</span></span>
-<span id="cb18-424"><a href="#cb18-424"></a>      <span class="co"># so it moves out of the plotting area here.</span></span>
-<span id="cb18-425"><a href="#cb18-425"></a>      <span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
-<span id="cb18-426"><a href="#cb18-426"></a>      <span class="at">legend.key.size =</span> <span class="fu">unit</span>(<span class="dv">7</span>, <span class="st">"mm"</span>),</span>
-<span id="cb18-427"><a href="#cb18-427"></a>      <span class="at">legend.background =</span> <span class="fu">element_rect</span>(</span>
-<span id="cb18-428"><a href="#cb18-428"></a>        <span class="at">fill =</span> <span class="st">"grey95"</span>,</span>
-<span id="cb18-429"><a href="#cb18-429"></a>        <span class="at">colour =</span> <span class="st">"grey20"</span>,</span>
-<span id="cb18-430"><a href="#cb18-430"></a>        <span class="at">linewidth =</span> <span class="fl">0.5</span></span>
-<span id="cb18-431"><a href="#cb18-431"></a>      ),</span>
-<span id="cb18-432"><a href="#cb18-432"></a>      <span class="at">legend.title =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb18-433"><a href="#cb18-433"></a>    )</span>
-<span id="cb18-434"><a href="#cb18-434"></a>}</span>
-<span id="cb18-435"><a href="#cb18-435"></a><span class="in">```</span></span>
-<span id="cb18-436"><a href="#cb18-436"></a></span>
-<span id="cb18-437"><a href="#cb18-437"></a><span class="fu">## Plot differences in mean maximum density (empirical K)</span></span>
-<span id="cb18-438"><a href="#cb18-438"></a></span>
-<span id="cb18-441"><a href="#cb18-441"></a><span class="in">```{r}</span></span>
-<span id="cb18-442"><a href="#cb18-442"></a>pk <span class="ot">&lt;-</span> <span class="fu">plotter</span>(k_summary, <span class="st">"Mean K (OD600)"</span>)</span>
-<span id="cb18-443"><a href="#cb18-443"></a></span>
-<span id="cb18-444"><a href="#cb18-444"></a><span class="fu">ggsave</span>(</span>
-<span id="cb18-445"><a href="#cb18-445"></a>  here<span class="sc">::</span><span class="fu">here</span>(figs, <span class="st">"one_carbon_K_strep.svg"</span>),</span>
-<span id="cb18-446"><a href="#cb18-446"></a>  <span class="at">plot =</span> pk,</span>
-<span id="cb18-447"><a href="#cb18-447"></a>  <span class="at">device =</span> <span class="st">"svg"</span>,</span>
-<span id="cb18-448"><a href="#cb18-448"></a>  <span class="at">width =</span> <span class="dv">13</span>,</span>
-<span id="cb18-449"><a href="#cb18-449"></a>  <span class="at">height =</span> <span class="dv">8</span></span>
-<span id="cb18-450"><a href="#cb18-450"></a>)</span>
-<span id="cb18-451"><a href="#cb18-451"></a><span class="in">```</span></span>
-<span id="cb18-452"><a href="#cb18-452"></a></span>
-<span id="cb18-455"><a href="#cb18-455"></a><span class="in">```{r}</span></span>
-<span id="cb18-456"><a href="#cb18-456"></a><span class="co">#| echo: false</span></span>
-<span id="cb18-457"><a href="#cb18-457"></a><span class="co">#| output: true</span></span>
-<span id="cb18-458"><a href="#cb18-458"></a><span class="co">#| label: fig-01</span></span>
-<span id="cb18-459"><a href="#cb18-459"></a><span class="co">#| fig-width: 13</span></span>
-<span id="cb18-460"><a href="#cb18-460"></a><span class="co">#| fig-height: 8</span></span>
-<span id="cb18-461"><a href="#cb18-461"></a><span class="co">#| fig-cap: "Mean maximum density for ANC and EVO forms of each species grown on 20 substrates as the sole carbon source in a minimal medium lacking carbon, at each streptomycin concentration that species was dosed at. Mean K and bootstrapped 95% CI (2000 resamples) are computed for each combination of strainID, evo_hist, streptomycin_ug_ml and carbon_source. Point colour is streptomycin resistance evolution; y axis text colour is molecular class, starting at the top with sugars, then organic acids, then amino acids. Gaps in the +Str panels are the four carbon sources that were only run without streptomycin."</span></span>
-<span id="cb18-462"><a href="#cb18-462"></a>pk</span>
-<span id="cb18-463"><a href="#cb18-463"></a><span class="in">```</span></span>
-<span id="cb18-464"><a href="#cb18-464"></a></span>
-<span id="cb18-465"><a href="#cb18-465"></a><span class="fu">## Plot differences in mean AUC (area under growth curve)</span></span>
-<span id="cb18-466"><a href="#cb18-466"></a></span>
-<span id="cb18-469"><a href="#cb18-469"></a><span class="in">```{r}</span></span>
-<span id="cb18-470"><a href="#cb18-470"></a>pauc <span class="ot">&lt;-</span> <span class="fu">plotter</span>(auc_summary, <span class="st">"Mean AUC (OD600•h)"</span>)</span>
-<span id="cb18-471"><a href="#cb18-471"></a></span>
-<span id="cb18-472"><a href="#cb18-472"></a><span class="fu">ggsave</span>(</span>
-<span id="cb18-473"><a href="#cb18-473"></a>  here<span class="sc">::</span><span class="fu">here</span>(figs, <span class="st">"one_carbon_AUC_strep.svg"</span>),</span>
-<span id="cb18-474"><a href="#cb18-474"></a>  <span class="at">plot =</span> pauc,</span>
-<span id="cb18-475"><a href="#cb18-475"></a>  <span class="at">device =</span> <span class="st">"svg"</span>,</span>
-<span id="cb18-476"><a href="#cb18-476"></a>  <span class="at">width =</span> <span class="dv">13</span>,</span>
-<span id="cb18-477"><a href="#cb18-477"></a>  <span class="at">height =</span> <span class="dv">8</span></span>
-<span id="cb18-478"><a href="#cb18-478"></a>)</span>
-<span id="cb18-479"><a href="#cb18-479"></a><span class="in">```</span></span>
-<span id="cb18-480"><a href="#cb18-480"></a></span>
-<span id="cb18-483"><a href="#cb18-483"></a><span class="in">```{r}</span></span>
-<span id="cb18-484"><a href="#cb18-484"></a><span class="co">#| echo: false</span></span>
-<span id="cb18-485"><a href="#cb18-485"></a><span class="co">#| output: true</span></span>
-<span id="cb18-486"><a href="#cb18-486"></a><span class="co">#| label: fig-02</span></span>
-<span id="cb18-487"><a href="#cb18-487"></a><span class="co">#| fig-width: 13</span></span>
-<span id="cb18-488"><a href="#cb18-488"></a><span class="co">#| fig-height: 8</span></span>
-<span id="cb18-489"><a href="#cb18-489"></a><span class="co">#| fig-cap: "As in @fig-01 but for mean area under the growth curve."</span></span>
-<span id="cb18-490"><a href="#cb18-490"></a>pauc</span>
-<span id="cb18-491"><a href="#cb18-491"></a><span class="in">```</span></span>
-<span id="cb18-492"><a href="#cb18-492"></a></span>
-<span id="cb18-493"><a href="#cb18-493"></a><span class="fu">## Plot differences in mean growth rate</span></span>
-<span id="cb18-494"><a href="#cb18-494"></a></span>
-<span id="cb18-497"><a href="#cb18-497"></a><span class="in">```{r}</span></span>
-<span id="cb18-498"><a href="#cb18-498"></a>pgr <span class="ot">&lt;-</span> <span class="fu">plotter</span>(gr_summary, <span class="st">"Mean μ (per hour)"</span>)</span>
-<span id="cb18-499"><a href="#cb18-499"></a></span>
-<span id="cb18-500"><a href="#cb18-500"></a><span class="fu">ggsave</span>(</span>
-<span id="cb18-501"><a href="#cb18-501"></a>  here<span class="sc">::</span><span class="fu">here</span>(figs, <span class="st">"one_carbon_mumax_strep.svg"</span>),</span>
-<span id="cb18-502"><a href="#cb18-502"></a>  <span class="at">plot =</span> pgr,</span>
-<span id="cb18-503"><a href="#cb18-503"></a>  <span class="at">device =</span> <span class="st">"svg"</span>,</span>
-<span id="cb18-504"><a href="#cb18-504"></a>  <span class="at">width =</span> <span class="dv">13</span>,</span>
-<span id="cb18-505"><a href="#cb18-505"></a>  <span class="at">height =</span> <span class="dv">8</span></span>
-<span id="cb18-506"><a href="#cb18-506"></a>)</span>
-<span id="cb18-507"><a href="#cb18-507"></a><span class="in">```</span></span>
-<span id="cb18-508"><a href="#cb18-508"></a></span>
-<span id="cb18-511"><a href="#cb18-511"></a><span class="in">```{r}</span></span>
-<span id="cb18-512"><a href="#cb18-512"></a><span class="co">#| echo: false</span></span>
-<span id="cb18-513"><a href="#cb18-513"></a><span class="co">#| output: true</span></span>
-<span id="cb18-514"><a href="#cb18-514"></a><span class="co">#| label: fig-03</span></span>
-<span id="cb18-515"><a href="#cb18-515"></a><span class="co">#| fig-width: 13</span></span>
-<span id="cb18-516"><a href="#cb18-516"></a><span class="co">#| fig-height: 8</span></span>
-<span id="cb18-517"><a href="#cb18-517"></a><span class="co">#| fig-cap: "As in @fig-01 but for mean maximum per capita growth rate from the spline fits."</span></span>
-<span id="cb18-518"><a href="#cb18-518"></a>pgr</span>
-<span id="cb18-519"><a href="#cb18-519"></a><span class="in">```</span></span>
+<span id="cb18-12"><a href="#cb18-12"></a><span class="co">&lt;!-- </span></span>
+<span id="cb18-13"><a href="#cb18-13"></a><span class="co">This analysis is ported from `scripts/10_one_carbon_gcurves_logphase/03_analyze_gcurves.qmd` in [hambiEvoEnvCoexist](https://github.com/slhogle/hambiEvoEnvCoexist), which restricted itself to the streptomycin-free wells. Here we keep every streptomycin concentration.</span></span>
+<span id="cb18-14"><a href="#cb18-14"></a></span>
+<span id="cb18-15"><a href="#cb18-15"></a><span class="co">::: {.callout-note}</span></span>
+<span id="cb18-16"><a href="#cb18-16"></a><span class="co">## The streptomycin design is nested inside species, not crossed with it</span></span>
+<span id="cb18-17"><a href="#cb18-17"></a></span>
+<span id="cb18-18"><a href="#cb18-18"></a><span class="co">Dosing is per species: HAMBI_1977 wells were dosed at 10 μg/ml and HAMBI_1287 wells at 512 μg/ml. There is no concentration at which both species were tested, so the streptomycin panels below compare ANC against EVO *within* a species, never one species against the other at matched dose.</span></span>
+<span id="cb18-19"><a href="#cb18-19"></a></span>
+<span id="cb18-20"><a href="#cb18-20"></a><span class="co">Four carbon sources — D-mannitol, L-arginine, lactic acid and sodium acetate — were only ever run without streptomycin. They appear as gaps in the +Str panels rather than being dropped, so that rows stay aligned across panels.</span></span>
+<span id="cb18-21"><a href="#cb18-21"></a><span class="co">::: --&gt;</span></span>
+<span id="cb18-22"><a href="#cb18-22"></a></span>
+<span id="cb18-23"><a href="#cb18-23"></a><span class="fu"># Setup</span></span>
+<span id="cb18-24"><a href="#cb18-24"></a></span>
+<span id="cb18-25"><a href="#cb18-25"></a><span class="fu">## Libraries</span></span>
+<span id="cb18-26"><a href="#cb18-26"></a></span>
+<span id="cb18-29"><a href="#cb18-29"></a><span class="in">```{r}</span></span>
+<span id="cb18-30"><a href="#cb18-30"></a><span class="fu">library</span>(here)</span>
+<span id="cb18-31"><a href="#cb18-31"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb18-32"><a href="#cb18-32"></a><span class="fu">library</span>(growthrates)</span>
+<span id="cb18-33"><a href="#cb18-33"></a><span class="fu">library</span>(fs)</span>
+<span id="cb18-34"><a href="#cb18-34"></a><span class="fu">library</span>(glue)</span>
+<span id="cb18-35"><a href="#cb18-35"></a><span class="fu">library</span>(marquee)</span>
+<span id="cb18-36"><a href="#cb18-36"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"gcurves.R"</span>))</span>
+<span id="cb18-37"><a href="#cb18-37"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"generic.R"</span>))</span>
+<span id="cb18-38"><a href="#cb18-38"></a><span class="in">```</span></span>
+<span id="cb18-39"><a href="#cb18-39"></a></span>
+<span id="cb18-40"><a href="#cb18-40"></a><span class="fu">## Global variables</span></span>
+<span id="cb18-41"><a href="#cb18-41"></a></span>
+<span id="cb18-44"><a href="#cb18-44"></a><span class="in">```{r}</span></span>
+<span id="cb18-45"><a href="#cb18-45"></a>data_interim <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"interim"</span>, <span class="st">"05_one_carbon_gcurves"</span>)</span>
+<span id="cb18-46"><a href="#cb18-46"></a>data_processed <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"processed"</span>, <span class="st">"05_one_carbon_gcurves"</span>)</span>
+<span id="cb18-47"><a href="#cb18-47"></a>figs <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"output"</span>, <span class="st">"figures"</span>)</span>
+<span id="cb18-48"><a href="#cb18-48"></a></span>
+<span id="cb18-49"><a href="#cb18-49"></a><span class="co"># make output directories if they don't exist</span></span>
+<span id="cb18-50"><a href="#cb18-50"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(data_interim)</span>
+<span id="cb18-51"><a href="#cb18-51"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(data_processed)</span>
+<span id="cb18-52"><a href="#cb18-52"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(figs)</span>
+<span id="cb18-53"><a href="#cb18-53"></a><span class="in">```</span></span>
+<span id="cb18-54"><a href="#cb18-54"></a></span>
+<span id="cb18-55"><a href="#cb18-55"></a><span class="fu"># Load data</span></span>
+<span id="cb18-56"><a href="#cb18-56"></a></span>
+<span id="cb18-59"><a href="#cb18-59"></a><span class="in">```{r}</span></span>
+<span id="cb18-60"><a href="#cb18-60"></a>df <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(</span>
+<span id="cb18-61"><a href="#cb18-61"></a>  data_processed,</span>
+<span id="cb18-62"><a href="#cb18-62"></a>  <span class="st">"one_carbon_gcurves_logphase.tsv"</span></span>
+<span id="cb18-63"><a href="#cb18-63"></a>)) <span class="sc">|&gt;</span></span>
+<span id="cb18-64"><a href="#cb18-64"></a>  <span class="fu">mutate</span>(<span class="at">plate_name =</span> <span class="fu">as.character</span>(plate_name))</span>
+<span id="cb18-65"><a href="#cb18-65"></a><span class="in">```</span></span>
+<span id="cb18-66"><a href="#cb18-66"></a></span>
+<span id="cb18-67"><a href="#cb18-67"></a><span class="fu"># Processing</span></span>
+<span id="cb18-68"><a href="#cb18-68"></a></span>
+<span id="cb18-69"><a href="#cb18-69"></a><span class="fu">## Growth rates per well (spline based estimate)</span></span>
+<span id="cb18-70"><a href="#cb18-70"></a></span>
+<span id="cb18-71"><a href="#cb18-71"></a>Using the tool <span class="co">[</span><span class="ot">`growthrates`</span><span class="co">](https://cran.r-project.org/web/packages/growthrates/index.html)</span> to estimate mu_max. I have found this works a lot better than gcplyr and is more convenient than using another tool outside of R. Nonparametric estimate growth rates by spline is very fast. Fitting to a model takes more time resources. <span class="co">[</span><span class="ot">Generally it is best to try multiple approaches and to visualize/check the data to make sure it makes sense.</span><span class="co">](https://www.frontiersin.org/journals/ecology-and-evolution/articles/10.3389/fevo.2023.1313500/full)</span></span>
+<span id="cb18-72"><a href="#cb18-72"></a></span>
+<span id="cb18-73"><a href="#cb18-73"></a>Unlike upstream, the streptomycin-dosed wells are kept here.</span>
+<span id="cb18-74"><a href="#cb18-74"></a></span>
+<span id="cb18-77"><a href="#cb18-77"></a><span class="in">```{r}</span></span>
+<span id="cb18-78"><a href="#cb18-78"></a>gcurves_thin_sm <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
+<span id="cb18-79"><a href="#cb18-79"></a>  <span class="co"># exclude blanks, but keep every streptomycin concentration</span></span>
+<span id="cb18-80"><a href="#cb18-80"></a>  <span class="fu">filter</span>(strainID <span class="sc">!=</span> <span class="st">"blank"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-81"><a href="#cb18-81"></a>  <span class="co"># need to add a small floor for numerical stability for the spline fit</span></span>
+<span id="cb18-82"><a href="#cb18-82"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb18-83"><a href="#cb18-83"></a>    <span class="at">OD600_rollmean_spline =</span> <span class="fu">if_else</span>(OD600_rollmean <span class="sc">==</span> <span class="dv">0</span>, <span class="fl">1e-3</span>, OD600_rollmean)</span>
+<span id="cb18-84"><a href="#cb18-84"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb18-85"><a href="#cb18-85"></a>  <span class="co"># make uniq id</span></span>
+<span id="cb18-86"><a href="#cb18-86"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">paste0</span>(plate_name, <span class="st">"|"</span>, well))</span>
+<span id="cb18-87"><a href="#cb18-87"></a><span class="in">```</span></span>
+<span id="cb18-88"><a href="#cb18-88"></a></span>
+<span id="cb18-89"><a href="#cb18-89"></a>Smoothing splines are a quick method to estimate maximum growth. The method is</span>
+<span id="cb18-90"><a href="#cb18-90"></a>called nonparametric, because the growth rate is directly estimated from the</span>
+<span id="cb18-91"><a href="#cb18-91"></a>smoothed data without being restricted to a specific model formula. From</span>
+<span id="cb18-92"><a href="#cb18-92"></a><span class="co">[</span><span class="ot">growthrates documentation:</span><span class="co">](https://cran.r-project.org/web/packages/growthrates/growthrates.pdf)</span></span>
+<span id="cb18-93"><a href="#cb18-93"></a></span>
+<span id="cb18-94"><a href="#cb18-94"></a><span class="at">&gt; The method was inspired by an algorithm of [Kahm et al.</span></span>
+<span id="cb18-95"><a href="#cb18-95"></a><span class="at">&gt; (2010)](https://www.jstatsoft.org/article/view/v033i07), with different</span></span>
+<span id="cb18-96"><a href="#cb18-96"></a><span class="at">&gt; settings and assumptions. In the moment, spline fitting is always done with</span></span>
+<span id="cb18-97"><a href="#cb18-97"></a><span class="at">&gt; log-transformed data, assuming exponential growth at the time point of the</span></span>
+<span id="cb18-98"><a href="#cb18-98"></a><span class="at">&gt; maximum of the first derivative of the spline fit. All the hard work is done</span></span>
+<span id="cb18-99"><a href="#cb18-99"></a><span class="at">&gt; by function smooth.spline from package stats, that is highly user</span></span>
+<span id="cb18-100"><a href="#cb18-100"></a><span class="at">&gt; configurable. Normally, smoothness is automatically determined via</span></span>
+<span id="cb18-101"><a href="#cb18-101"></a><span class="at">&gt; cross-validation. This works well in many cases, whereas manual adjustment</span></span>
+<span id="cb18-102"><a href="#cb18-102"></a><span class="at">&gt; is required otherwise, e.g. by setting spar to a fixed value </span><span class="sc">\[</span><span class="at">0, 1</span><span class="sc">\]</span><span class="at"> that</span></span>
+<span id="cb18-103"><a href="#cb18-103"></a><span class="at">&gt; also disables cross-validation.</span></span>
+<span id="cb18-104"><a href="#cb18-104"></a></span>
+<span id="cb18-107"><a href="#cb18-107"></a><span class="in">```{r}</span></span>
+<span id="cb18-108"><a href="#cb18-108"></a><span class="fu">set.seed</span>(<span class="dv">45278</span>)</span>
+<span id="cb18-109"><a href="#cb18-109"></a>many_spline <span class="ot">&lt;-</span> growthrates<span class="sc">::</span><span class="fu">all_splines</span>(</span>
+<span id="cb18-110"><a href="#cb18-110"></a>  OD600_rollmean_spline <span class="sc">~</span> hours <span class="sc">|</span> id,</span>
+<span id="cb18-111"><a href="#cb18-111"></a>  <span class="at">data =</span> gcurves_thin_sm,</span>
+<span id="cb18-112"><a href="#cb18-112"></a>  <span class="at">spar =</span> <span class="fl">0.5</span></span>
+<span id="cb18-113"><a href="#cb18-113"></a>)</span>
+<span id="cb18-114"><a href="#cb18-114"></a></span>
+<span id="cb18-115"><a href="#cb18-115"></a>readr<span class="sc">::</span><span class="fu">write_rds</span>(</span>
+<span id="cb18-116"><a href="#cb18-116"></a>  many_spline,</span>
+<span id="cb18-117"><a href="#cb18-117"></a>  here<span class="sc">::</span><span class="fu">here</span>(data_interim, <span class="st">"one_carbon_spline_fits.rds"</span>)</span>
+<span id="cb18-118"><a href="#cb18-118"></a>)</span>
+<span id="cb18-119"><a href="#cb18-119"></a><span class="in">```</span></span>
+<span id="cb18-120"><a href="#cb18-120"></a></span>
+<span id="cb18-123"><a href="#cb18-123"></a><span class="in">```{r}</span></span>
+<span id="cb18-124"><a href="#cb18-124"></a><span class="co"># get results</span></span>
+<span id="cb18-125"><a href="#cb18-125"></a>gr_per_well <span class="ot">&lt;-</span> growthrates<span class="sc">::</span><span class="fu">results</span>(many_spline) <span class="sc">|&gt;</span></span>
+<span id="cb18-126"><a href="#cb18-126"></a>  tidyr<span class="sc">::</span><span class="fu">separate</span>(<span class="st">'id'</span>, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"plate_name"</span>, <span class="st">"well"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb18-127"><a href="#cb18-127"></a>  <span class="fu">left_join</span>(<span class="fu">distinct</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
+<span id="cb18-128"><a href="#cb18-128"></a>    df,</span>
+<span id="cb18-129"><a href="#cb18-129"></a>    <span class="sc">-</span>seconds,</span>
+<span id="cb18-130"><a href="#cb18-130"></a>    <span class="sc">-</span>hours,</span>
+<span id="cb18-131"><a href="#cb18-131"></a>    <span class="sc">-</span>OD600,</span>
+<span id="cb18-132"><a href="#cb18-132"></a>    <span class="sc">-</span>OD600_rollmean</span>
+<span id="cb18-133"><a href="#cb18-133"></a>  )))</span>
+<span id="cb18-134"><a href="#cb18-134"></a><span class="in">```</span></span>
+<span id="cb18-135"><a href="#cb18-135"></a></span>
+<span id="cb18-136"><a href="#cb18-136"></a><span class="fu">## Compute K per well</span></span>
+<span id="cb18-137"><a href="#cb18-137"></a></span>
+<span id="cb18-138"><a href="#cb18-138"></a>Simply take the maximum observed OD600 value to get a "dumb" empirical estimate of the carrying capacity.</span>
+<span id="cb18-139"><a href="#cb18-139"></a></span>
+<span id="cb18-142"><a href="#cb18-142"></a><span class="in">```{r}</span></span>
+<span id="cb18-143"><a href="#cb18-143"></a>k_per_well <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
+<span id="cb18-144"><a href="#cb18-144"></a>  <span class="fu">filter</span>(strainID <span class="sc">!=</span> <span class="st">"blank"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-145"><a href="#cb18-145"></a>  <span class="fu">arrange</span>(plate_file, well, hours) <span class="sc">|&gt;</span></span>
+<span id="cb18-146"><a href="#cb18-146"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb18-147"><a href="#cb18-147"></a>    <span class="at">max_od =</span> <span class="fu">max</span>(OD600_rollmean),</span>
+<span id="cb18-148"><a href="#cb18-148"></a>    <span class="at">.by =</span> <span class="fu">c</span>(</span>
+<span id="cb18-149"><a href="#cb18-149"></a>      plate_name,</span>
+<span id="cb18-150"><a href="#cb18-150"></a>      well,</span>
+<span id="cb18-151"><a href="#cb18-151"></a>      strainID,</span>
+<span id="cb18-152"><a href="#cb18-152"></a>      evo_hist,</span>
+<span id="cb18-153"><a href="#cb18-153"></a>      streptomycin_ug_ml,</span>
+<span id="cb18-154"><a href="#cb18-154"></a>      carbon_source,</span>
+<span id="cb18-155"><a href="#cb18-155"></a>      class</span>
+<span id="cb18-156"><a href="#cb18-156"></a>    )</span>
+<span id="cb18-157"><a href="#cb18-157"></a>  )</span>
+<span id="cb18-158"><a href="#cb18-158"></a><span class="in">```</span></span>
+<span id="cb18-159"><a href="#cb18-159"></a></span>
+<span id="cb18-160"><a href="#cb18-160"></a><span class="fu">## Compute AUC per well</span></span>
+<span id="cb18-161"><a href="#cb18-161"></a></span>
+<span id="cb18-162"><a href="#cb18-162"></a>Area under the growth curve (AUC) is computed per unique well using the</span>
+<span id="cb18-163"><a href="#cb18-163"></a>trapezoidal rule over time in hours. <span class="in">`OD600_rollmean`</span> values are used to reduce noise.</span>
+<span id="cb18-164"><a href="#cb18-164"></a></span>
+<span id="cb18-167"><a href="#cb18-167"></a><span class="in">```{r}</span></span>
+<span id="cb18-168"><a href="#cb18-168"></a>auc_per_well <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
+<span id="cb18-169"><a href="#cb18-169"></a>  <span class="fu">filter</span>(strainID <span class="sc">!=</span> <span class="st">"blank"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-170"><a href="#cb18-170"></a>  <span class="fu">arrange</span>(plate_file, well, hours) <span class="sc">|&gt;</span></span>
+<span id="cb18-171"><a href="#cb18-171"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb18-172"><a href="#cb18-172"></a>    <span class="at">auc =</span> <span class="fu">trap_auc</span>(hours, OD600_rollmean),</span>
+<span id="cb18-173"><a href="#cb18-173"></a>    <span class="at">.by =</span> <span class="fu">c</span>(</span>
+<span id="cb18-174"><a href="#cb18-174"></a>      plate_name,</span>
+<span id="cb18-175"><a href="#cb18-175"></a>      well,</span>
+<span id="cb18-176"><a href="#cb18-176"></a>      strainID,</span>
+<span id="cb18-177"><a href="#cb18-177"></a>      evo_hist,</span>
+<span id="cb18-178"><a href="#cb18-178"></a>      streptomycin_ug_ml,</span>
+<span id="cb18-179"><a href="#cb18-179"></a>      carbon_source,</span>
+<span id="cb18-180"><a href="#cb18-180"></a>      class</span>
+<span id="cb18-181"><a href="#cb18-181"></a>    )</span>
+<span id="cb18-182"><a href="#cb18-182"></a>  )</span>
+<span id="cb18-183"><a href="#cb18-183"></a><span class="in">```</span></span>
+<span id="cb18-184"><a href="#cb18-184"></a></span>
+<span id="cb18-185"><a href="#cb18-185"></a><span class="fu">## Write growth summaries to disc</span></span>
+<span id="cb18-186"><a href="#cb18-186"></a></span>
+<span id="cb18-187"><a href="#cb18-187"></a><span class="in">`streptomycin_ug_ml`</span> is carried into the summary table here — upstream it was a</span>
+<span id="cb18-188"><a href="#cb18-188"></a>constant 0 and could be dropped.</span>
+<span id="cb18-189"><a href="#cb18-189"></a></span>
+<span id="cb18-192"><a href="#cb18-192"></a><span class="in">```{r}</span></span>
+<span id="cb18-193"><a href="#cb18-193"></a>myformatter <span class="ot">&lt;-</span> <span class="cf">function</span>(df, grvar) {</span>
+<span id="cb18-194"><a href="#cb18-194"></a>  df <span class="sc">|&gt;</span></span>
+<span id="cb18-195"><a href="#cb18-195"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
+<span id="cb18-196"><a href="#cb18-196"></a>      <span class="at">species =</span> strainID,</span>
+<span id="cb18-197"><a href="#cb18-197"></a>      evo_hist,</span>
+<span id="cb18-198"><a href="#cb18-198"></a>      streptomycin_ug_ml,</span>
+<span id="cb18-199"><a href="#cb18-199"></a>      carbon_source,</span>
+<span id="cb18-200"><a href="#cb18-200"></a>      <span class="at">carbon_class =</span> class,</span>
+<span id="cb18-201"><a href="#cb18-201"></a>      {{ grvar }}</span>
+<span id="cb18-202"><a href="#cb18-202"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb18-203"><a href="#cb18-203"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb18-204"><a href="#cb18-204"></a>      <span class="at">genotype =</span> <span class="fu">str_sub</span>(evo_hist, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb18-205"><a href="#cb18-205"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb18-206"><a href="#cb18-206"></a>    <span class="fu">arrange</span>(</span>
+<span id="cb18-207"><a href="#cb18-207"></a>      species,</span>
+<span id="cb18-208"><a href="#cb18-208"></a>      genotype,</span>
+<span id="cb18-209"><a href="#cb18-209"></a>      streptomycin_ug_ml,</span>
+<span id="cb18-210"><a href="#cb18-210"></a>      carbon_source,</span>
+<span id="cb18-211"><a href="#cb18-211"></a>      carbon_class</span>
+<span id="cb18-212"><a href="#cb18-212"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb18-213"><a href="#cb18-213"></a>    <span class="fu">group_by</span>(</span>
+<span id="cb18-214"><a href="#cb18-214"></a>      species,</span>
+<span id="cb18-215"><a href="#cb18-215"></a>      genotype,</span>
+<span id="cb18-216"><a href="#cb18-216"></a>      streptomycin_ug_ml,</span>
+<span id="cb18-217"><a href="#cb18-217"></a>      carbon_source,</span>
+<span id="cb18-218"><a href="#cb18-218"></a>      carbon_class</span>
+<span id="cb18-219"><a href="#cb18-219"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb18-220"><a href="#cb18-220"></a>    <span class="fu">mutate</span>(<span class="at">replicate =</span> LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()]) <span class="sc">|&gt;</span></span>
+<span id="cb18-221"><a href="#cb18-221"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb18-222"><a href="#cb18-222"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
+<span id="cb18-223"><a href="#cb18-223"></a>      species,</span>
+<span id="cb18-224"><a href="#cb18-224"></a>      genotype,</span>
+<span id="cb18-225"><a href="#cb18-225"></a>      streptomycin_ug_ml,</span>
+<span id="cb18-226"><a href="#cb18-226"></a>      carbon_source,</span>
+<span id="cb18-227"><a href="#cb18-227"></a>      carbon_class,</span>
+<span id="cb18-228"><a href="#cb18-228"></a>      replicate,</span>
+<span id="cb18-229"><a href="#cb18-229"></a>      {{ grvar }}</span>
+<span id="cb18-230"><a href="#cb18-230"></a>    )</span>
+<span id="cb18-231"><a href="#cb18-231"></a>}</span>
+<span id="cb18-232"><a href="#cb18-232"></a></span>
+<span id="cb18-233"><a href="#cb18-233"></a><span class="fu">left_join</span>(<span class="fu">myformatter</span>(gr_per_well, mumax), <span class="fu">myformatter</span>(k_per_well, max_od)) <span class="sc">|&gt;</span></span>
+<span id="cb18-234"><a href="#cb18-234"></a>  <span class="fu">left_join</span>(<span class="fu">myformatter</span>(auc_per_well, auc)) <span class="sc">|&gt;</span></span>
+<span id="cb18-235"><a href="#cb18-235"></a>  <span class="fu">rename</span>(</span>
+<span id="cb18-236"><a href="#cb18-236"></a>    <span class="at">growth_rate =</span> mumax,</span>
+<span id="cb18-237"><a href="#cb18-237"></a>    <span class="at">carrying_capacity =</span> max_od,</span>
+<span id="cb18-238"><a href="#cb18-238"></a>    <span class="at">area_under_growth_curve =</span> auc</span>
+<span id="cb18-239"><a href="#cb18-239"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb18-240"><a href="#cb18-240"></a>  <span class="fu">write_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(data_processed, <span class="st">"growth_summaries_carbon.tsv"</span>))</span>
+<span id="cb18-241"><a href="#cb18-241"></a><span class="in">```</span></span>
+<span id="cb18-242"><a href="#cb18-242"></a></span>
+<span id="cb18-243"><a href="#cb18-243"></a><span class="fu">## Bootstrap summary by strainID, evo_hist, streptomycin_ug_ml, carbon_source</span></span>
+<span id="cb18-244"><a href="#cb18-244"></a></span>
+<span id="cb18-247"><a href="#cb18-247"></a><span class="in">```{r}</span></span>
+<span id="cb18-248"><a href="#cb18-248"></a><span class="co">#| output: false</span></span>
+<span id="cb18-249"><a href="#cb18-249"></a><span class="co">#| warning: false</span></span>
+<span id="cb18-250"><a href="#cb18-250"></a><span class="fu">set.seed</span>(<span class="dv">7391</span>)</span>
+<span id="cb18-251"><a href="#cb18-251"></a>N_BOOT <span class="ot">&lt;-</span> <span class="dv">2000</span></span>
+<span id="cb18-252"><a href="#cb18-252"></a></span>
+<span id="cb18-253"><a href="#cb18-253"></a>auc_summary <span class="ot">&lt;-</span> auc_per_well <span class="sc">|&gt;</span></span>
+<span id="cb18-254"><a href="#cb18-254"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb18-255"><a href="#cb18-255"></a>    <span class="fu">boot_mean_ci</span>(auc),</span>
+<span id="cb18-256"><a href="#cb18-256"></a>    <span class="at">.by =</span> <span class="fu">c</span>(strainID, evo_hist, streptomycin_ug_ml, carbon_source, class)</span>
+<span id="cb18-257"><a href="#cb18-257"></a>  )</span>
+<span id="cb18-258"><a href="#cb18-258"></a></span>
+<span id="cb18-259"><a href="#cb18-259"></a>k_summary <span class="ot">&lt;-</span> k_per_well <span class="sc">|&gt;</span></span>
+<span id="cb18-260"><a href="#cb18-260"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb18-261"><a href="#cb18-261"></a>    <span class="fu">boot_mean_ci</span>(max_od),</span>
+<span id="cb18-262"><a href="#cb18-262"></a>    <span class="at">.by =</span> <span class="fu">c</span>(strainID, evo_hist, streptomycin_ug_ml, carbon_source, class)</span>
+<span id="cb18-263"><a href="#cb18-263"></a>  )</span>
+<span id="cb18-264"><a href="#cb18-264"></a></span>
+<span id="cb18-265"><a href="#cb18-265"></a>gr_summary <span class="ot">&lt;-</span> gr_per_well <span class="sc">|&gt;</span></span>
+<span id="cb18-266"><a href="#cb18-266"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb18-267"><a href="#cb18-267"></a>    <span class="fu">boot_mean_ci</span>(mumax),</span>
+<span id="cb18-268"><a href="#cb18-268"></a>    <span class="at">.by =</span> <span class="fu">c</span>(strainID, evo_hist, streptomycin_ug_ml, carbon_source, class)</span>
+<span id="cb18-269"><a href="#cb18-269"></a>  )</span>
+<span id="cb18-270"><a href="#cb18-270"></a><span class="in">```</span></span>
+<span id="cb18-271"><a href="#cb18-271"></a></span>
+<span id="cb18-272"><a href="#cb18-272"></a>Replicate counts per point, so the figure captions do not have to assert one.</span>
+<span id="cb18-273"><a href="#cb18-273"></a></span>
+<span id="cb18-276"><a href="#cb18-276"></a><span class="in">```{r}</span></span>
+<span id="cb18-277"><a href="#cb18-277"></a><span class="co">#| echo: false</span></span>
+<span id="cb18-278"><a href="#cb18-278"></a><span class="co">#| output: true</span></span>
+<span id="cb18-279"><a href="#cb18-279"></a>auc_per_well <span class="sc">|&gt;</span></span>
+<span id="cb18-280"><a href="#cb18-280"></a>  <span class="fu">count</span>(strainID, streptomycin_ug_ml, <span class="at">name =</span> <span class="st">"wells"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-281"><a href="#cb18-281"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb18-282"><a href="#cb18-282"></a>    auc_per_well <span class="sc">|&gt;</span></span>
+<span id="cb18-283"><a href="#cb18-283"></a>      <span class="fu">count</span>(strainID, streptomycin_ug_ml, evo_hist, carbon_source) <span class="sc">|&gt;</span></span>
+<span id="cb18-284"><a href="#cb18-284"></a>      <span class="fu">summarize</span>(</span>
+<span id="cb18-285"><a href="#cb18-285"></a>        <span class="at">reps_per_point =</span> <span class="fu">paste</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(n)), <span class="at">collapse =</span> <span class="st">", "</span>),</span>
+<span id="cb18-286"><a href="#cb18-286"></a>        <span class="at">.by =</span> <span class="fu">c</span>(strainID, streptomycin_ug_ml)</span>
+<span id="cb18-287"><a href="#cb18-287"></a>      ),</span>
+<span id="cb18-288"><a href="#cb18-288"></a>    <span class="at">by =</span> <span class="fu">join_by</span>(strainID, streptomycin_ug_ml)</span>
+<span id="cb18-289"><a href="#cb18-289"></a>  )</span>
+<span id="cb18-290"><a href="#cb18-290"></a><span class="in">```</span></span>
+<span id="cb18-291"><a href="#cb18-291"></a></span>
+<span id="cb18-292"><a href="#cb18-292"></a><span class="fu"># Plot results</span></span>
+<span id="cb18-293"><a href="#cb18-293"></a></span>
+<span id="cb18-296"><a href="#cb18-296"></a><span class="in">```{r}</span></span>
+<span id="cb18-297"><a href="#cb18-297"></a><span class="co"># order of the carbon sources</span></span>
+<span id="cb18-298"><a href="#cb18-298"></a>carbon_levels <span class="ot">&lt;-</span> <span class="fu">rev</span>(<span class="fu">c</span>(</span>
+<span id="cb18-299"><a href="#cb18-299"></a>  <span class="st">"glucose"</span>,</span>
+<span id="cb18-300"><a href="#cb18-300"></a>  <span class="st">"xylose"</span>,</span>
+<span id="cb18-301"><a href="#cb18-301"></a>  <span class="st">"sucrose"</span>,</span>
+<span id="cb18-302"><a href="#cb18-302"></a>  <span class="st">"cellobiose"</span>,</span>
+<span id="cb18-303"><a href="#cb18-303"></a>  <span class="st">"starch"</span>,</span>
+<span id="cb18-304"><a href="#cb18-304"></a>  <span class="st">"D-mannitol"</span>,</span>
+<span id="cb18-305"><a href="#cb18-305"></a>  <span class="st">"succinic acid"</span>,</span>
+<span id="cb18-306"><a href="#cb18-306"></a>  <span class="st">"malate"</span>,</span>
+<span id="cb18-307"><a href="#cb18-307"></a>  <span class="st">"4-Hydroxybenzoic acid"</span>,</span>
+<span id="cb18-308"><a href="#cb18-308"></a>  <span class="st">"shikimic acid"</span>,</span>
+<span id="cb18-309"><a href="#cb18-309"></a>  <span class="st">"salicylic acid"</span>,</span>
+<span id="cb18-310"><a href="#cb18-310"></a>  <span class="st">"lactic acid"</span>,</span>
+<span id="cb18-311"><a href="#cb18-311"></a>  <span class="st">"sodium acetate"</span>,</span>
+<span id="cb18-312"><a href="#cb18-312"></a>  <span class="st">"histidine"</span>,</span>
+<span id="cb18-313"><a href="#cb18-313"></a>  <span class="st">"leucine"</span>,</span>
+<span id="cb18-314"><a href="#cb18-314"></a>  <span class="st">"L-valine"</span>,</span>
+<span id="cb18-315"><a href="#cb18-315"></a>  <span class="st">"L-cysteine"</span>,</span>
+<span id="cb18-316"><a href="#cb18-316"></a>  <span class="st">"phenylalanine"</span>,</span>
+<span id="cb18-317"><a href="#cb18-317"></a>  <span class="st">"taurine"</span>,</span>
+<span id="cb18-318"><a href="#cb18-318"></a>  <span class="st">"asparagine"</span></span>
+<span id="cb18-319"><a href="#cb18-319"></a>))</span>
+<span id="cb18-320"><a href="#cb18-320"></a><span class="in">```</span></span>
+<span id="cb18-321"><a href="#cb18-321"></a></span>
+<span id="cb18-322"><a href="#cb18-322"></a>Upstream the axis-label colours were a hard-coded run of 7/7/6. Here they are</span>
+<span id="cb18-323"><a href="#cb18-323"></a>looked up from the <span class="in">`class`</span> column instead, so the colouring cannot silently</span>
+<span id="cb18-324"><a href="#cb18-324"></a>drift out of step with <span class="in">`carbon_levels`</span>.</span>
+<span id="cb18-325"><a href="#cb18-325"></a></span>
+<span id="cb18-328"><a href="#cb18-328"></a><span class="in">```{r}</span></span>
+<span id="cb18-329"><a href="#cb18-329"></a>class_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb18-330"><a href="#cb18-330"></a>  <span class="st">"sugar"</span> <span class="ot">=</span> <span class="st">"#17A769"</span>,</span>
+<span id="cb18-331"><a href="#cb18-331"></a>  <span class="st">"organic_acid"</span> <span class="ot">=</span> <span class="st">"#E8351E"</span>,</span>
+<span id="cb18-332"><a href="#cb18-332"></a>  <span class="st">"amino_acid"</span> <span class="ot">=</span> <span class="st">"#852F88"</span></span>
+<span id="cb18-333"><a href="#cb18-333"></a>)</span>
+<span id="cb18-334"><a href="#cb18-334"></a></span>
+<span id="cb18-335"><a href="#cb18-335"></a>carbon_class_lookup <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(auc_per_well, k_per_well) <span class="sc">|&gt;</span></span>
+<span id="cb18-336"><a href="#cb18-336"></a>  <span class="fu">distinct</span>(carbon_source, class) <span class="sc">|&gt;</span></span>
+<span id="cb18-337"><a href="#cb18-337"></a>  <span class="fu">deframe</span>()</span>
+<span id="cb18-338"><a href="#cb18-338"></a></span>
+<span id="cb18-339"><a href="#cb18-339"></a>label_colors <span class="ot">&lt;-</span> <span class="fu">unname</span>(class_colors[carbon_class_lookup[carbon_levels]])</span>
+<span id="cb18-340"><a href="#cb18-340"></a><span class="in">```</span></span>
+<span id="cb18-341"><a href="#cb18-341"></a></span>
+<span id="cb18-342"><a href="#cb18-342"></a>Each panel is one species at one streptomycin concentration. Species are never</span>
+<span id="cb18-343"><a href="#cb18-343"></a>compared across panels at matched dose, because no such dose exists.</span>
+<span id="cb18-344"><a href="#cb18-344"></a></span>
+<span id="cb18-347"><a href="#cb18-347"></a><span class="in">```{r}</span></span>
+<span id="cb18-348"><a href="#cb18-348"></a>panel_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb18-349"><a href="#cb18-349"></a>  <span class="st">"HAMBI_1287</span><span class="sc">\n</span><span class="st">0 μg/ml Str"</span>,</span>
+<span id="cb18-350"><a href="#cb18-350"></a>  <span class="st">"HAMBI_1287</span><span class="sc">\n</span><span class="st">512 μg/ml Str"</span>,</span>
+<span id="cb18-351"><a href="#cb18-351"></a>  <span class="st">"HAMBI_1977</span><span class="sc">\n</span><span class="st">0 μg/ml Str"</span>,</span>
+<span id="cb18-352"><a href="#cb18-352"></a>  <span class="st">"HAMBI_1977</span><span class="sc">\n</span><span class="st">10 μg/ml Str"</span></span>
+<span id="cb18-353"><a href="#cb18-353"></a>)</span>
+<span id="cb18-354"><a href="#cb18-354"></a></span>
+<span id="cb18-355"><a href="#cb18-355"></a>add_panel <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb18-356"><a href="#cb18-356"></a>  df <span class="sc">|&gt;</span></span>
+<span id="cb18-357"><a href="#cb18-357"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb18-358"><a href="#cb18-358"></a>      <span class="at">panel =</span> <span class="fu">factor</span>(</span>
+<span id="cb18-359"><a href="#cb18-359"></a>        <span class="fu">paste0</span>(</span>
+<span id="cb18-360"><a href="#cb18-360"></a>          <span class="fu">str_replace</span>(strainID, <span class="st">"^H"</span>, <span class="st">"HAMBI_"</span>),</span>
+<span id="cb18-361"><a href="#cb18-361"></a>          <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb18-362"><a href="#cb18-362"></a>          streptomycin_ug_ml,</span>
+<span id="cb18-363"><a href="#cb18-363"></a>          <span class="st">" μg/ml Str"</span></span>
+<span id="cb18-364"><a href="#cb18-364"></a>        ),</span>
+<span id="cb18-365"><a href="#cb18-365"></a>        <span class="at">levels =</span> panel_levels</span>
+<span id="cb18-366"><a href="#cb18-366"></a>      )</span>
+<span id="cb18-367"><a href="#cb18-367"></a>    )</span>
+<span id="cb18-368"><a href="#cb18-368"></a>}</span>
+<span id="cb18-369"><a href="#cb18-369"></a><span class="in">```</span></span>
+<span id="cb18-370"><a href="#cb18-370"></a></span>
+<span id="cb18-373"><a href="#cb18-373"></a><span class="in">```{r}</span></span>
+<span id="cb18-374"><a href="#cb18-374"></a>plotter <span class="ot">&lt;-</span> <span class="cf">function</span>(df, lab) {</span>
+<span id="cb18-375"><a href="#cb18-375"></a>  dw <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb18-376"><a href="#cb18-376"></a>  psize <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb18-377"><a href="#cb18-377"></a>  lsize <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb18-378"><a href="#cb18-378"></a></span>
+<span id="cb18-379"><a href="#cb18-379"></a>  df <span class="sc">|&gt;</span></span>
+<span id="cb18-380"><a href="#cb18-380"></a>    <span class="fu">add_panel</span>() <span class="sc">|&gt;</span></span>
+<span id="cb18-381"><a href="#cb18-381"></a>    <span class="fu">mutate</span>(<span class="at">carbon_source =</span> <span class="fu">factor</span>(carbon_source, <span class="at">levels =</span> carbon_levels)) <span class="sc">|&gt;</span></span>
+<span id="cb18-382"><a href="#cb18-382"></a>    <span class="co"># fill in the untested species/streptomycin/carbon combinations as explicit</span></span>
+<span id="cb18-383"><a href="#cb18-383"></a>    <span class="co"># NA rows. Without this the connecting line is drawn straight across the</span></span>
+<span id="cb18-384"><a href="#cb18-384"></a>    <span class="co"># four carbon sources that were never run with streptomycin, which reads as</span></span>
+<span id="cb18-385"><a href="#cb18-385"></a>    <span class="co"># an interpolated value rather than a gap.</span></span>
+<span id="cb18-386"><a href="#cb18-386"></a>    tidyr<span class="sc">::</span><span class="fu">complete</span>(panel, evo_hist, carbon_source) <span class="sc">|&gt;</span></span>
+<span id="cb18-387"><a href="#cb18-387"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> mn, <span class="at">x =</span> carbon_source, <span class="at">color =</span> evo_hist)) <span class="sc">+</span></span>
+<span id="cb18-388"><a href="#cb18-388"></a>    <span class="fu">geom_linerange</span>(</span>
+<span id="cb18-389"><a href="#cb18-389"></a>      <span class="fu">aes</span>(<span class="at">ymin =</span> ci_lo, <span class="at">ymax =</span> ci_hi),</span>
+<span id="cb18-390"><a href="#cb18-390"></a>      <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> dw),</span>
+<span id="cb18-391"><a href="#cb18-391"></a>      <span class="at">size =</span> lsize</span>
+<span id="cb18-392"><a href="#cb18-392"></a>    ) <span class="sc">+</span></span>
+<span id="cb18-393"><a href="#cb18-393"></a>    <span class="fu">geom_point</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> dw), <span class="at">size =</span> psize) <span class="sc">+</span></span>
+<span id="cb18-394"><a href="#cb18-394"></a>    <span class="fu">geom_line</span>(</span>
+<span id="cb18-395"><a href="#cb18-395"></a>      <span class="fu">aes</span>(<span class="at">group =</span> evo_hist),</span>
+<span id="cb18-396"><a href="#cb18-396"></a>      <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
+<span id="cb18-397"><a href="#cb18-397"></a>      <span class="at">size =</span> lsize <span class="sc">-</span> <span class="fl">0.5</span>,</span>
+<span id="cb18-398"><a href="#cb18-398"></a>      <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> dw),</span>
+<span id="cb18-399"><a href="#cb18-399"></a>    ) <span class="sc">+</span></span>
+<span id="cb18-400"><a href="#cb18-400"></a>    <span class="co"># fixed rather than free_x: the +Str panels are missing four carbon</span></span>
+<span id="cb18-401"><a href="#cb18-401"></a>    <span class="co"># sources, and free scales would misalign the rows across panels</span></span>
+<span id="cb18-402"><a href="#cb18-402"></a>    <span class="fu">facet_grid</span>(<span class="sc">~</span>panel) <span class="sc">+</span></span>
+<span id="cb18-403"><a href="#cb18-403"></a>    <span class="fu">labs</span>(</span>
+<span id="cb18-404"><a href="#cb18-404"></a>      <span class="at">y =</span> lab,</span>
+<span id="cb18-405"><a href="#cb18-405"></a>      <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb18-406"><a href="#cb18-406"></a>      <span class="at">color =</span> <span class="st">"Str Resistance"</span>,</span>
+<span id="cb18-407"><a href="#cb18-407"></a>    ) <span class="sc">+</span></span>
+<span id="cb18-408"><a href="#cb18-408"></a>    <span class="fu">scale_x_discrete</span>(</span>
+<span id="cb18-409"><a href="#cb18-409"></a>      <span class="at">labels =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb18-410"><a href="#cb18-410"></a>        glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"{{.{label_colors} {x}}}"</span>)</span>
+<span id="cb18-411"><a href="#cb18-411"></a>      }</span>
+<span id="cb18-412"><a href="#cb18-412"></a>    ) <span class="sc">+</span></span>
+<span id="cb18-413"><a href="#cb18-413"></a>    <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#333333"</span>, <span class="st">"#EB990C"</span>)) <span class="sc">+</span></span>
+<span id="cb18-414"><a href="#cb18-414"></a>    <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb18-415"><a href="#cb18-415"></a>    <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb18-416"><a href="#cb18-416"></a>    <span class="fu">theme</span>(</span>
+<span id="cb18-417"><a href="#cb18-417"></a>      <span class="at">axis.text.y =</span> marquee<span class="sc">::</span><span class="fu">element_marquee</span>(<span class="at">size =</span> <span class="dv">11</span>),</span>
+<span id="cb18-418"><a href="#cb18-418"></a>      <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb18-419"><a href="#cb18-419"></a>      <span class="at">panel.grid.major =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"grey90"</span>),</span>
+<span id="cb18-420"><a href="#cb18-420"></a>      <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb18-421"><a href="#cb18-421"></a>      <span class="at">strip.placement =</span> <span class="st">"outside"</span>,</span>
+<span id="cb18-422"><a href="#cb18-422"></a>      <span class="at">strip.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb18-423"><a href="#cb18-423"></a>      <span class="co"># upstream this legend sat inside the panel at (0.95, 0.95). With four</span></span>
+<span id="cb18-424"><a href="#cb18-424"></a>      <span class="co"># panels instead of two it lands on top of the right-hand panel's points,</span></span>
+<span id="cb18-425"><a href="#cb18-425"></a>      <span class="co"># so it moves out of the plotting area here.</span></span>
+<span id="cb18-426"><a href="#cb18-426"></a>      <span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb18-427"><a href="#cb18-427"></a>      <span class="at">legend.key.size =</span> <span class="fu">unit</span>(<span class="dv">7</span>, <span class="st">"mm"</span>),</span>
+<span id="cb18-428"><a href="#cb18-428"></a>      <span class="at">legend.background =</span> <span class="fu">element_rect</span>(</span>
+<span id="cb18-429"><a href="#cb18-429"></a>        <span class="at">fill =</span> <span class="st">"grey95"</span>,</span>
+<span id="cb18-430"><a href="#cb18-430"></a>        <span class="at">colour =</span> <span class="st">"grey20"</span>,</span>
+<span id="cb18-431"><a href="#cb18-431"></a>        <span class="at">linewidth =</span> <span class="fl">0.5</span></span>
+<span id="cb18-432"><a href="#cb18-432"></a>      ),</span>
+<span id="cb18-433"><a href="#cb18-433"></a>      <span class="at">legend.title =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb18-434"><a href="#cb18-434"></a>    )</span>
+<span id="cb18-435"><a href="#cb18-435"></a>}</span>
+<span id="cb18-436"><a href="#cb18-436"></a><span class="in">```</span></span>
+<span id="cb18-437"><a href="#cb18-437"></a></span>
+<span id="cb18-438"><a href="#cb18-438"></a><span class="fu">## Plot differences in mean maximum density (empirical K)</span></span>
+<span id="cb18-439"><a href="#cb18-439"></a></span>
+<span id="cb18-442"><a href="#cb18-442"></a><span class="in">```{r}</span></span>
+<span id="cb18-443"><a href="#cb18-443"></a>pk <span class="ot">&lt;-</span> <span class="fu">plotter</span>(k_summary, <span class="st">"Mean K (OD600)"</span>)</span>
+<span id="cb18-444"><a href="#cb18-444"></a></span>
+<span id="cb18-445"><a href="#cb18-445"></a><span class="fu">ggsave</span>(</span>
+<span id="cb18-446"><a href="#cb18-446"></a>  here<span class="sc">::</span><span class="fu">here</span>(figs, <span class="st">"one_carbon_K_strep.svg"</span>),</span>
+<span id="cb18-447"><a href="#cb18-447"></a>  <span class="at">plot =</span> pk,</span>
+<span id="cb18-448"><a href="#cb18-448"></a>  <span class="at">device =</span> <span class="st">"svg"</span>,</span>
+<span id="cb18-449"><a href="#cb18-449"></a>  <span class="at">width =</span> <span class="dv">13</span>,</span>
+<span id="cb18-450"><a href="#cb18-450"></a>  <span class="at">height =</span> <span class="dv">8</span></span>
+<span id="cb18-451"><a href="#cb18-451"></a>)</span>
+<span id="cb18-452"><a href="#cb18-452"></a><span class="in">```</span></span>
+<span id="cb18-453"><a href="#cb18-453"></a></span>
+<span id="cb18-456"><a href="#cb18-456"></a><span class="in">```{r}</span></span>
+<span id="cb18-457"><a href="#cb18-457"></a><span class="co">#| echo: false</span></span>
+<span id="cb18-458"><a href="#cb18-458"></a><span class="co">#| output: true</span></span>
+<span id="cb18-459"><a href="#cb18-459"></a><span class="co">#| label: fig-01</span></span>
+<span id="cb18-460"><a href="#cb18-460"></a><span class="co">#| fig-width: 13</span></span>
+<span id="cb18-461"><a href="#cb18-461"></a><span class="co">#| fig-height: 8</span></span>
+<span id="cb18-462"><a href="#cb18-462"></a><span class="co">#| fig-cap: "Mean maximum density for ANC and EVO forms of each species grown on 20 substrates as the sole carbon source in a minimal medium lacking carbon, at each streptomycin concentration that species was dosed at. Mean K and bootstrapped 95% CI (2000 resamples) are computed for each combination of strainID, evo_hist, streptomycin_ug_ml and carbon_source. Point colour is streptomycin resistance evolution; y axis text colour is molecular class, starting at the top with sugars, then organic acids, then amino acids. Gaps in the +Str panels are the four carbon sources that were only run without streptomycin."</span></span>
+<span id="cb18-463"><a href="#cb18-463"></a>pk</span>
+<span id="cb18-464"><a href="#cb18-464"></a><span class="in">```</span></span>
+<span id="cb18-465"><a href="#cb18-465"></a></span>
+<span id="cb18-466"><a href="#cb18-466"></a><span class="fu">## Plot differences in mean AUC (area under growth curve)</span></span>
+<span id="cb18-467"><a href="#cb18-467"></a></span>
+<span id="cb18-470"><a href="#cb18-470"></a><span class="in">```{r}</span></span>
+<span id="cb18-471"><a href="#cb18-471"></a>pauc <span class="ot">&lt;-</span> <span class="fu">plotter</span>(auc_summary, <span class="st">"Mean AUC (OD600•h)"</span>)</span>
+<span id="cb18-472"><a href="#cb18-472"></a></span>
+<span id="cb18-473"><a href="#cb18-473"></a><span class="fu">ggsave</span>(</span>
+<span id="cb18-474"><a href="#cb18-474"></a>  here<span class="sc">::</span><span class="fu">here</span>(figs, <span class="st">"one_carbon_AUC_strep.svg"</span>),</span>
+<span id="cb18-475"><a href="#cb18-475"></a>  <span class="at">plot =</span> pauc,</span>
+<span id="cb18-476"><a href="#cb18-476"></a>  <span class="at">device =</span> <span class="st">"svg"</span>,</span>
+<span id="cb18-477"><a href="#cb18-477"></a>  <span class="at">width =</span> <span class="dv">13</span>,</span>
+<span id="cb18-478"><a href="#cb18-478"></a>  <span class="at">height =</span> <span class="dv">8</span></span>
+<span id="cb18-479"><a href="#cb18-479"></a>)</span>
+<span id="cb18-480"><a href="#cb18-480"></a><span class="in">```</span></span>
+<span id="cb18-481"><a href="#cb18-481"></a></span>
+<span id="cb18-484"><a href="#cb18-484"></a><span class="in">```{r}</span></span>
+<span id="cb18-485"><a href="#cb18-485"></a><span class="co">#| echo: false</span></span>
+<span id="cb18-486"><a href="#cb18-486"></a><span class="co">#| output: true</span></span>
+<span id="cb18-487"><a href="#cb18-487"></a><span class="co">#| label: fig-02</span></span>
+<span id="cb18-488"><a href="#cb18-488"></a><span class="co">#| fig-width: 13</span></span>
+<span id="cb18-489"><a href="#cb18-489"></a><span class="co">#| fig-height: 8</span></span>
+<span id="cb18-490"><a href="#cb18-490"></a><span class="co">#| fig-cap: "As in @fig-01 but for mean area under the growth curve."</span></span>
+<span id="cb18-491"><a href="#cb18-491"></a>pauc</span>
+<span id="cb18-492"><a href="#cb18-492"></a><span class="in">```</span></span>
+<span id="cb18-493"><a href="#cb18-493"></a></span>
+<span id="cb18-494"><a href="#cb18-494"></a><span class="fu">## Plot differences in mean growth rate</span></span>
+<span id="cb18-495"><a href="#cb18-495"></a></span>
+<span id="cb18-498"><a href="#cb18-498"></a><span class="in">```{r}</span></span>
+<span id="cb18-499"><a href="#cb18-499"></a>pgr <span class="ot">&lt;-</span> <span class="fu">plotter</span>(gr_summary, <span class="st">"Mean μ (per hour)"</span>)</span>
+<span id="cb18-500"><a href="#cb18-500"></a></span>
+<span id="cb18-501"><a href="#cb18-501"></a><span class="fu">ggsave</span>(</span>
+<span id="cb18-502"><a href="#cb18-502"></a>  here<span class="sc">::</span><span class="fu">here</span>(figs, <span class="st">"one_carbon_mumax_strep.svg"</span>),</span>
+<span id="cb18-503"><a href="#cb18-503"></a>  <span class="at">plot =</span> pgr,</span>
+<span id="cb18-504"><a href="#cb18-504"></a>  <span class="at">device =</span> <span class="st">"svg"</span>,</span>
+<span id="cb18-505"><a href="#cb18-505"></a>  <span class="at">width =</span> <span class="dv">13</span>,</span>
+<span id="cb18-506"><a href="#cb18-506"></a>  <span class="at">height =</span> <span class="dv">8</span></span>
+<span id="cb18-507"><a href="#cb18-507"></a>)</span>
+<span id="cb18-508"><a href="#cb18-508"></a><span class="in">```</span></span>
+<span id="cb18-509"><a href="#cb18-509"></a></span>
+<span id="cb18-512"><a href="#cb18-512"></a><span class="in">```{r}</span></span>
+<span id="cb18-513"><a href="#cb18-513"></a><span class="co">#| echo: false</span></span>
+<span id="cb18-514"><a href="#cb18-514"></a><span class="co">#| output: true</span></span>
+<span id="cb18-515"><a href="#cb18-515"></a><span class="co">#| label: fig-03</span></span>
+<span id="cb18-516"><a href="#cb18-516"></a><span class="co">#| fig-width: 13</span></span>
+<span id="cb18-517"><a href="#cb18-517"></a><span class="co">#| fig-height: 8</span></span>
+<span id="cb18-518"><a href="#cb18-518"></a><span class="co">#| fig-cap: "As in @fig-01 but for mean maximum per capita growth rate from the spline fits."</span></span>
+<span id="cb18-519"><a href="#cb18-519"></a>pgr</span>
+<span id="cb18-520"><a href="#cb18-520"></a><span class="in">```</span></span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

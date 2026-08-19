@@ -842,13 +842,13 @@ added, so it's keyed on `(plate_file, plate, well)` instead, which is stable.
 
 ```{r}
 blacklist <- tribble(
-  ~plate_file,                                     ~plate,    ~well,
-  "Carbon_sources_1_3_08-kesä-2026 12-51-22.txt",  "Plate 3", "F01",
-  "Carbon_sources_3_4_26-kesä-2026 12-49-10.txt",  "Plate 4", "H01",
-  "Carbon_sources_3_4_26-kesä-2026 12-49-10.txt",  "Plate 4", "H02",
-  "Carbon_sources_9_3_09-heinä-2026 14-42-47.txt", "Plate 2", "A01",
-  "Carbon_sources_9_3_09-heinä-2026 14-42-47.txt", "Plate 2", "G02",
-  "Carbon_sources_9_3_09-heinä-2026 14-42-47.txt", "Plate 2", "E04"
+  ~plate_file                                     , ~plate    , ~well ,
+  "Carbon_sources_1_3_08-kesä-2026 12-51-22.txt"  , "Plate 3" , "F01" ,
+  "Carbon_sources_3_4_26-kesä-2026 12-49-10.txt"  , "Plate 4" , "H01" ,
+  "Carbon_sources_3_4_26-kesä-2026 12-49-10.txt"  , "Plate 4" , "H02" ,
+  "Carbon_sources_9_3_09-heinä-2026 14-42-47.txt" , "Plate 2" , "A01" ,
+  "Carbon_sources_9_3_09-heinä-2026 14-42-47.txt" , "Plate 2" , "G02" ,
+  "Carbon_sources_9_3_09-heinä-2026 14-42-47.txt" , "Plate 2" , "E04"
 ) |>
   # match the NFD normalization applied to plate_file above
   mutate(plate_file = stri_trans_nfd(plate_file))
