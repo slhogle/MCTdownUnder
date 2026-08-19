@@ -1,95 +1,63 @@
 # repo specific files
-wip/
-# _notrack is for data objects that shouldn't be git tracked
-_notrack/
-# Adobe illustrator files
-*.ai
-# R data files
-*.rds
-# Apache arrow parquet files
-*.parquet
-# Netcdf files
-*.nc
-# renv puts documentation of local library in docs but this is used for
-# github pages to work
-/docs/renv
+wip
+_notrack
 
-# Quarto documents
-/.quarto/
+# Quarto
+_freeze
+.quarto
+*.rmarkdown
 
-# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
-# this is in case you are using code with private API key to access a
-# remove database
-.httr-oauth
+# Agents, Posit and Positron
+.claude
+.vscode
+.posit
+AGENTS.md
 
-# History files
+# ----- R ----- #
+# package specific files
+air.toml
+.here
+
+## History files
 .Rhistory
 .Rapp.history
 
-# Session Data files
+## Session Data files
 .RData
 .RDataTmp
 
-# User-specific files
+## User-specific files
 .Ruserdata
 
-# Example code in package build process
-*-Ex.R
+## RStudio files
+.Rproj.user
 
-# Output files from R CMD build
-/*.tar.gz
-
-# Output files from R CMD check
-/*.Rcheck/
-
-# RStudio files
-.Rproj.user/
-
-# produced vignettes
-vignettes/*.html
-vignettes/*.pdf
-
-# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
+## OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth
 
-# knitr and R markdown default cache directories
-*_cache/
-/cache/
+## knitr and R markdown default cache directories
+*_cache
+cache
 
-# Temporary files created by R markdown
+## Temporary files created by R markdown
 *.utf8.md
 *.knit.md
 
-# R Environment Variables
+## R Environment Variables
 .Renviron
 
-# translation temp files
-po/*~
+# Adobe illustrator files
+*.ai
 
-# RStudio Connect folder
-rsconnect/
+# Python
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+*.egg-info/
 
-# Python Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+# OS
+.DS_Store
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# VSCode
-.vscode/
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/*.code-snippets
-
-# Local History for Visual Studio Code
-.history/
-
+/.quarto/
 **/*.quarto_ipynb
