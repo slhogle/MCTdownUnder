@@ -1,33 +1,62 @@
+---
+title: "02.C Strain growth on Biolog Ecoplates"
+subtitle: "Carbon substrate use"
+author: "Shane Hogle"
+date: today
+---
+
+# Introduction
+
+The [Biolog Ecoplates](https://www.biolog.com/products/community-analysis-microplates/ecoplate/) utilize tetrazolium reduction to measure the metabolic response of bacterial cells to different carbon substrates. Oxidized tetrazolium salt is water soluble, colorless in solution, and can freely diffuse into bacterial cells. Once inside the cell, tetrazolium is reduced by reducing agents like NADH an NADPH which are generated via cellular metabolism and catabolism. Once reduced tetrazolium is transformed into pink product. This assay measures the accumulation of reduced tetrazolium (colormetric absorbance at 590 nm) and hence the accumulation and concentration of reducing agents from cellular metabolism. This process will reflect both the concentration of cells in solution and per-capita concentration of reductant from central metabolism. There is a useful overview of the Tetrazolium colorometric procedure [available here.](https://fi.promega.com/resources/pubhub/is-your-mtt-assay-really-the-best-choice/)
+
+In the [prior step](02_growth_curve_stats.qmd) we imported, smoothed, and calculated summary statistics for the species growth on Biolog Ecoplates. Here we will do some simple plots and analysis of the growth data on different carbon sources from the ecoplates.
+
+# Setup
+
+## Libraries
+
+```{r}
 library(here)
 library(tidyverse)
 library(ggforce)
 library(errors)
-source(here::here("R", "utils_gcurves.R"))
+library(fs)
+source(here::here("R", "gcurves.R"))
+source(here::here("R", "generic.R"))
+```
 
-# Global vars
-data_raw <- here::here("_data_raw", "biolog_ecoplates")
-data <- here::here("data", "biolog_ecoplates")
-figs <- here::here("figs", "biolog_ecoplates")
+## Global variables
 
-# make processed data and figs directories if they don't exist
-fs::dir_create(data)
+```{r}
+data_raw <- here::here("data", "raw")
+data_processed <- here::here("data", "processed", "02_biolog_ecoplates")
+figs <- here::here("output", "figures")
+
+# make output directories if they don't exist
+fs::dir_create(data_processed)
 fs::dir_create(figs)
+```
 
-# Read data --------------------------------------------------------------
+## Read data
 
-# Growth summary data (e.g., AUC and growth rates from )
+Growth summary data (e.g., AUC and growth rates).
+
+```{r}
 many_auc_res <- readr::read_tsv(here::here(
-  data,
-  "gcurves_auc_results.tsv"
+  data_processed,
+  "gcurve_auc_results.tsv"
 ))
 
 many_spline_res <- readr::read_tsv(here::here(
-  data,
-  "gcurves_spline_results.tsv"
+  data_processed,
+  "gcurve_spline_results.tsv"
 ))
+```
 
-# Full growth curves
-gcurves <- readr::read_tsv(here::here(data, "gcurves_smooth.tsv")) %>%
+Full growth curves.
+
+```{r}
+gcurves <- readr::read_tsv(here::here(data_processed, "gcurves_smooth.tsv")) %>%
   arrange(strainID, well, plate_name) %>%
   group_by(strainID, evolution, plate_name, `carbon source`, well) %>%
   mutate(id = dplyr::cur_group_id()) %>%
@@ -46,14 +75,20 @@ gcurves <- readr::read_tsv(here::here(data, "gcurves_smooth.tsv")) %>%
   mutate(
     hist = if_else(str_detect(evolution, "anc"), "Str Sens.", "Str Res.")
   )
+```
 
-# read which wells correspond to which compounds
+Read which wells correspond to which compounds.
+
+```{r}
 cc <- readr::read_tsv(here::here(data_raw, "carbon_compound_map.tsv")) %>%
   dplyr::select(compound, class)
+```
 
-# Plot ecoplate growthcurves ---------------------------------------------
+# Plot ecoplate growth curves
 
-# HAMBI_1287
+## HAMBI_1287
+
+```{r}
 p1287ecoplates_gcurves <- gcurves %>%
   filter(strainID == "HAMBI_1287") %>%
   ggplot() +
@@ -80,7 +115,7 @@ p1287ecoplates_gcurves <- gcurves %>%
     ~carbon_source,
     labeller = labeller(carbon_source = label_wrap_gen(20))
   ) +
-  theme(legend.position = "bottom")
+  theme_mct()
 
 ggsave(
   here::here(figs, "H1287_ecoplates_gcurves.svg"),
@@ -89,8 +124,21 @@ ggsave(
   width = 7,
   height = 8
 )
+```
 
-# HAMBI_1977
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-01
+#| fig-width: 7
+#| fig-height: 8
+#| fig-cap: Full growth curves of *Citrobacter koseri* HAMBI_1287 on 31 different carbon substrates and water in Biolog Ecoplates over 48 hours of growth. Metabolic activity via tetrazolium reduction is colorometrically tracked with absorbance at 590 nm. Line type denotes the biological replicate, while line color denotes adaptation to the antibiotic streptomycin.
+p1287ecoplates_gcurves
+```
+
+## HAMBI_1977
+
+```{r}
 p1977ecoplates_gcurves <- gcurves %>%
   filter(strainID == "HAMBI_1977") %>%
   ggplot() +
@@ -106,7 +154,6 @@ p1977ecoplates_gcurves <- gcurves %>%
     breaks = seq(0, 48, 12),
     labels = seq(0, 48, 12)
   ) +
-  facet_wrap(~carbon_source) +
   labs(
     y = "Metabolic performance (absorbance units, λ = 590 nm)",
     x = "Hours",
@@ -118,7 +165,7 @@ p1977ecoplates_gcurves <- gcurves %>%
     ~carbon_source,
     labeller = labeller(carbon_source = label_wrap_gen(20))
   ) +
-  theme(legend.position = "bottom")
+  theme_mct()
 
 ggsave(
   here::here(figs, "H1977_ecoplates_gcurves.svg"),
@@ -127,19 +174,27 @@ ggsave(
   width = 7,
   height = 8
 )
+```
 
-# Plot ecoplate growth summaries -----------------------------------------
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-02
+#| fig-width: 7
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for *Pseudomonas chlororaphis* HAMBI_1977.
+p1977ecoplates_gcurves
+```
 
-# 1. for each replicate take the mean over all measurements within 0.05 units of
-#    the max
-# 2. subtract water from all values
-# 3. calculate mean and bootstrapped 95% CI across biological replicates
+# Plot ecoplate growth summaries
 
-# order carbon levels by compound class
-carbon_levels <- unique(paste(cc$class, cc$compound, sep = ":")) %>%
-  sort() %>%
-  str_extract(".*\\:(.*$)", group = 1)
+The procedure is:
 
+1. for each replicate take the mean over all measurements within 0.05 units of the max
+2. subtract water from all values
+3. calculate mean and bootstrapped 95% CI across biological replicates
+
+```{r}
 gcurves_metabolic_pref <- gcurves %>%
   mutate(
     strainID2 = paste0(
@@ -185,15 +240,21 @@ gcurves_metabolic_pref_fmt <- gcurves_metabolic_pref %>%
   mutate(
     tot_met_output = errors::drop_errors(y_Sens + y_Res)
   )
+```
 
+Order the carbon substrates by compound class, then by the difference between
+the sensitive and resistant forms of HAMBI_1287.
+
+```{r}
 carbon_levels <- gcurves_metabolic_pref_fmt %>%
   filter(strainID2 == "H1287") %>%
   arrange(delta_sens_res) %>%
   arrange(class) %>%
   distinct(carbon_source) %>%
   pull()
+```
 
-# plot
+```{r}
 pcarbonindv <- gcurves_metabolic_pref_fmt %>%
   mutate(carbon_source = factor(carbon_source, levels = carbon_levels)) %>%
   ggplot(
@@ -226,11 +287,25 @@ ggsave(
   width = 7,
   height = 7
 )
+```
 
-# Old code - not needed --------------------------------------------------
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-03
+#| fig-width: 7
+#| fig-height: 7
+#| fig-cap: Difference in metabolic performance between streptomycin sensitive and resistant forms of *Citrobacter koseri* 1287 and *Pseudomonas chlororaphis* 1977 when grown on 31 carbon substrates. Horizontal axis depicts the difference in maximum absorbance (AU, 590 nm) between the sensitive and resistant forms of each species over 48 hours. Point represents the difference in the mean over three biological replicates while the line range depicts the 95% confidence interval. Carbon sources are displayed on the vertical axis and organized by their parent molecular class (shown in color). Point size depicts the sum of the metabolic output of the sensitive and resistant forms.
+pcarbonindv
+```
 
-# Code for plotting heatmaps of growth parameters
-# Plot maximum observed absorbance
+# Appendix: superseded code
+
+Code for plotting heatmaps of growth parameters, plotting maximum observed
+absorbance, and clustering by similar responses. Retained for reference, not run.
+
+```{r}
+#| eval: false
 # Some clustering to plot by more similar responses
 
 # df2clust <- many_auc_res %>%
@@ -362,3 +437,4 @@ ggsave(
 #     strip.background = element_blank(),
 #     panel.border = element_blank()
 #   )
+```

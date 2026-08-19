@@ -1,72 +1,82 @@
+---
+title: "03.B Growth statistics for co-culture plates"
+subtitle: "Spline fits and area under the curve"
+author: "Shane Hogle"
+date: today
+---
+
+# Introduction
+
+Here we estimate maximum specific growth rate ($\mathrm{\mu_{max}}$) and total growth (area under the growth curve) for every well of the co-culture plates formatted in the [prior step](01_format_growthcurves.qmd).
+
+We use [growthrates](https://cran.r-project.org/web/packages/growthrates/index.html) to estimate $\mathrm{\mu_{max}}$. I have found this works a lot better than gcplyr and is more convenient than using another tool outside of R. Nonparametric estimation of growth rates by spline is very fast. Fitting to a model takes more time resources. Generally it is best to try multiple approaches and to visualize/check the data to make sure it makes sense ([Frontiers in Ecology and Evolution](https://www.frontiersin.org/journals/ecology-and-evolution/articles/10.3389/fevo.2023.1313500/full)).
+
+# Setup
+
+## Libraries
+
+```{r}
 library(here)
 library(tidyverse)
 library(growthrates)
 library(DescTools)
 library(ggforce)
-source(here::here("R", "utils_gcurves.R"))
+library(fs)
+source(here::here("R", "gcurves.R"))
+source(here::here("R", "generic.R"))
+```
 
-# Using the tool growthrates -
-# https://cran.r-project.org/web/packages/growthrates/index.html to estimate
-# mu_max. I have found this works a lot better the gcplyr and is more convenient
-# than using another tool outside of R. Nonparametric estimate growth rates by
-# spline is very fast. Fitting to a model takes more time resources. Generally
-# it is best to try multiple approaches and to visualize/check the data to make
-# sure it makes sense -
-# https://www.frontiersin.org/journals/ecology-and-evolution/articles/10.3389/fevo.2023.1313500/full)
+## Global variables
 
-# Global vars
-data_raw <- here::here("_data_raw", "coculture_plates")
-data <- here::here("data", "coculture_plates")
-figs <- here::here("figs", "coculture_plates")
+```{r}
+data_interim <- here::here("data", "interim", "03_coculture_plates")
+data_processed <- here::here("data", "processed", "03_coculture_plates")
 
-# make processed data and figs directories if they don't exist
-fs::dir_create(data)
-fs::dir_create(figs)
+# make data directories if they don't exist
+fs::dir_create(data_interim)
+fs::dir_create(data_processed)
+```
 
-# save result for later
-coculture_gcurves_sm <- readr::read_tsv(
-  here::here(data, "coculture_gcurves_smooth.tsv")
+## Read data
+
+```{r}
+gcurves_sm <- readr::read_tsv(
+  here::here(data_processed, "gcurves_smooth.tsv")
 ) %>%
   # make uniq id
   mutate(id = paste0(plate_name, "|", well))
+```
 
+# Spline based estimates
 
-# Spline based estimates -------------------------------------------------
+Smoothing splines are a quick method to estimate maximum growth. The method is called nonparametric, because the growth rate is directly estimated from the smoothed data without being restricted to a specific model formula.
 
-# Smoothing splines are a quick method to estimate maximum growth. The method is
-# called nonparametric, because the growth rate is directly estimated from the
-# smoothed data without being restricted to a specific model formula.
+From the [growthrates documentation](https://cran.r-project.org/web/packages/growthrates/growthrates.pdf):
 
-# From growthrates documentation:
-# https://cran.r-project.org/web/packages/growthrates/growthrates.pdf
+> The method was inspired by an algorithm of [Kahm et al. (2010)](https://www.jstatsoft.org/article/view/v033i07), with different settings and assumptions. In the moment, spline fitting is always done with log-transformed data, assuming exponential growth at the time point of the maximum of the first derivative of the spline fit. All the hard work is done by function `smooth.spline` from package stats, that is highly user configurable. Normally, smoothness is automatically determined via cross-validation. This works well in many cases, whereas manual adjustment is required otherwise, e.g. by setting `spar` to a fixed value \[0, 1\] that also disables cross-validation.
 
-# The method was inspired by an algorithm of Kahm et al.
-# (2010) (https://www.jstatsoft.org/article/view/v033i07), with different
-# settings and assumptions. In the moment, spline fitting is always done with
-# log-transformed data, assuming exponential growth at the time point of the
-# maximum of the first derivative of the spline fit. All the hard work is done
-# by function smooth.spline from package stats, that is highly user
-# configurable. Normally, smoothness is automatically determined via
-# cross-validation. This works well in many cases, whereas manual adjustment is
-# required otherwise, e.g. by setting spar to a fixed value \[0, 1\] that also
-# disables cross-validation.
+Fit splines to all growth curves.
 
-# Fit splines to all growth curves
+```{r}
 set.seed(45278)
 many_spline <- growthrates::all_splines(
   OD600_rollmean ~ hours | id,
-  data = coculture_gcurves_sm,
+  data = gcurves_sm,
   spar = 0.5
 )
 
-readr::write_rds(many_spline, here::here(data, "coculture_spline_fits"))
+readr::write_rds(many_spline, here::here(data_interim, "spline_fits.rds"))
+```
 
-# Extract results
+Extract results.
 
+```{r}
 many_spline_res <- growthrates::results(many_spline)
+```
 
-# Extract time of maximum specific growth rate for plotting
+Extract time of maximum specific growth rate for plotting.
 
+```{r}
 many_spline_xy <- purrr::map(many_spline@fits, \(x) {
   data.frame(x = x@xy[1], y = x@xy[2])
 }) %>%
@@ -76,15 +86,17 @@ many_spline_xy <- purrr::map(many_spline@fits, \(x) {
     delim = "|",
     names = c("plate_name", "well")
   )
+```
 
-# Extract slope of maximum specific growth rate for plotting
+Extract slope of maximum specific growth rate for plotting.
 
+```{r}
 many_spline_fitted <- purrr::map(many_spline@fits, \(x) {
   data.frame(x@FUN(x@obs$time, x@par))
 }) %>%
   purrr::list_rbind(names_to = "id") %>%
   dplyr::rename(hours = time, predicted = y) %>%
-  dplyr::left_join(coculture_gcurves_sm, by = dplyr::join_by(id, hours)) %>%
+  dplyr::left_join(gcurves_sm, by = dplyr::join_by(id, hours)) %>%
   dplyr::group_by(id) %>%
   # this step makes sure we don't plot fits that go outside the range of the data
   dplyr::mutate(
@@ -95,12 +107,14 @@ many_spline_fitted <- purrr::map(many_spline@fits, \(x) {
     )
   ) %>%
   dplyr::ungroup()
+```
 
+# Area under growth curve (AUC)
 
-# Area under growth curve (AUC) ------------------------------------------
-# Calculates AUC using `DescTools` package
+Calculates AUC using the `DescTools` package.
 
-many_auc_res <- coculture_gcurves_sm %>%
+```{r}
+many_auc_res <- gcurves_sm %>%
   dplyr::summarize(
     auc = DescTools::AUC(hours, OD600_rollmean),
     max_od = max(OD600_rollmean),
@@ -108,7 +122,7 @@ many_auc_res <- coculture_gcurves_sm %>%
     .by = id
   ) %>%
   dplyr::left_join(
-    dplyr::distinct(dplyr::select(coculture_gcurves_sm, strain:id)),
+    dplyr::distinct(dplyr::select(gcurves_sm, strain:id)),
     by = join_by(id)
   ) %>%
   dplyr::select(-id)
@@ -116,39 +130,181 @@ many_auc_res <- coculture_gcurves_sm %>%
 # Write auc output
 readr::write_tsv(
   many_auc_res,
-  here::here(data, "coculture_gcurve_auc_results.tsv")
+  here::here(data_processed, "gcurve_auc_results.tsv")
 )
+```
 
-# write spline results with strain info
+Write spline results with strain info.
+
+```{r}
 many_spline_res %>%
   dplyr::left_join(
-    dplyr::distinct(dplyr::select(coculture_gcurves_sm, strain:id)),
+    dplyr::distinct(dplyr::select(gcurves_sm, strain:id)),
     by = join_by(id)
   ) %>%
   dplyr::select(-id) %>%
-  readr::write_tsv(here::here(data, "coculture_gcurve_spline_results.tsv"))
+  readr::write_tsv(here::here(data_processed, "gcurve_spline_results.tsv"))
+```
 
-# Make plots -------------------------------------------------------------
+# Inspect the fits
 
+```{r}
 plotter <- function(plate) {
-  ggsave(
-    here::here(figs, paste0(plate, "_fitted.svg")),
-    plotplate(
-      many_spline_fitted,
-      dfxy = many_spline_xy,
-      unsmoothed = FALSE,
-      predicted = TRUE,
-      plate = plate,
-      rows = 6,
-      cols = 12,
-      page = 1,
-      scales = "fixed"
-    ),
-    device = "svg",
-    width = 12,
-    height = 8
+  plotplate(
+    many_spline_fitted,
+    dfxy = many_spline_xy,
+    unsmoothed = FALSE,
+    predicted = TRUE,
+    plate = plate,
+    rows = 6,
+    cols = 12,
+    page = 1,
+    scales = "fixed"
   )
 }
+```
 
-paste0("plate", str_pad(seq(1:12), 2, "left", pad = "0")) %>%
-  map(plotter)
+## plate01
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-01
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: Fitted growth curves for plate01, the diffusion test plate. Only smoothed data is shown (blue line, five point moving average). Orange is slope of the maximum predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.
+plotter("plate01")
+```
+
+## plate02
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-02
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate02, competition at 0 μg/ml streptomycin.
+plotter("plate02")
+```
+
+## plate03
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-03
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate03, competition at 4 μg/ml streptomycin.
+plotter("plate03")
+```
+
+## plate04
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-04
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate04, competition at 8 μg/ml streptomycin.
+plotter("plate04")
+```
+
+## plate05
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-05
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate05, competition at 12 μg/ml streptomycin.
+plotter("plate05")
+```
+
+## plate06
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-06
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate06, competition at 16 μg/ml streptomycin.
+plotter("plate06")
+```
+
+## plate07
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-07
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate07, competition at 24 μg/ml streptomycin.
+plotter("plate07")
+```
+
+## plate08
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-08
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate08, monocultures at 0, 4, 8 μg/ml streptomycin.
+plotter("plate08")
+```
+
+## plate09
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-09
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate09, monocultures at 12, 16, 24 μg/ml streptomycin.
+plotter("plate09")
+```
+
+## plate10
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-10
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate10, cocultures at 64 and 256 μg/ml streptomycin.
+plotter("plate10")
+```
+
+## plate11
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-11
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate11, monocultures at 64 and 256, cocultures at 1028 and 4096 μg/ml streptomycin.
+plotter("plate11")
+```
+
+## plate12
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-12
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate12, monocultures at 64 and 256, cocultures at 8 and 10 μg/ml streptomycin.
+plotter("plate12")
+```
+

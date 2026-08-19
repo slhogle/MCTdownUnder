@@ -1,45 +1,77 @@
 project:
   type: website
-  resources:
-    - "css/"
-    - "js/"
-    - "*.html"
-  output-dir: docs
+  output-dir: _site
+  render:
+    - index.qmd
+    # Monoculture growth (external bioscreen import)
+    - scripts/01_bioscreen_strains/01_plot_analyze_growth.qmd
+    # Resource use in monoculture. 01 feeds 02, 02 feeds 03.
+    - scripts/02_biolog_ecoplates/01_format_growthcurves.qmd
+    - scripts/02_biolog_ecoplates/02_growth_curve_stats.qmd
+    - scripts/02_biolog_ecoplates/03_plot_analyze_growth.qmd
+    # Competition in membrane-separated co-culture plates. 01 -> 02 -> 03.
+    - scripts/03_coculture_plates/01_format_growthcurves.qmd
+    - scripts/03_coculture_plates/02_growth_curve_stats.qmd
+    - scripts/03_coculture_plates/03_competition_outcomes.qmd
+    # Serial transfer co-culture. 02 feeds 03; 01 is a standalone pilot.
+    - scripts/04_serial_transfer_coculture/01_pilot_20260202.qmd
+    - scripts/04_serial_transfer_coculture/02_20260410_format_growthcurves.qmd
+    - scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.qmd
 
 website:
   title: "MCTdownUnder"
+  navbar:
+    search: true
+    tools:
+      - icon: github
+        href: https://github.com/slhogle/MCTdownUnder
+    left:
+      - sidebar:monoculture
+      - sidebar:coculture
+      - sidebar:serial_transfer
+
   sidebar:
+  - id: monoculture
+    title: "Monoculture"
     style: "docked"
     background: light
-    search: true
     contents:
-
-      - section: "1. Str resistance monoculture"
-        contents:
-          - text: "i) Growth at different Strep"
-            file: notebooks/bioscreen_strains/01_plot_analyze_growth.qmd
-      - section: "2. Resource use monoculture: Biolog ecoplates"
-        contents:
-          - text: "i) Reading and formatting data from plate reader"
-            file: notebooks/biolog_ecoplates/01_inspect_growthcurves.qmd
-          - text: "ii) Plotting and analyzing growth on different carbon substrates"
-            file: notebooks/biolog_ecoplates/02_plot_analyze_growth.qmd
-      - section: "3. Competition outcomes from co-culture plates"
-        contents:
-          - text: "i) Reading and formatting data from plate reader"
-            file: notebooks/coculture_plates/01_inspect_growthcurves.qmd
-          - text: "ii) Plotting curves from competition exps"
-            file: notebooks/coculture_plates/02_plot_analyze_growth.qmd
-      - section: "4. Coculture serial transfer experiment"
-        contents:
-          - text: "i) 2026-04-17 results"
-            file: notebooks/serial_transfer_coculture.qmd
+    - text: "01.A Growth vs streptomycin"
+      href: scripts/01_bioscreen_strains/01_plot_analyze_growth.qmd
+    - text: "02.A Ecoplates QC"
+      href: scripts/02_biolog_ecoplates/01_format_growthcurves.qmd
+    - text: "02.B Ecoplates growth stats"
+      href: scripts/02_biolog_ecoplates/02_growth_curve_stats.qmd
+    - text: "02.C Ecoplates carbon use"
+      href: scripts/02_biolog_ecoplates/03_plot_analyze_growth.qmd
+  - id: coculture
+    title: "Co-culture plates"
+    style: "docked"
+    background: light
+    contents:
+    - text: "03.A Co-culture QC"
+      href: scripts/03_coculture_plates/01_format_growthcurves.qmd
+    - text: "03.B Co-culture growth stats"
+      href: scripts/03_coculture_plates/02_growth_curve_stats.qmd
+    - text: "03.C Competition outcomes"
+      href: scripts/03_coculture_plates/03_competition_outcomes.qmd
+  - id: serial_transfer
+    title: "Serial transfer"
+    style: "docked"
+    background: light
+    contents:
+    - text: "04.A Pilot 2026-02-02"
+      href: scripts/04_serial_transfer_coculture/01_pilot_20260202.qmd
+    - text: "04.B Serial transfer QC"
+      href: scripts/04_serial_transfer_coculture/02_20260410_format_growthcurves.qmd
+    - text: "04.C Serial transfer results"
+      href: scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.qmd
 
 format:
   html:
     theme:
-      - cosmo
-    # include table of contents
+      light: flatly
+      dark: darkly
     toc: true
     # when printing dataframes use rmarkdown::paged_table())
     df-print: paged
@@ -47,18 +79,20 @@ format:
     fig-width: 8
     fig-height: 6
     # tidy format R code upon render
-    tidy: false
+    tidy: true
     # include line numbers in code blocks
     code-line-numbers: true
-    # The code-link option enables hyper-linking of functions within code blocks to their online documentation:
-    #code-link: true
     number-sections: true
     code-fold: show
     code-summary: "Show/hide code"
     code-tools: true
 
-# auto: re-render only when source changes
 execute:
-  freeze: false
+  freeze: auto        # Default: saving intermediate files to make project rendering faster
+  echo: true          # Default: Shows the source code in the output
+  eval: true          # Default: Runs the code
+  output: false       # Default: Suppress output from running the code
+  warning: false      # Default: Suppresses warnings
+  message: false      # Default: Suppresses messages
 
 editor: source

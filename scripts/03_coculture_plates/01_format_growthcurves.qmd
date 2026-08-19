@@ -1,3 +1,21 @@
+---
+title: "03.A Formatting co-culture growth curves from Logphase 600"
+subtitle: "Quality control"
+author: "Shane Hogle"
+date: today
+---
+
+# Introduction
+
+The ancestral (streptomycin sensitive) and evolved (streptomycin resistant) forms of HAMBI_1287 and HAMBI_1977 were grown on adjacent 0.22 μm membrane-separated wells in a Verasys co-culture plate. The membrane allows free diffusion of resources and metabolic byproducts but not cells. Note that due to the unique format of the plate rows A and H do not contain any data. The plates differ by streptomycin concentration as indicated below. Measurements were collected with a Biotek Logphase 600 microplate reader.
+
+In this notebook we read the plate reader exports, join them to the samplesheets, smooth them, and inspect every well.
+
+# Setup
+
+## Libraries
+
+```{r}
 library(here)
 library(tidyverse)
 library(readxl)
@@ -6,247 +24,238 @@ library(lubridate)
 library(fs)
 library(ggforce)
 library(slider)
-source(here::here("R", "utils_gcurves.R"))
+source(here::here("R", "gcurves.R"))
+source(here::here("R", "generic.R"))
+```
 
-# Global vars
-data_raw <- here::here("_data_raw", "coculture_plates")
-data <- here::here("data", "coculture_plates")
-figs <- here::here("figs", "coculture_plates")
+## Global variables
 
-# make processed data and figs directories if they don't exist
-fs::dir_create(data)
-fs::dir_create(figs)
+```{r}
+data_raw <- here::here("data", "raw")
+data_processed <- here::here("data", "processed", "03_coculture_plates")
 
-# Batch01 - 2025.09.20 ---------------------------------------------------
+# make processed data directory if it doesn't exist
+fs::dir_create(data_processed)
+```
 
-batch <- "20250920_batch01"
+# Batch01 - 2025.09.20
 
-# Read sample metadata
+## Read sample metadata
+
+```{r}
+batch <- here::here(data_raw, "20250920_coculture_batch01")
+
 samplesheet_diff_test <- readxl::read_xlsx(here::here(
-  data_raw,
   batch,
   "diffusion_test_2_samplesheet.xlsx"
 ))
+
 samplesheet_coculture <- readxl::read_xlsx(here::here(
-  data_raw,
   batch,
   "coculture_samplesheet.xlsx"
 ))
+```
 
-# Read crowth curves
-# Diffusion test plate01
+## Read growth curves
+
+Diffusion test plate01.
+
+```{r}
 plate01 <- read_logphase_xlsx(
-  batch,
-  "diffusion_test_2_Co-culture_1977_1287AE_12.9_15-syys-2025 09-00-26.xlsx",
-  2,
-  1
+  here::here(
+    batch,
+    "diffusion_test_2_Co-culture_1977_1287AE_12.9_15-syys-2025 09-00-26.xlsx"
+  ),
+  sheet = 2,
+  skip = 1
 ) %>%
   # remove rows A and H
   filter(str_detect(well, "^A|^H", negate = TRUE)) %>%
   left_join(samplesheet_diff_test, by = join_by(well)) %>%
   mutate(plate_name = "plate01")
+```
 
-# Experiment plate02 - 0 ug/ml streptomycin
+Experiment plate02 - 0 μg/ml streptomycin.
+
+```{r}
 plate02 <- read_logphase_xlsx(
-  batch,
-  "Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx",
-  2,
-  1
+  here::here(batch, "Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx"),
+  sheet = 2,
+  skip = 1
 ) %>%
   # rows A and H not collected here so they are NA
   drop_na() %>%
   left_join(samplesheet_coculture, by = join_by(well)) %>%
   mutate(streptomycin = 0) %>%
   mutate(plate_name = "plate02")
+```
 
-# Experiment plate03 -  4 ug/ml streptomycin
+Experiment plate03 - 4 μg/ml streptomycin.
+
+```{r}
 plate03 <- read_logphase_xlsx(
-  batch,
-  "Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx",
-  5,
-  1
+  here::here(batch, "Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx"),
+  sheet = 5,
+  skip = 1
 ) %>%
-  # rows A and H not collected here so they are NA
   drop_na() %>%
   left_join(samplesheet_coculture, by = join_by(well)) %>%
   mutate(streptomycin = 4) %>%
   mutate(plate_name = "plate03")
+```
 
-# Experiment plate04 - 8 ug/ml streptomycin
+Experiment plate04 - 8 μg/ml streptomycin.
+
+```{r}
 plate04 <- read_logphase_xlsx(
-  batch,
-  "Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx",
-  8,
-  1
+  here::here(batch, "Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx"),
+  sheet = 8,
+  skip = 1
 ) %>%
-  # rows A and H not collected here so they are NA
   drop_na() %>%
   left_join(samplesheet_coculture, by = join_by(well)) %>%
   mutate(streptomycin = 8) %>%
   mutate(plate_name = "plate04")
+```
 
+# Batch02 - 2025.09.25
 
-# Batch02 - 2025.09.25 ---------------------------------------------------
+## Read sample metadata
 
-batch <- "20250925_batch02"
+```{r}
+batch <- here::here(data_raw, "20250925_coculture_batch02")
 
-# Read sample metadata
 samplesheet_coculture <- readxl::read_xlsx(here::here(
-  data_raw,
   batch,
   "coculture_samplesheet.xlsx"
 ))
+```
 
-# Read crowth curves
-# Experiment plate05 - 12 ug/ml streptomycin
+## Read growth curves
+
+Experiment plate05 - 12 μg/ml streptomycin.
+
+```{r}
 plate05 <- read_logphase_xlsx(
-  batch,
-  "Co-culture_12_16_24_ug_plates_25-syys-2025 13-42-42.xlsx",
-  2,
-  1
+  here::here(batch, "Co-culture_12_16_24_ug_plates_25-syys-2025 13-42-42.xlsx"),
+  sheet = 2,
+  skip = 1
 ) %>%
-  # rows A and H not collected here so they are NA
   drop_na() %>%
   left_join(samplesheet_coculture, by = join_by(well)) %>%
   mutate(streptomycin = 12) %>%
   mutate(plate_name = "plate05")
+```
 
-# Experiment plate06 =  16 ug/ml streptomycin
+Experiment plate06 - 16 μg/ml streptomycin.
+
+```{r}
 plate06 <- read_logphase_xlsx(
-  batch,
-  "Co-culture_12_16_24_ug_plates_25-syys-2025 13-42-42.xlsx",
-  5,
-  1
+  here::here(batch, "Co-culture_12_16_24_ug_plates_25-syys-2025 13-42-42.xlsx"),
+  sheet = 5,
+  skip = 1
 ) %>%
-  # rows A and H not collected here so they are NA
   drop_na() %>%
   left_join(samplesheet_coculture, by = join_by(well)) %>%
   mutate(streptomycin = 16) %>%
   mutate(plate_name = "plate06")
+```
 
-# Experiment plate07 - 24 ug/ml streptomycin
+Experiment plate07 - 24 μg/ml streptomycin.
+
+```{r}
 plate07 <- read_logphase_xlsx(
-  batch,
-  "Co-culture_12_16_24_ug_plates_25-syys-2025 13-42-42.xlsx",
-  8,
-  1
+  here::here(batch, "Co-culture_12_16_24_ug_plates_25-syys-2025 13-42-42.xlsx"),
+  sheet = 8,
+  skip = 1
 ) %>%
-  # rows A and H not collected here so they are NA
   drop_na() %>%
   left_join(samplesheet_coculture, by = join_by(well)) %>%
   mutate(streptomycin = 24) %>%
   mutate(plate_name = "plate07")
+```
 
+# Batch03 - 2025.10.06
 
-# Batch03 - 2025.10.06 ---------------------------------------------------
+Each plate in this batch has its own samplesheet.
 
-batch <- "20251006_batch03"
+```{r}
+batch <- here::here(data_raw, "20251006_coculture_batch03")
 
-# Read growth curves
-# Experiment plate08
 plate08 <- read_logphase_xlsx(
-  batch,
-  "coculture_plates_8_9_10_11_06-10-2025.xlsx",
-  2,
-  1
+  here::here(batch, "coculture_plates_8_9_10_11_06-10-2025.xlsx"),
+  sheet = 2,
+  skip = 1
 ) %>%
-  # rows A and H not collected here so they are NA
   drop_na() %>%
   left_join(
-    readxl::read_xlsx(here::here(
-      data_raw,
-      batch,
-      "coculture_samplesheet_plate08.xlsx"
-    )),
+    readxl::read_xlsx(here::here(batch, "coculture_samplesheet_plate08.xlsx")),
     by = join_by(well)
   ) %>%
   mutate(plate_name = "plate08")
 
-# Experiment plate09
 plate09 <- read_logphase_xlsx(
-  batch,
-  "coculture_plates_8_9_10_11_06-10-2025.xlsx",
-  5,
-  1
+  here::here(batch, "coculture_plates_8_9_10_11_06-10-2025.xlsx"),
+  sheet = 5,
+  skip = 1
 ) %>%
-  # rows A and H not collected here so they are NA
   drop_na() %>%
   left_join(
-    readxl::read_xlsx(here::here(
-      data_raw,
-      batch,
-      "coculture_samplesheet_plate09.xlsx"
-    )),
+    readxl::read_xlsx(here::here(batch, "coculture_samplesheet_plate09.xlsx")),
     by = join_by(well)
   ) %>%
   mutate(plate_name = "plate09")
 
-# Experiment plate10
 plate10 <- read_logphase_xlsx(
-  batch,
-  "coculture_plates_8_9_10_11_06-10-2025.xlsx",
-  8,
-  1
+  here::here(batch, "coculture_plates_8_9_10_11_06-10-2025.xlsx"),
+  sheet = 8,
+  skip = 1
 ) %>%
-  # rows A and H not collected here so they are NA
   drop_na() %>%
   left_join(
-    readxl::read_xlsx(here::here(
-      data_raw,
-      batch,
-      "coculture_samplesheet_plate10.xlsx"
-    )),
+    readxl::read_xlsx(here::here(batch, "coculture_samplesheet_plate10.xlsx")),
     by = join_by(well)
   ) %>%
   mutate(plate_name = "plate10")
 
-# Experiment plate11
 plate11 <- read_logphase_xlsx(
-  batch,
-  "coculture_plates_8_9_10_11_06-10-2025.xlsx",
-  11,
-  1
+  here::here(batch, "coculture_plates_8_9_10_11_06-10-2025.xlsx"),
+  sheet = 11,
+  skip = 1
 ) %>%
-  # rows A and H not collected here so they are NA
   drop_na() %>%
   left_join(
-    readxl::read_xlsx(here::here(
-      data_raw,
-      batch,
-      "coculture_samplesheet_plate11.xlsx"
-    )),
+    readxl::read_xlsx(here::here(batch, "coculture_samplesheet_plate11.xlsx")),
     by = join_by(well)
   ) %>%
   mutate(plate_name = "plate11")
+```
 
+# Batch04 - 2025.10.30
 
-# Batch04 - 2025.10.30 ---------------------------------------------------
-
-batch <- "20251030_batch04"
+```{r}
+batch <- here::here(data_raw, "20251030_coculture_batch04")
 
 plate12 <- read_logphase_xlsx(
-  batch,
-  "coculture_plate12.xlsx",
-  2,
-  1
+  here::here(batch, "coculture_plate12.xlsx"),
+  sheet = 2,
+  skip = 1
 ) %>%
-  # rows A and H not collected here so they are NA
   drop_na() %>%
   left_join(
-    readxl::read_xlsx(here::here(
-      data_raw,
-      batch,
-      "coculture_samplesheet_plate12.xlsx"
-    )),
+    readxl::read_xlsx(here::here(batch, "coculture_samplesheet_plate12.xlsx")),
     by = join_by(well)
   ) %>%
   mutate(plate_name = "plate12")
+```
 
-# Combine, tidy, format --------------------------------------------------
+# Combine, tidy, format
 
-# combine all samples, group by plate + well, calculate rolling mean. This
-# reduces the jaggedness of the curves and also makes the resulting saved data
-# file smaller
+Combine all samples, group by plate + well, calculate rolling mean. This reduces
+the jaggedness of the curves and also makes the resulting saved data file
+smaller.
+
+```{r}
 coculture_gcurves_sm <- bind_rows(
   plate01,
   plate02,
@@ -272,31 +281,194 @@ coculture_gcurves_sm <- bind_rows(
 # save result for later
 readr::write_tsv(
   coculture_gcurves_sm,
-  here::here(data, "coculture_gcurves_smooth.tsv")
+  here::here(data_processed, "gcurves_smooth.tsv")
 )
+```
 
-# Plot growth curves for later inspection --------------------------------
+# Inspect growth curves
 
-# quick function for saving files
+```{r}
 plotter <- function(id) {
-  ggsave(
-    here::here(figs, paste0(id, ".svg")),
-    plotplate(
-      coculture_gcurves_sm,
-      dfxy = NULL,
-      unsmoothed = TRUE,
-      predicted = FALSE,
-      plate = id,
-      rows = 6,
-      cols = 12,
-      page = 1,
-      scales = "fixed"
-    ),
-    device = "svg",
-    width = 12,
-    height = 8
+  plotplate(
+    coculture_gcurves_sm,
+    dfxy = NULL,
+    unsmoothed = TRUE,
+    predicted = FALSE,
+    plate = id,
+    rows = 6,
+    cols = 12,
+    page = 1,
+    scales = "fixed"
   )
 }
+```
 
-paste0("plate", str_pad(seq(1:12), 2, "left", pad = "0")) %>%
-  map(plotter)
+## plate01
+
+Growth curves for the "diffusion test" co-culture plate. Columns 1, 3, 5, and 7 have only M9 salts. Columns 2, 4, 6, 8, 9, 10, 11, and 12 had R2A medium. Bacteria were inoculated into rows B-D, columns 1, 3, 5, and 7 and rows E-F columns 2, 4, 6, and 8. Columns 9 and 11 were not inoculated with any bacteria.
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-01
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: Plate01 co-culture plate growth curves. Column $n=\{1\dots11\}$ is connected to column $n+1$ with a 0.22 μm membrane allowing free diffusion of resources and metabolic byproducts but not cells. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of five points. Orange is non-smoothed raw data.
+plotter("plate01")
+```
+
+## plate02
+
+Growth curves from bacterial competition at 0 μg/ml streptomycin.
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-02
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate02 with 0 μg/ml streptomycin.
+plotter("plate02")
+```
+
+## plate03
+
+Growth curves from bacterial competition at 4 μg/ml streptomycin.
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-03
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate03 with 4 μg/ml streptomycin.
+plotter("plate03")
+```
+
+## plate04
+
+Growth curves from bacterial competition at 8 μg/ml streptomycin.
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-04
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate04 with 8 μg/ml streptomycin.
+plotter("plate04")
+```
+
+## plate05
+
+Growth curves from bacterial competition at 12 μg/ml streptomycin.
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-05
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate05 with 12 μg/ml streptomycin.
+plotter("plate05")
+```
+
+## plate06
+
+Growth curves from bacterial competition at 16 μg/ml streptomycin.
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-06
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate06 with 16 μg/ml streptomycin.
+plotter("plate06")
+```
+
+## plate07
+
+Growth curves from bacterial competition at 24 μg/ml streptomycin.
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-07
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate07 with 24 μg/ml streptomycin.
+plotter("plate07")
+```
+
+## plate08
+
+Growth curves from bacterial monocultures at 0, 4, 8 μg/ml streptomycin. Here each well pair contains only one bacterial strain.
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-08
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate08.
+plotter("plate08")
+```
+
+## plate09
+
+Growth curves from bacterial monocultures at 12, 16, 24 μg/ml streptomycin. Here each well pair contains only one bacterial strain.
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-09
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate09.
+plotter("plate09")
+```
+
+## plate10
+
+Growth curves from bacterial competition co-cultures at 64 and 256 μg/ml streptomycin.
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-10
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate10.
+plotter("plate10")
+```
+
+## plate11
+
+- monocultures at 64 and 256 μg/ml streptomycin
+- cocultures at 1028 and 4096 μg/ml streptomycin
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-11
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate11.
+plotter("plate11")
+```
+
+## plate12
+
+- monocultures at 64 and 256 μg/ml streptomycin
+- cocultures at 8 and 10 μg/ml streptomycin
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-12
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-01 but for plate12.
+plotter("plate12")
+```
