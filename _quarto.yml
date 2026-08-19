@@ -17,6 +17,10 @@ project:
     - scripts/04_serial_transfer_coculture/01_pilot_20260202.qmd
     - scripts/04_serial_transfer_coculture/02_20260410_format_growthcurves.qmd
     - scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.qmd
+    # Single carbon source growth across streptomycin concentrations. 01 -> 02 -> 03.
+    - scripts/05_one_carbon_gcurves/01_carbon_source_platemap_format.qmd
+    - scripts/05_one_carbon_gcurves/02_read_format_gcurves.qmd
+    - scripts/05_one_carbon_gcurves/03_analyze_gcurves.qmd
 
 website:
   title: "MCTdownUnder"
@@ -29,6 +33,7 @@ website:
       - sidebar:monoculture
       - sidebar:coculture
       - sidebar:serial_transfer
+      - sidebar:one_carbon
 
   sidebar:
   - id: monoculture
@@ -66,6 +71,17 @@ website:
       href: scripts/04_serial_transfer_coculture/02_20260410_format_growthcurves.qmd
     - text: "04.C Serial transfer results"
       href: scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.qmd
+  - id: one_carbon
+    title: "Single carbon"
+    style: "docked"
+    background: light
+    contents:
+    - text: "05.A Carbon platemap"
+      href: scripts/05_one_carbon_gcurves/01_carbon_source_platemap_format.qmd
+    - text: "05.B Single carbon QC"
+      href: scripts/05_one_carbon_gcurves/02_read_format_gcurves.qmd
+    - text: "05.C Single carbon analysis"
+      href: scripts/05_one_carbon_gcurves/03_analyze_gcurves.qmd
 
 format:
   html:

@@ -110,3 +110,76 @@ read_synergy_xlsx <- function(path, sheet = 3, skip = 1) {
   readxl::read_xlsx(path, sheet = sheet, skip = skip) %>%
     tidy_plate_wide()
 }
+
+# Logphase 600 plate reader reading function but for the text file export.
+# Unlike the xlsx export these files carry a header block that must be skipped,
+# and the plate identity lives in the filename rather than in a sheet name.
+read_logphase_txt <- function(file, skip) {
+  readr::read_tsv(file, skip = skip) %>%
+    dplyr::mutate(
+      seconds = lubridate::time_length(
+        lubridate::interval(Time[1], Time, tzone = "UTC"),
+        unit = "second"
+      ),
+    ) %>%
+    tidyr::pivot_longer(
+      c(-seconds, -Time),
+      names_to = "well",
+      values_to = "OD600"
+    ) %>%
+    dplyr::mutate(hours = lubridate::time_length(seconds, unit = "hours")) %>%
+    # converting the well format so it matches the samplesheet
+    dplyr::mutate(
+      well = paste0(
+        stringr::str_extract(well, "^[A-H]"),
+        stringr::str_pad(
+          stringr::str_extract(well, "\\d+"),
+          width = 2,
+          pad = "0",
+          side = "left"
+        )
+      )
+    ) %>%
+    dplyr::select(seconds, hours, well, OD600) %>%
+    dplyr::mutate(OD600 = as.numeric(OD600)) %>%
+    dplyr::mutate(plate_file = fs::path_file(file))
+}
+
+
+# Growth curve summaries --------------------------------------------------
+
+# makes a summary table for inspecting 96-well growth curve plates
+plate_summary <- function(df, plate_id) {
+  df %>%
+    dplyr::filter(plate_name == {{ plate_id }}) %>%
+    dplyr::select(
+      plate_name,
+      column,
+      evo_hist,
+      strainID,
+      carbon_source,
+      streptomycin_ug_ml,
+      plate_file
+    ) %>%
+    dplyr::distinct()
+}
+
+# function for calculating AUC using trapezoid rule
+trap_auc <- function(x, y) {
+  sum(diff(x) * (utils::head(y, -1) + utils::tail(y, -1)) / 2)
+}
+
+# Function for calculating bootstrapped mean and 95% CI
+boot_mean_ci <- function(x, n_boot = N_BOOT, ci = 0.95) {
+  x <- x[!is.na(x)]
+  if (length(x) == 0) {
+    return(tibble::tibble(mn = NA_real_, ci_lo = NA_real_, ci_hi = NA_real_))
+  }
+  alpha <- (1 - ci) / 2
+  boot_means <- replicate(n_boot, mean(sample(x, length(x), replace = TRUE)))
+  tibble::tibble(
+    mn = mean(x),
+    ci_lo = stats::quantile(boot_means, alpha),
+    ci_hi = stats::quantile(boot_means, 1 - alpha)
+  )
+}

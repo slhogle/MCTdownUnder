@@ -20,6 +20,11 @@ MCTdownUnder/
 └── _site/           # rendered project website, deployed to GitHub Pages by Actions
 ```
 
+Some raw data is shared with the sister project
+[hambiEvoEnvCoexist](https://github.com/slhogle/hambiEvoEnvCoexist), where the same plates were run: the
+single carbon source growth curves in `data/raw/20260601_single_carbon_growth/` and the bioscreen tables in
+`data/raw/20240328_bioscreen_strains/`.
+
 Every processed data file and figure is produced by a notebook in `scripts/`, so the analysis can be rebuilt
 from `data/raw/` by rendering the project:
 

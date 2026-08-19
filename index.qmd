@@ -65,6 +65,7 @@ The notebooks are grouped into four tracks, run in order within each track:
 | `scripts/02_biolog_ecoplates` | Carbon substrate use in monoculture (Biolog Ecoplates, Synergy H1) |
 | `scripts/03_coculture_plates` | Competition in membrane-separated co-culture plates (Logphase 600) |
 | `scripts/04_serial_transfer_coculture` | Serial transfer co-culture over five 48 hour cycles |
+| `scripts/05_one_carbon_gcurves` | Growth on 20 single carbon sources across streptomycin concentrations |
 
 ## Availability
 

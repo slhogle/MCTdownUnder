@@ -65,6 +65,7 @@ Every notebook opens the same way: `## Libraries` (with `source(here::here("R", 
 | `02_biolog_ecoplates` | `01_format_growthcurves` → `02_growth_curve_stats` → `03_plot_analyze_growth` | Synergy H1; `03` joins `data/raw/carbon_compound_map.tsv` |
 | `03_coculture_plates` | `01_format_growthcurves` → `02_growth_curve_stats` → `03_competition_outcomes` | Logphase 600 membrane plates; `03` emits the per-pair `competition_*_final.tsv` |
 | `04_serial_transfer_coculture` | `01_pilot_20260202`, then `02_20260410_format_growthcurves` → `03_20260410_prune_and_plot` | One notebook per dated experiment; the pilot is standalone |
+| `05_one_carbon_gcurves` | `01_carbon_source_platemap_format` → `02_read_format_gcurves` → `03_analyze_gcurves` | Ported from hambiEvoEnvCoexist `10_one_carbon_gcurves_logphase`; plates were run jointly with that project |
 
 Stage 01 reads raw plate-reader files + samplesheet, joins by `well`, tags `plate_name`, adds a 5-point centered
 rolling mean (`slider::slide_dbl`, `.before = 2, .after = 2`) as `OD600_rollmean`, and writes `gcurves_smooth.tsv`.
@@ -90,6 +91,13 @@ on different sheets. `R/generic.R` holds strain labels, `straincols`/`histcols`,
 - `scripts/04_.../03_prune_and_plot` writes `*_gcurves_pruned.tsv` rather than overwriting stage 02's
   `*_gcurves_smooth.tsv`, so partial re-renders cannot leave `data/processed/` in a half-pruned state.
 - A `fig-cap` containing `: ` must be quoted or Quarto's YAML parser rejects the chunk.
+- Streptomycin dosing in `05_one_carbon_gcurves` is **nested inside species**: HAMBI_1977 wells at 10 μg/ml,
+  HAMBI_1287 at 512 μg/ml. No dose is shared, so species cannot be compared at matched streptomycin. Four carbon
+  sources (D-mannitol, L-arginine, lactic acid, sodium acetate) were only run without streptomycin.
+- The `Carbon_platemap_5` block transposition fixed in `05_one_carbon_gcurves/01` was inferred from the reads, not
+  read off the spreadsheet, and it lands on the +Str columns that this project analyses (upstream only used the
+  streptomycin-free columns, which the correction never touched). Re-check it against the bench notebook before
+  publishing.
 - `_notrack/` is a deliberate scratch area for untracked data and code (it still holds `_notrack/R/utils_cfus.R`,
   never wired into the pipeline); `wip/` likewise.
 - New notebooks must be added to **both** the `render:` list and a sidebar `contents:` in `_quarto.yml`.

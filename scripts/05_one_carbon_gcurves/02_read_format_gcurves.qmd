@@ -1,0 +1,865 @@
+---
+title: "05.B Growth curves on M9MM + single carbon"
+subtitle: "Quality control"
+author: "Shane Hogle"
+date: today
+---
+
+# Introduction
+
+Each strain was grown in M9 minimal medium with a single compound supplied as the sole carbon source, at three streptomycin concentrations, and read on a Biotek Logphase 600. This notebook joins the LogPhase reads to the platemap from the [previous step](01_carbon_source_platemap_format.qmd), smooths them, and inspects every plate.
+
+The plates were run jointly with [hambiEvoEnvCoexist](https://github.com/slhogle/hambiEvoEnvCoexist) and carry four species. The QC views below show every well as it was run; the saved table is restricted to the two species this project uses (HAMBI_1287 and HAMBI_1977) plus the uninoculated blanks.
+
+Streptomycin dosing is per species — HAMBI_1977 wells were dosed at 10 μg/ml and HAMBI_1287 wells at 512 μg/ml, alongside the streptomycin-free wells. So each species has two levels, not a shared gradient.
+
+# Setup
+
+## Libraries
+
+```{r}
+library(here)
+library(tidyverse)
+library(readxl)
+library(stringr)
+library(lubridate)
+library(fs)
+library(ggforce)
+library(slider)
+library(stringi)
+source(here::here("R", "gcurves.R"))
+source(here::here("R", "generic.R"))
+```
+
+## Global variables
+
+```{r}
+data_raw <- here::here("data", "raw", "20260601_single_carbon_growth")
+data_interim <- here::here("data", "interim", "05_one_carbon_gcurves")
+data_processed <- here::here("data", "processed", "05_one_carbon_gcurves")
+
+# make output directories if they don't exist
+fs::dir_create(data_interim)
+fs::dir_create(data_processed)
+```
+
+# Read
+
+```{r}
+# read in the metadata plate map from the previous step
+platemap <- read_tsv(here::here(data_interim, "platemap_master_tidy.tsv")) |>
+  # filenames on disk use NFD Unicode normalization (e.g. "ä" stored as
+  # decomposed a + combining diaeresis, U+0308) while this table stores
+  # the precomposed NFC form; normalize to NFD here so paths built
+  # downstream match the literal bytes on disk (Linux filesystems don't
+  # auto-normalize, unlike macOS/HFS+)
+  mutate(plate_file = stri_trans_nfd(plate_file))
+```
+
+```{r}
+# read in OD data
+ods_combined <- platemap |>
+  select(plate_file) |>
+  distinct() |>
+  mutate(file1 = here::here(data_raw, paste(plate_file))) |>
+  pull(file1) |>
+  map(\(x) read_logphase_txt(x, skip = 28)) |>
+  list_rbind()
+```
+
+# Format
+
+```{r}
+# join combined optical density data with platemap
+ods_combined_md <- left_join(ods_combined, platemap) |>
+  # add a unique id
+  group_by(plate_file, plate) |>
+  mutate(plate_name = cur_group_id()) |>
+  ungroup()
+```
+
+```{r}
+# smooth growth curves
+ods_combined_md_sm <- ods_combined_md |>
+  dplyr::group_by(plate_name, well) |>
+  arrange(plate_file, plate, well) |>
+  # subtract od at first time point from gcurve so it starts at 0 OD
+  mutate(OD600 = OD600 - first(OD600)) |>
+  # set negative values to 0
+  mutate(OD600 = if_else(OD600 < 0, 0, OD600)) |>
+  dplyr::mutate(
+    OD600_rollmean = slider::slide_dbl(OD600, mean, .before = 2, .after = 2)
+  ) |>
+  ungroup() |>
+  relocate(OD600_rollmean, .after = "OD600")
+```
+
+# Plot
+
+Inspecting individual plates. There are 26 plates.
+
+::: {.panel-tabset}
+
+## Plate 1
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-01
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 1. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 1,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 1)
+```
+
+## Plate 2
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-02
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 2. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 2,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 2)
+```
+
+## Plate 3
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-03
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 3. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 3,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 3)
+```
+
+## Plate 4
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-04
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 4. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 4,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 4)
+```
+
+## Plate 5
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-05
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 5. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 5,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 5)
+```
+
+## Plate 6
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-06
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 6. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 6,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 6)
+```
+
+## Plate 7
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-07
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 7. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 7,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 7)
+```
+
+## Plate 8
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-08
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 8. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 8,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 8)
+```
+
+## Plate 9
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-09
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 9. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 9,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 9)
+```
+
+## Plate 10
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-10
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 10. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 10,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 10)
+```
+
+## Plate 11
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-11
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 11. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 11,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 11)
+```
+
+## Plate 12
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-12
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 12. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 12,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 12)
+```
+
+## Plate 13
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-13
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 13. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 13,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 13)
+```
+
+## Plate 14
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-14
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 14. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 14,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 14)
+```
+
+## Plate 15
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-15
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 15. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 15,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 15)
+```
+
+## Plate 16
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-16
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 16. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 16,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 16)
+```
+
+## Plate 17
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-17
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 17. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 17,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 17)
+```
+
+## Plate 18
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-18
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 18. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 18,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 18)
+```
+
+## Plate 19
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-19
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 19. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 19,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 19)
+```
+
+## Plate 20
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-20
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 20. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 20,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 20)
+```
+
+## Plate 21
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-21
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 21. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 21,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 21)
+```
+
+## Plate 22
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-22
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 22. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 22,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 22)
+```
+
+## Plate 23
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-23
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 23. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 23,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 23)
+```
+
+## Plate 24
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-24
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 24. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 24,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 24)
+```
+
+## Plate 25
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-25
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 25. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 25,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 25)
+```
+
+## Plate 26
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-26
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Logphase 600 plate_name = 26. Blue line is smoothed with a moving average window of five points. Orange dashed is non-smoothed."
+plotplate(
+  ods_combined_md_sm,
+  dfxy = NULL,
+  unsmoothed = TRUE,
+  predicted = FALSE,
+  plate = 26,
+  rows = 8,
+  cols = 12,
+  page = 1,
+  scales = "fixed"
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+plate_summary(ods_combined_md_sm, 26)
+```
+
+:::
+
+# Save
+
+Remove these wells after inspecting the plots above — they look suspect.
+
+`plate_name` is a `cur_group_id()` over `(plate_file, plate)`, so its integers are
+reassigned whenever a new `plate_file` sorts ahead of existing ones alphabetically
+(e.g. "Carbon_sources_10_..." sorts before "Carbon_sources_1_..."). Keying this list
+on `plate_name` would silently blacklist the wrong wells the next time a batch is
+added, so it's keyed on `(plate_file, plate, well)` instead, which is stable.
+
+```{r}
+blacklist <- tribble(
+  ~plate_file,                                     ~plate,    ~well,
+  "Carbon_sources_1_3_08-kesä-2026 12-51-22.txt",  "Plate 3", "F01",
+  "Carbon_sources_3_4_26-kesä-2026 12-49-10.txt",  "Plate 4", "H01",
+  "Carbon_sources_3_4_26-kesä-2026 12-49-10.txt",  "Plate 4", "H02",
+  "Carbon_sources_9_3_09-heinä-2026 14-42-47.txt", "Plate 2", "A01",
+  "Carbon_sources_9_3_09-heinä-2026 14-42-47.txt", "Plate 2", "G02",
+  "Carbon_sources_9_3_09-heinä-2026 14-42-47.txt", "Plate 2", "E04"
+) |>
+  # match the NFD normalization applied to plate_file above
+  mutate(plate_file = stri_trans_nfd(plate_file))
+```
+
+Restrict to the species used in this project. HAMBI_0403 and HAMBI_1896 shared
+the plates but belong to the sister project; the uninoculated blanks are kept so
+that downstream steps can still see them.
+
+```{r}
+anti_join(ods_combined_md_sm, blacklist) |>
+  filter(strainID %in% c("H1287", "H1977", "blank")) |>
+  write_tsv(here::here(data_processed, "one_carbon_gcurves_logphase.tsv"))
+```
