@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Shane Hogle">
+<meta name="dcterms.date" content="2026-08-19">
+
+<title>04.C Serial transfer of co-culture pairs – MCTdownUnder</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-5f646c6b4dd5a066b08f27aace2c65e4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-1da56a5aba4ff86d3346fb7391a3d6e1.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-5f646c6b4dd5a066b08f27aace2c65e4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">MCTdownUnder</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-monoculture" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Monoculture</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-monoculture">    
+        <li>
+    <a class="dropdown-item" href="../../scripts/01_bioscreen_strains/01_plot_analyze_growth.html">
+ <span class="dropdown-text">01.A Growth vs streptomycin</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../scripts/02_biolog_ecoplates/01_format_growthcurves.html">
+ <span class="dropdown-text">02.A Ecoplates QC</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../scripts/02_biolog_ecoplates/02_growth_curve_stats.html">
+ <span class="dropdown-text">02.B Ecoplates growth stats</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../scripts/02_biolog_ecoplates/03_plot_analyze_growth.html">
+ <span class="dropdown-text">02.C Ecoplates carbon use</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-co-culture-plates" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Co-culture plates</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-co-culture-plates">    
+        <li>
+    <a class="dropdown-item" href="../../scripts/03_coculture_plates/01_format_growthcurves.html">
+ <span class="dropdown-text">03.A Co-culture QC</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../scripts/03_coculture_plates/02_growth_curve_stats.html">
+ <span class="dropdown-text">03.B Co-culture growth stats</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../scripts/03_coculture_plates/03_competition_outcomes.html">
+ <span class="dropdown-text">03.C Competition outcomes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-serial-transfer" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Serial transfer</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-serial-transfer">    
+        <li>
+    <a class="dropdown-item" href="../../scripts/04_serial_transfer_coculture/01_pilot_20260202.html">
+ <span class="dropdown-text">04.A Pilot 2026-02-02</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../scripts/04_serial_transfer_coculture/02_20260410_format_growthcurves.html">
+ <span class="dropdown-text">04.B Serial transfer QC</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html">
+ <span class="dropdown-text">04.C Serial transfer results</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+    <a href="https://github.com/slhogle/MCTdownUnder" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html">04.C Serial transfer results</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../scripts/04_serial_transfer_coculture/01_pilot_20260202.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">04.A Pilot 2026-02-02</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../scripts/04_serial_transfer_coculture/02_20260410_format_growthcurves.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">04.B Serial transfer QC</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">04.C Serial transfer results</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">2</span> Setup</a>
+  <ul class="collapse">
+  <li><a href="#libraries" id="toc-libraries" class="nav-link" data-scroll-target="#libraries"><span class="header-section-number">2.1</span> Libraries</a></li>
+  <li><a href="#global-variables" id="toc-global-variables" class="nav-link" data-scroll-target="#global-variables"><span class="header-section-number">2.2</span> Global variables</a></li>
+  <li><a href="#read-data" id="toc-read-data" class="nav-link" data-scroll-target="#read-data"><span class="header-section-number">2.3</span> Read data</a></li>
+  </ul></li>
+  <li><a href="#inspect-individual-growth-curves" id="toc-inspect-individual-growth-curves" class="nav-link" data-scroll-target="#inspect-individual-growth-curves"><span class="header-section-number">3</span> Inspect individual growth curves</a>
+  <ul class="collapse">
+  <li><a href="#pseudomonas-chlororaphis-1977" id="toc-pseudomonas-chlororaphis-1977" class="nav-link" data-scroll-target="#pseudomonas-chlororaphis-1977"><span class="header-section-number">3.1</span> <em>Pseudomonas chlororaphis</em> 1977</a></li>
+  <li><a href="#citrobacter-koseri-1287" id="toc-citrobacter-koseri-1287" class="nav-link" data-scroll-target="#citrobacter-koseri-1287"><span class="header-section-number">3.2</span> <em>Citrobacter koseri</em> 1287</a></li>
+  </ul></li>
+  <li><a href="#blacklists" id="toc-blacklists" class="nav-link" data-scroll-target="#blacklists"><span class="header-section-number">4</span> Blacklists</a></li>
+  <li><a href="#growth-curves-with-transfers-combined" id="toc-growth-curves-with-transfers-combined" class="nav-link" data-scroll-target="#growth-curves-with-transfers-combined"><span class="header-section-number">5</span> Growth curves with transfers combined</a>
+  <ul class="collapse">
+  <li><a href="#citrobacter-koseri-1287-1" id="toc-citrobacter-koseri-1287-1" class="nav-link" data-scroll-target="#citrobacter-koseri-1287-1"><span class="header-section-number">5.1</span> <em>Citrobacter koseri</em> 1287</a></li>
+  <li><a href="#pseudomonas-chlororaphis-1977-1" id="toc-pseudomonas-chlororaphis-1977-1" class="nav-link" data-scroll-target="#pseudomonas-chlororaphis-1977-1"><span class="header-section-number">5.2</span> <em>Pseudomonas chlororaphis</em> 1977</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">04.C Serial transfer of co-culture pairs</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<p class="subtitle lead">Pruning and competition time courses, 2026-04-10 experiment</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Shane Hogle </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 19, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>Strain naming convention: 1287 = <em>Citrobacter koseri</em> 1287, 1977 = <em>Pseudomonas chlororaphis</em> 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.</p>
+<p>Growth media convention: M9MM = M9 minimal media with glucose as the sole carbon source and supplemented with casamino acids. R2A = Reasoner’s 2 broth (complex growth medium).</p>
+<p>This experiment ran for five 48-hour growth cycles (240 hours of growth total) where each well was serially diluted to a concentration of 10<sup>-4</sup> (10,000 fold dilution) and then placed back in the incubating plate reader.</p>
+<p>Here we inspect every cycle, drop the well pairs that grew where nothing should have grown, and plot the competition time course with all five cycles joined end to end.</p>
+</section>
+<section id="setup" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Setup</h1>
+<section id="libraries" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="libraries"><span class="header-section-number">2.1</span> Libraries</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(fs)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">library</span>(ggforce)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"gcurves.R"</span>))</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"generic.R"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="global-variables" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="global-variables"><span class="header-section-number">2.2</span> Global variables</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>data_processed <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(</span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="st">"data"</span>,</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="st">"processed"</span>,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="st">"04_serial_transfer_coculture"</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>)</span>
+<span id="cb2-6"><a href="#cb2-6"></a>figs <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"output"</span>, <span class="st">"figures"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7"></a></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="co"># make output directories if they don't exist</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(data_processed)</span>
+<span id="cb2-10"><a href="#cb2-10"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(figs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="read-data" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="read-data"><span class="header-section-number">2.3</span> Read data</h2>
+<p>Formatted in the <a href="../../scripts/04_serial_transfer_coculture/02_20260410_format_growthcurves.html">prior step</a>.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>coculture_gcurves_sm_1977 <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(</span>
+<span id="cb3-2"><a href="#cb3-2"></a>  here<span class="sc">::</span><span class="fu">here</span>(data_processed, <span class="st">"20260410_1977_gcurves_smooth.tsv"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3"></a>)</span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a>coculture_gcurves_sm_1287 <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(</span>
+<span id="cb3-6"><a href="#cb3-6"></a>  here<span class="sc">::</span><span class="fu">here</span>(data_processed, <span class="st">"20260410_1287_gcurves_smooth.tsv"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+</section>
+<section id="inspect-individual-growth-curves" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Inspect individual growth curves</h1>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>plotter <span class="ot">&lt;-</span> <span class="cf">function</span>(id, df) {</span>
+<span id="cb4-2"><a href="#cb4-2"></a>  <span class="fu">plotplate</span>(</span>
+<span id="cb4-3"><a href="#cb4-3"></a>    df,</span>
+<span id="cb4-4"><a href="#cb4-4"></a>    <span class="at">dfxy =</span> <span class="cn">NULL</span>,</span>
+<span id="cb4-5"><a href="#cb4-5"></a>    <span class="at">unsmoothed =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb4-6"><a href="#cb4-6"></a>    <span class="at">predicted =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-7"><a href="#cb4-7"></a>    <span class="at">plate =</span> id,</span>
+<span id="cb4-8"><a href="#cb4-8"></a>    <span class="at">rows =</span> <span class="dv">6</span>,</span>
+<span id="cb4-9"><a href="#cb4-9"></a>    <span class="at">cols =</span> <span class="dv">12</span>,</span>
+<span id="cb4-10"><a href="#cb4-10"></a>    <span class="at">page =</span> <span class="dv">1</span>,</span>
+<span id="cb4-11"><a href="#cb4-11"></a>    <span class="at">scales =</span> <span class="st">"fixed"</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a>  )</span>
+<span id="cb4-13"><a href="#cb4-13"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="pseudomonas-chlororaphis-1977" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="pseudomonas-chlororaphis-1977"><span class="header-section-number">3.1</span> <em>Pseudomonas chlororaphis</em> 1977</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Cycle 1</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Cycle 2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Cycle 3</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false" href="">Cycle 4</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-5" role="tab" aria-controls="tabset-1-5" aria-selected="false" href="">Cycle 5</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-1977-c1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-1977-c1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03_20260410_prune_and_plot_files/figure-html/fig-1977-c1-1.png" class="img-fluid figure-img" width="1152">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-1977-c1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Growth curves for <em>P. chlororaphis</em> 1977, cycle 1. X-axis is time in hours (48 hour cycle). Blue line is smoothed with a moving average window of five points, orange dashed is non-smoothed raw data.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-1977-c2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-1977-c2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03_20260410_prune_and_plot_files/figure-html/fig-1977-c2-1.png" class="img-fluid figure-img" width="1152">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-1977-c2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: As in <a href="#fig-1977-c1" class="quarto-xref">Figure&nbsp;1</a> but for cycle 2.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-1977-c3" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-1977-c3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03_20260410_prune_and_plot_files/figure-html/fig-1977-c3-1.png" class="img-fluid figure-img" width="1152">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-1977-c3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: As in <a href="#fig-1977-c1" class="quarto-xref">Figure&nbsp;1</a> but for cycle 3.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-1977-c4" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-1977-c4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03_20260410_prune_and_plot_files/figure-html/fig-1977-c4-1.png" class="img-fluid figure-img" width="1152">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-1977-c4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: As in <a href="#fig-1977-c1" class="quarto-xref">Figure&nbsp;1</a> but for cycle 4.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-5-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-1977-c5" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-1977-c5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03_20260410_prune_and_plot_files/figure-html/fig-1977-c5-1.png" class="img-fluid figure-img" width="1152">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-1977-c5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: As in <a href="#fig-1977-c1" class="quarto-xref">Figure&nbsp;1</a> but for cycle 5.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="citrobacter-koseri-1287" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="citrobacter-koseri-1287"><span class="header-section-number">3.2</span> <em>Citrobacter koseri</em> 1287</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Cycle 1</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Cycle 2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false" href="">Cycle 3</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false" href="">Cycle 4</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-5" role="tab" aria-controls="tabset-2-5" aria-selected="false" href="">Cycle 5</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-1287-c1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-1287-c1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03_20260410_prune_and_plot_files/figure-html/fig-1287-c1-1.png" class="img-fluid figure-img" width="1152">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-1287-c1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Growth curves for <em>C. koseri</em> 1287, cycle 1. X-axis is time in hours (48 hour cycle). Blue line is smoothed with a moving average window of five points, orange dashed is non-smoothed raw data.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-1287-c2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-1287-c2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03_20260410_prune_and_plot_files/figure-html/fig-1287-c2-1.png" class="img-fluid figure-img" width="1152">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-1287-c2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: As in <a href="#fig-1287-c1" class="quarto-xref">Figure&nbsp;6</a> but for cycle 2.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-1287-c3" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-1287-c3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03_20260410_prune_and_plot_files/figure-html/fig-1287-c3-1.png" class="img-fluid figure-img" width="1152">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-1287-c3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: As in <a href="#fig-1287-c1" class="quarto-xref">Figure&nbsp;6</a> but for cycle 3.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-2-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-4-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-1287-c4" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-1287-c4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03_20260410_prune_and_plot_files/figure-html/fig-1287-c4-1.png" class="img-fluid figure-img" width="1152">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-1287-c4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: As in <a href="#fig-1287-c1" class="quarto-xref">Figure&nbsp;6</a> but for cycle 4.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-2-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-5-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-1287-c5" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-1287-c5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03_20260410_prune_and_plot_files/figure-html/fig-1287-c5-1.png" class="img-fluid figure-img" width="1152">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-1287-c5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10: As in <a href="#fig-1287-c1" class="quarto-xref">Figure&nbsp;6</a> but for cycle 5.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="blacklists" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Blacklists</h1>
+<p>These are well pairs where there was growth where there should be none, identified by inspecting the plots above.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>blacklist_1287 <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb5-2"><a href="#cb5-2"></a>  <span class="sc">~</span>strainID , <span class="sc">~</span>plate_name , <span class="sc">~</span>joined_well_pair ,</span>
+<span id="cb5-3"><a href="#cb5-3"></a>  <span class="st">"H1287"</span>   , <span class="st">"c2"</span>        , <span class="st">"C05C06"</span>          ,</span>
+<span id="cb5-4"><a href="#cb5-4"></a>  <span class="st">"H1287"</span>   , <span class="st">"c2"</span>        , <span class="st">"E05E06"</span>          ,</span>
+<span id="cb5-5"><a href="#cb5-5"></a>  <span class="st">"H1287"</span>   , <span class="st">"c2"</span>        , <span class="st">"F05F06"</span>          ,</span>
+<span id="cb5-6"><a href="#cb5-6"></a>  <span class="st">"H1287"</span>   , <span class="st">"c2"</span>        , <span class="st">"E09E10"</span>          ,</span>
+<span id="cb5-7"><a href="#cb5-7"></a>  <span class="st">"H1287"</span>   , <span class="st">"c3"</span>        , <span class="st">"C05C06"</span>          ,</span>
+<span id="cb5-8"><a href="#cb5-8"></a>  <span class="st">"H1287"</span>   , <span class="st">"c3"</span>        , <span class="st">"E09E10"</span>          ,</span>
+<span id="cb5-9"><a href="#cb5-9"></a>  <span class="st">"H1287"</span>   , <span class="st">"c4"</span>        , <span class="st">"C05C06"</span>          ,</span>
+<span id="cb5-10"><a href="#cb5-10"></a>  <span class="st">"H1287"</span>   , <span class="st">"c4"</span>        , <span class="st">"E09E10"</span>          ,</span>
+<span id="cb5-11"><a href="#cb5-11"></a>  <span class="st">"H1287"</span>   , <span class="st">"c5"</span>        , <span class="st">"C05C06"</span>          ,</span>
+<span id="cb5-12"><a href="#cb5-12"></a>  <span class="st">"H1287"</span>   , <span class="st">"c5"</span>        , <span class="st">"E09E10"</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a>)</span>
+<span id="cb5-14"><a href="#cb5-14"></a></span>
+<span id="cb5-15"><a href="#cb5-15"></a>blacklist_1977 <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb5-16"><a href="#cb5-16"></a>  <span class="sc">~</span>strainID , <span class="sc">~</span>plate_name , <span class="sc">~</span>joined_well_pair ,</span>
+<span id="cb5-17"><a href="#cb5-17"></a>  <span class="st">"H1977"</span>   , <span class="st">"c2"</span>        , <span class="st">"D05D06"</span>          ,</span>
+<span id="cb5-18"><a href="#cb5-18"></a>  <span class="st">"H1977"</span>   , <span class="st">"c2"</span>        , <span class="st">"E05E06"</span>          ,</span>
+<span id="cb5-19"><a href="#cb5-19"></a>  <span class="st">"H1977"</span>   , <span class="st">"c3"</span>        , <span class="st">"D05D06"</span>          ,</span>
+<span id="cb5-20"><a href="#cb5-20"></a>  <span class="st">"H1977"</span>   , <span class="st">"c3"</span>        , <span class="st">"E05E06"</span>          ,</span>
+<span id="cb5-21"><a href="#cb5-21"></a>  <span class="st">"H1977"</span>   , <span class="st">"c3"</span>        , <span class="st">"G05G06"</span>          ,</span>
+<span id="cb5-22"><a href="#cb5-22"></a>  <span class="st">"H1977"</span>   , <span class="st">"c3"</span>        , <span class="st">"B09B10"</span>          ,</span>
+<span id="cb5-23"><a href="#cb5-23"></a>  <span class="st">"H1977"</span>   , <span class="st">"c3"</span>        , <span class="st">"C09C10"</span>          ,</span>
+<span id="cb5-24"><a href="#cb5-24"></a>  <span class="st">"H1977"</span>   , <span class="st">"c4"</span>        , <span class="st">"D05D06"</span>          ,</span>
+<span id="cb5-25"><a href="#cb5-25"></a>  <span class="st">"H1977"</span>   , <span class="st">"c4"</span>        , <span class="st">"E05E06"</span>          ,</span>
+<span id="cb5-26"><a href="#cb5-26"></a>  <span class="st">"H1977"</span>   , <span class="st">"c4"</span>        , <span class="st">"G05G06"</span>          ,</span>
+<span id="cb5-27"><a href="#cb5-27"></a>  <span class="st">"H1977"</span>   , <span class="st">"c4"</span>        , <span class="st">"B09B10"</span>          ,</span>
+<span id="cb5-28"><a href="#cb5-28"></a>  <span class="st">"H1977"</span>   , <span class="st">"c4"</span>        , <span class="st">"C09C10"</span>          ,</span>
+<span id="cb5-29"><a href="#cb5-29"></a>  <span class="st">"H1977"</span>   , <span class="st">"c5"</span>        , <span class="st">"D05D06"</span>          ,</span>
+<span id="cb5-30"><a href="#cb5-30"></a>  <span class="st">"H1977"</span>   , <span class="st">"c5"</span>        , <span class="st">"E05E06"</span>          ,</span>
+<span id="cb5-31"><a href="#cb5-31"></a>  <span class="st">"H1977"</span>   , <span class="st">"c5"</span>        , <span class="st">"G05G06"</span>          ,</span>
+<span id="cb5-32"><a href="#cb5-32"></a>  <span class="st">"H1977"</span>   , <span class="st">"c5"</span>        , <span class="st">"B09B10"</span>          ,</span>
+<span id="cb5-33"><a href="#cb5-33"></a>  <span class="st">"H1977"</span>   , <span class="st">"c5"</span>        , <span class="st">"C09C10"</span></span>
+<span id="cb5-34"><a href="#cb5-34"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Now that I think about this there is no need to include monocultures on these plates, because we have that information from the previous non-serial transfer runs. This might save us some plates in the future.</p>
+</div>
+</div>
+<p>Drop the blacklisted well pairs and keep only the wells that actually hold a culture. The pruned tables are written under their own names so that re-running this notebook never destroys the output of the formatting step.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>prune_wells <span class="ot">&lt;-</span> <span class="cf">function</span>(df, blacklist) {</span>
+<span id="cb6-2"><a href="#cb6-2"></a>  df <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>    <span class="fu">anti_join</span>(blacklist, <span class="at">by =</span> <span class="fu">join_by</span>(joined_well_pair, plate_name)) <span class="sc">|&gt;</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>    <span class="fu">filter</span>(</span>
+<span id="cb6-5"><a href="#cb6-5"></a>      (culture_type <span class="sc">==</span> <span class="st">"monoculture"</span> <span class="sc">&amp;</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a>        <span class="fu">str_detect</span>(well, <span class="st">"[BCD]01|[BCD]05|[BCD]09"</span>) <span class="sc">|</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a>        <span class="fu">str_detect</span>(well, <span class="st">"[EFG]02|[EFG]06|[EFG]10"</span>)) <span class="sc">|</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a>        culture_type <span class="sc">==</span> <span class="st">"coculture"</span></span>
+<span id="cb6-9"><a href="#cb6-9"></a>    )</span>
+<span id="cb6-10"><a href="#cb6-10"></a>}</span>
+<span id="cb6-11"><a href="#cb6-11"></a></span>
+<span id="cb6-12"><a href="#cb6-12"></a>coculture_gcurves_pruned_1287 <span class="ot">&lt;-</span> <span class="fu">prune_wells</span>(</span>
+<span id="cb6-13"><a href="#cb6-13"></a>  coculture_gcurves_sm_1287,</span>
+<span id="cb6-14"><a href="#cb6-14"></a>  blacklist_1287</span>
+<span id="cb6-15"><a href="#cb6-15"></a>)</span>
+<span id="cb6-16"><a href="#cb6-16"></a></span>
+<span id="cb6-17"><a href="#cb6-17"></a>coculture_gcurves_pruned_1977 <span class="ot">&lt;-</span> <span class="fu">prune_wells</span>(</span>
+<span id="cb6-18"><a href="#cb6-18"></a>  coculture_gcurves_sm_1977,</span>
+<span id="cb6-19"><a href="#cb6-19"></a>  blacklist_1977</span>
+<span id="cb6-20"><a href="#cb6-20"></a>)</span>
+<span id="cb6-21"><a href="#cb6-21"></a></span>
+<span id="cb6-22"><a href="#cb6-22"></a>readr<span class="sc">::</span><span class="fu">write_tsv</span>(</span>
+<span id="cb6-23"><a href="#cb6-23"></a>  coculture_gcurves_pruned_1287,</span>
+<span id="cb6-24"><a href="#cb6-24"></a>  here<span class="sc">::</span><span class="fu">here</span>(data_processed, <span class="st">"20260410_1287_gcurves_pruned.tsv"</span>)</span>
+<span id="cb6-25"><a href="#cb6-25"></a>)</span>
+<span id="cb6-26"><a href="#cb6-26"></a></span>
+<span id="cb6-27"><a href="#cb6-27"></a>readr<span class="sc">::</span><span class="fu">write_tsv</span>(</span>
+<span id="cb6-28"><a href="#cb6-28"></a>  coculture_gcurves_pruned_1977,</span>
+<span id="cb6-29"><a href="#cb6-29"></a>  here<span class="sc">::</span><span class="fu">here</span>(data_processed, <span class="st">"20260410_1977_gcurves_pruned.tsv"</span>)</span>
+<span id="cb6-30"><a href="#cb6-30"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="growth-curves-with-transfers-combined" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Growth curves with transfers combined</h1>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>cyclelines <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb7-2"><a href="#cb7-2"></a>  <span class="at">plate_name =</span> <span class="fu">c</span>(<span class="st">"c1"</span>, <span class="st">"c2"</span>, <span class="st">"c3"</span>, <span class="st">"c4"</span>, <span class="st">"c5"</span>),</span>
+<span id="cb7-3"><a href="#cb7-3"></a>  <span class="at">cycle_hour =</span> <span class="fu">c</span>(<span class="dv">48</span>, <span class="dv">96</span>, <span class="dv">144</span>, <span class="dv">192</span>, <span class="dv">240</span>)</span>
+<span id="cb7-4"><a href="#cb7-4"></a>)</span>
+<span id="cb7-5"><a href="#cb7-5"></a></span>
+<span id="cb7-6"><a href="#cb7-6"></a>plot_competition_timecourse <span class="ot">&lt;-</span> <span class="cf">function</span>(df, title) {</span>
+<span id="cb7-7"><a href="#cb7-7"></a>  df <span class="sc">|&gt;</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a>    <span class="fu">mutate</span>(<span class="at">hours_agg =</span> hours <span class="sc">+</span> start_hrs_from_0) <span class="sc">%&gt;%</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb7-10"><a href="#cb7-10"></a>      <span class="at">strainID =</span> <span class="fu">paste0</span>(</span>
+<span id="cb7-11"><a href="#cb7-11"></a>        <span class="fu">str_to_upper</span>(<span class="fu">str_sub</span>(evolution, <span class="dv">1</span>, <span class="dv">1</span>)),</span>
+<span id="cb7-12"><a href="#cb7-12"></a>        <span class="fu">str_sub</span>(strain, <span class="dv">2</span>, <span class="dv">5</span>)</span>
+<span id="cb7-13"><a href="#cb7-13"></a>      ),</span>
+<span id="cb7-14"><a href="#cb7-14"></a>      <span class="at">growthenv =</span> <span class="fu">paste</span>(media, strep_conc_ugml, <span class="at">sep =</span> <span class="st">"_"</span>)</span>
+<span id="cb7-15"><a href="#cb7-15"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb7-17"><a href="#cb7-17"></a>      <span class="at">strainID =</span> <span class="fu">factor</span>(</span>
+<span id="cb7-18"><a href="#cb7-18"></a>        strainID,</span>
+<span id="cb7-19"><a href="#cb7-19"></a>        <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"A1287"</span>, <span class="st">"E1287"</span>, <span class="st">"A1977"</span>, <span class="st">"E1977"</span>)</span>
+<span id="cb7-20"><a href="#cb7-20"></a>      )</span>
+<span id="cb7-21"><a href="#cb7-21"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-22"><a href="#cb7-22"></a>    <span class="fu">summarize</span>(</span>
+<span id="cb7-23"><a href="#cb7-23"></a>      <span class="at">y =</span> <span class="fu">mean</span>(OD600_rollmean),</span>
+<span id="cb7-24"><a href="#cb7-24"></a>      <span class="at">sd =</span> <span class="fu">sd</span>(OD600_rollmean),</span>
+<span id="cb7-25"><a href="#cb7-25"></a>      <span class="at">.by =</span> <span class="fu">c</span>(</span>
+<span id="cb7-26"><a href="#cb7-26"></a>        hours_agg,</span>
+<span id="cb7-27"><a href="#cb7-27"></a>        strainID,</span>
+<span id="cb7-28"><a href="#cb7-28"></a>        evolution,</span>
+<span id="cb7-29"><a href="#cb7-29"></a>        growthenv,</span>
+<span id="cb7-30"><a href="#cb7-30"></a>        dilution,</span>
+<span id="cb7-31"><a href="#cb7-31"></a>        culture_type</span>
+<span id="cb7-32"><a href="#cb7-32"></a>      )</span>
+<span id="cb7-33"><a href="#cb7-33"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-34"><a href="#cb7-34"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(</span>
+<span id="cb7-35"><a href="#cb7-35"></a>      <span class="at">x =</span> hours_agg,</span>
+<span id="cb7-36"><a href="#cb7-36"></a>    )) <span class="sc">+</span></span>
+<span id="cb7-37"><a href="#cb7-37"></a>    <span class="fu">geom_vline</span>(<span class="at">data =</span> cyclelines, <span class="fu">aes</span>(<span class="at">xintercept =</span> cycle_hour), <span class="at">lty =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb7-38"><a href="#cb7-38"></a>    ggplot2<span class="sc">::</span><span class="fu">geom_ribbon</span>(</span>
+<span id="cb7-39"><a href="#cb7-39"></a>      <span class="fu">aes</span>(<span class="at">ymin =</span> y <span class="sc">-</span> sd, <span class="at">ymax =</span> y <span class="sc">+</span> sd, <span class="at">fill =</span> <span class="fu">factor</span>(evolution)),</span>
+<span id="cb7-40"><a href="#cb7-40"></a>      <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
+<span id="cb7-41"><a href="#cb7-41"></a>      <span class="at">show.legend =</span> <span class="cn">FALSE</span></span>
+<span id="cb7-42"><a href="#cb7-42"></a>    ) <span class="sc">+</span></span>
+<span id="cb7-43"><a href="#cb7-43"></a>    ggplot2<span class="sc">::</span><span class="fu">geom_line</span>(</span>
+<span id="cb7-44"><a href="#cb7-44"></a>      <span class="fu">aes</span>(<span class="at">y =</span> y, <span class="at">color =</span> <span class="fu">factor</span>(evolution)),</span>
+<span id="cb7-45"><a href="#cb7-45"></a>      <span class="at">linewidth =</span> <span class="fl">0.75</span></span>
+<span id="cb7-46"><a href="#cb7-46"></a>    ) <span class="sc">+</span></span>
+<span id="cb7-47"><a href="#cb7-47"></a>    <span class="fu">facet_grid</span>(growthenv <span class="sc">~</span> culture_type) <span class="sc">+</span></span>
+<span id="cb7-48"><a href="#cb7-48"></a>    <span class="fu">labs</span>(</span>
+<span id="cb7-49"><a href="#cb7-49"></a>      <span class="at">y =</span> <span class="st">"OD"</span>,</span>
+<span id="cb7-50"><a href="#cb7-50"></a>      <span class="at">x =</span> <span class="st">"Total hours from start"</span>,</span>
+<span id="cb7-51"><a href="#cb7-51"></a>      <span class="at">color =</span> <span class="st">"Evolution"</span>,</span>
+<span id="cb7-52"><a href="#cb7-52"></a>      <span class="at">title =</span> {{ title }}</span>
+<span id="cb7-53"><a href="#cb7-53"></a>    )</span>
+<span id="cb7-54"><a href="#cb7-54"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="citrobacter-koseri-1287-1" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="citrobacter-koseri-1287-1"><span class="header-section-number">5.1</span> <em>Citrobacter koseri</em> 1287</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>p1287 <span class="ot">&lt;-</span> <span class="fu">plot_competition_timecourse</span>(</span>
+<span id="cb8-2"><a href="#cb8-2"></a>  coculture_gcurves_pruned_1287,</span>
+<span id="cb8-3"><a href="#cb8-3"></a>  <span class="at">title =</span> <span class="st">"Citrobacter 1287"</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a>)</span>
+<span id="cb8-5"><a href="#cb8-5"></a></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="fu">ggsave</span>(</span>
+<span id="cb8-7"><a href="#cb8-7"></a>  here<span class="sc">::</span><span class="fu">here</span>(figs, <span class="st">"20260410_1287_competition_timecourse.svg"</span>),</span>
+<span id="cb8-8"><a href="#cb8-8"></a>  p1287,</span>
+<span id="cb8-9"><a href="#cb8-9"></a>  <span class="at">device =</span> <span class="st">"svg"</span>,</span>
+<span id="cb8-10"><a href="#cb8-10"></a>  <span class="at">dpi =</span> <span class="dv">300</span>,</span>
+<span id="cb8-11"><a href="#cb8-11"></a>  <span class="at">width =</span> <span class="dv">10</span>,</span>
+<span id="cb8-12"><a href="#cb8-12"></a>  <span class="at">height =</span> <span class="dv">6</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-01" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03_20260410_prune_and_plot_files/figure-html/fig-01-1.png" class="img-fluid figure-img" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11: Serial transfer growth curves (OD600) over five 48 hour growth cycles (240 hours total) for <em>Citrobacter koseri</em> 1287. Columns in the plot grid depict growth in monoculture or co-culture. Grid rows depict the growth medium and streptomycin concentrations. Heavy line corresponds to mean growth and the ribbon around each mean line corresponds to one standard deviation. Dashed vertical lines depict the serial transfer events. Color depicts the streptomycin resistance status (evo = resistant, anc = streptomycin sensitive).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="pseudomonas-chlororaphis-1977-1" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="pseudomonas-chlororaphis-1977-1"><span class="header-section-number">5.2</span> <em>Pseudomonas chlororaphis</em> 1977</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>p1977 <span class="ot">&lt;-</span> <span class="fu">plot_competition_timecourse</span>(</span>
+<span id="cb9-2"><a href="#cb9-2"></a>  coculture_gcurves_pruned_1977,</span>
+<span id="cb9-3"><a href="#cb9-3"></a>  <span class="at">title =</span> <span class="st">"Pseudomonas 1977"</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a>)</span>
+<span id="cb9-5"><a href="#cb9-5"></a></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="fu">ggsave</span>(</span>
+<span id="cb9-7"><a href="#cb9-7"></a>  here<span class="sc">::</span><span class="fu">here</span>(figs, <span class="st">"20260410_1977_competition_timecourse.svg"</span>),</span>
+<span id="cb9-8"><a href="#cb9-8"></a>  p1977,</span>
+<span id="cb9-9"><a href="#cb9-9"></a>  <span class="at">device =</span> <span class="st">"svg"</span>,</span>
+<span id="cb9-10"><a href="#cb9-10"></a>  <span class="at">dpi =</span> <span class="dv">300</span>,</span>
+<span id="cb9-11"><a href="#cb9-11"></a>  <span class="at">width =</span> <span class="dv">10</span>,</span>
+<span id="cb9-12"><a href="#cb9-12"></a>  <span class="at">height =</span> <span class="dv">6</span></span>
+<span id="cb9-13"><a href="#cb9-13"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-02" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03_20260410_prune_and_plot_files/figure-html/fig-02-1.png" class="img-fluid figure-img" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12: As in <a href="#fig-01" class="quarto-xref">Figure&nbsp;11</a> but for <em>Pseudomonas chlororaphis</em> 1977.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+
+
+<!-- -->
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">---</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="an">title:</span><span class="co"> "04.C Serial transfer of co-culture pairs"</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="an">subtitle:</span><span class="co"> "Pruning and competition time courses, 2026-04-10 experiment"</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="an">author:</span><span class="co"> "Shane Hogle"</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="an">date:</span><span class="co"> today</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="co">---</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a></span>
+<span id="cb10-8"><a href="#cb10-8"></a><span class="fu"># Introduction</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a></span>
+<span id="cb10-10"><a href="#cb10-10"></a>Strain naming convention: 1287 = *Citrobacter koseri* 1287, 1977 = *Pseudomonas chlororaphis* 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.</span>
+<span id="cb10-11"><a href="#cb10-11"></a></span>
+<span id="cb10-12"><a href="#cb10-12"></a>Growth media convention: M9MM = M9 minimal media with glucose as the sole carbon source and supplemented with casamino acids. R2A = Reasoner's 2 broth (complex growth medium).</span>
+<span id="cb10-13"><a href="#cb10-13"></a></span>
+<span id="cb10-14"><a href="#cb10-14"></a>This experiment ran for five 48-hour growth cycles (240 hours of growth total) where each well was serially diluted to a concentration of 10^-4^ (10,000 fold dilution) and then placed back in the incubating plate reader.</span>
+<span id="cb10-15"><a href="#cb10-15"></a></span>
+<span id="cb10-16"><a href="#cb10-16"></a>Here we inspect every cycle, drop the well pairs that grew where nothing should have grown, and plot the competition time course with all five cycles joined end to end.</span>
+<span id="cb10-17"><a href="#cb10-17"></a></span>
+<span id="cb10-18"><a href="#cb10-18"></a><span class="fu"># Setup</span></span>
+<span id="cb10-19"><a href="#cb10-19"></a></span>
+<span id="cb10-20"><a href="#cb10-20"></a><span class="fu">## Libraries</span></span>
+<span id="cb10-21"><a href="#cb10-21"></a></span>
+<span id="cb10-24"><a href="#cb10-24"></a><span class="in">```{r}</span></span>
+<span id="cb10-25"><a href="#cb10-25"></a><span class="fu">library</span>(here)</span>
+<span id="cb10-26"><a href="#cb10-26"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb10-27"><a href="#cb10-27"></a><span class="fu">library</span>(fs)</span>
+<span id="cb10-28"><a href="#cb10-28"></a><span class="fu">library</span>(ggforce)</span>
+<span id="cb10-29"><a href="#cb10-29"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"gcurves.R"</span>))</span>
+<span id="cb10-30"><a href="#cb10-30"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"generic.R"</span>))</span>
+<span id="cb10-31"><a href="#cb10-31"></a><span class="in">```</span></span>
+<span id="cb10-32"><a href="#cb10-32"></a></span>
+<span id="cb10-33"><a href="#cb10-33"></a><span class="fu">## Global variables</span></span>
+<span id="cb10-34"><a href="#cb10-34"></a></span>
+<span id="cb10-37"><a href="#cb10-37"></a><span class="in">```{r}</span></span>
+<span id="cb10-38"><a href="#cb10-38"></a>data_processed <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(</span>
+<span id="cb10-39"><a href="#cb10-39"></a>  <span class="st">"data"</span>,</span>
+<span id="cb10-40"><a href="#cb10-40"></a>  <span class="st">"processed"</span>,</span>
+<span id="cb10-41"><a href="#cb10-41"></a>  <span class="st">"04_serial_transfer_coculture"</span></span>
+<span id="cb10-42"><a href="#cb10-42"></a>)</span>
+<span id="cb10-43"><a href="#cb10-43"></a>figs <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"output"</span>, <span class="st">"figures"</span>)</span>
+<span id="cb10-44"><a href="#cb10-44"></a></span>
+<span id="cb10-45"><a href="#cb10-45"></a><span class="co"># make output directories if they don't exist</span></span>
+<span id="cb10-46"><a href="#cb10-46"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(data_processed)</span>
+<span id="cb10-47"><a href="#cb10-47"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(figs)</span>
+<span id="cb10-48"><a href="#cb10-48"></a><span class="in">```</span></span>
+<span id="cb10-49"><a href="#cb10-49"></a></span>
+<span id="cb10-50"><a href="#cb10-50"></a><span class="fu">## Read data</span></span>
+<span id="cb10-51"><a href="#cb10-51"></a></span>
+<span id="cb10-52"><a href="#cb10-52"></a>Formatted in the <span class="co">[</span><span class="ot">prior step</span><span class="co">](02_20260410_format_growthcurves.qmd)</span>.</span>
+<span id="cb10-53"><a href="#cb10-53"></a></span>
+<span id="cb10-56"><a href="#cb10-56"></a><span class="in">```{r}</span></span>
+<span id="cb10-57"><a href="#cb10-57"></a>coculture_gcurves_sm_1977 <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(</span>
+<span id="cb10-58"><a href="#cb10-58"></a>  here<span class="sc">::</span><span class="fu">here</span>(data_processed, <span class="st">"20260410_1977_gcurves_smooth.tsv"</span>)</span>
+<span id="cb10-59"><a href="#cb10-59"></a>)</span>
+<span id="cb10-60"><a href="#cb10-60"></a></span>
+<span id="cb10-61"><a href="#cb10-61"></a>coculture_gcurves_sm_1287 <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(</span>
+<span id="cb10-62"><a href="#cb10-62"></a>  here<span class="sc">::</span><span class="fu">here</span>(data_processed, <span class="st">"20260410_1287_gcurves_smooth.tsv"</span>)</span>
+<span id="cb10-63"><a href="#cb10-63"></a>)</span>
+<span id="cb10-64"><a href="#cb10-64"></a><span class="in">```</span></span>
+<span id="cb10-65"><a href="#cb10-65"></a></span>
+<span id="cb10-66"><a href="#cb10-66"></a><span class="fu"># Inspect individual growth curves</span></span>
+<span id="cb10-67"><a href="#cb10-67"></a></span>
+<span id="cb10-70"><a href="#cb10-70"></a><span class="in">```{r}</span></span>
+<span id="cb10-71"><a href="#cb10-71"></a>plotter <span class="ot">&lt;-</span> <span class="cf">function</span>(id, df) {</span>
+<span id="cb10-72"><a href="#cb10-72"></a>  <span class="fu">plotplate</span>(</span>
+<span id="cb10-73"><a href="#cb10-73"></a>    df,</span>
+<span id="cb10-74"><a href="#cb10-74"></a>    <span class="at">dfxy =</span> <span class="cn">NULL</span>,</span>
+<span id="cb10-75"><a href="#cb10-75"></a>    <span class="at">unsmoothed =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb10-76"><a href="#cb10-76"></a>    <span class="at">predicted =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb10-77"><a href="#cb10-77"></a>    <span class="at">plate =</span> id,</span>
+<span id="cb10-78"><a href="#cb10-78"></a>    <span class="at">rows =</span> <span class="dv">6</span>,</span>
+<span id="cb10-79"><a href="#cb10-79"></a>    <span class="at">cols =</span> <span class="dv">12</span>,</span>
+<span id="cb10-80"><a href="#cb10-80"></a>    <span class="at">page =</span> <span class="dv">1</span>,</span>
+<span id="cb10-81"><a href="#cb10-81"></a>    <span class="at">scales =</span> <span class="st">"fixed"</span></span>
+<span id="cb10-82"><a href="#cb10-82"></a>  )</span>
+<span id="cb10-83"><a href="#cb10-83"></a>}</span>
+<span id="cb10-84"><a href="#cb10-84"></a><span class="in">```</span></span>
+<span id="cb10-85"><a href="#cb10-85"></a></span>
+<span id="cb10-86"><a href="#cb10-86"></a><span class="fu">## *Pseudomonas chlororaphis* 1977</span></span>
+<span id="cb10-87"><a href="#cb10-87"></a></span>
+<span id="cb10-88"><a href="#cb10-88"></a>::: {.panel-tabset}</span>
+<span id="cb10-89"><a href="#cb10-89"></a></span>
+<span id="cb10-90"><a href="#cb10-90"></a><span class="fu">### Cycle 1</span></span>
+<span id="cb10-91"><a href="#cb10-91"></a></span>
+<span id="cb10-94"><a href="#cb10-94"></a><span class="in">```{r}</span></span>
+<span id="cb10-95"><a href="#cb10-95"></a><span class="co">#| echo: false</span></span>
+<span id="cb10-96"><a href="#cb10-96"></a><span class="co">#| output: true</span></span>
+<span id="cb10-97"><a href="#cb10-97"></a><span class="co">#| label: fig-1977-c1</span></span>
+<span id="cb10-98"><a href="#cb10-98"></a><span class="co">#| fig-width: 12</span></span>
+<span id="cb10-99"><a href="#cb10-99"></a><span class="co">#| fig-height: 8</span></span>
+<span id="cb10-100"><a href="#cb10-100"></a><span class="co">#| fig-cap: "Growth curves for *P. chlororaphis* 1977, cycle 1. X-axis is time in hours (48 hour cycle). Blue line is smoothed with a moving average window of five points, orange dashed is non-smoothed raw data."</span></span>
+<span id="cb10-101"><a href="#cb10-101"></a><span class="fu">plotter</span>(<span class="st">"c1"</span>, coculture_gcurves_sm_1977)</span>
+<span id="cb10-102"><a href="#cb10-102"></a><span class="in">```</span></span>
+<span id="cb10-103"><a href="#cb10-103"></a></span>
+<span id="cb10-104"><a href="#cb10-104"></a><span class="fu">### Cycle 2</span></span>
+<span id="cb10-105"><a href="#cb10-105"></a></span>
+<span id="cb10-108"><a href="#cb10-108"></a><span class="in">```{r}</span></span>
+<span id="cb10-109"><a href="#cb10-109"></a><span class="co">#| echo: false</span></span>
+<span id="cb10-110"><a href="#cb10-110"></a><span class="co">#| output: true</span></span>
+<span id="cb10-111"><a href="#cb10-111"></a><span class="co">#| label: fig-1977-c2</span></span>
+<span id="cb10-112"><a href="#cb10-112"></a><span class="co">#| fig-width: 12</span></span>
+<span id="cb10-113"><a href="#cb10-113"></a><span class="co">#| fig-height: 8</span></span>
+<span id="cb10-114"><a href="#cb10-114"></a><span class="co">#| fig-cap: As in @fig-1977-c1 but for cycle 2.</span></span>
+<span id="cb10-115"><a href="#cb10-115"></a><span class="fu">plotter</span>(<span class="st">"c2"</span>, coculture_gcurves_sm_1977)</span>
+<span id="cb10-116"><a href="#cb10-116"></a><span class="in">```</span></span>
+<span id="cb10-117"><a href="#cb10-117"></a></span>
+<span id="cb10-118"><a href="#cb10-118"></a><span class="fu">### Cycle 3</span></span>
+<span id="cb10-119"><a href="#cb10-119"></a></span>
+<span id="cb10-122"><a href="#cb10-122"></a><span class="in">```{r}</span></span>
+<span id="cb10-123"><a href="#cb10-123"></a><span class="co">#| echo: false</span></span>
+<span id="cb10-124"><a href="#cb10-124"></a><span class="co">#| output: true</span></span>
+<span id="cb10-125"><a href="#cb10-125"></a><span class="co">#| label: fig-1977-c3</span></span>
+<span id="cb10-126"><a href="#cb10-126"></a><span class="co">#| fig-width: 12</span></span>
+<span id="cb10-127"><a href="#cb10-127"></a><span class="co">#| fig-height: 8</span></span>
+<span id="cb10-128"><a href="#cb10-128"></a><span class="co">#| fig-cap: As in @fig-1977-c1 but for cycle 3.</span></span>
+<span id="cb10-129"><a href="#cb10-129"></a><span class="fu">plotter</span>(<span class="st">"c3"</span>, coculture_gcurves_sm_1977)</span>
+<span id="cb10-130"><a href="#cb10-130"></a><span class="in">```</span></span>
+<span id="cb10-131"><a href="#cb10-131"></a></span>
+<span id="cb10-132"><a href="#cb10-132"></a><span class="fu">### Cycle 4</span></span>
+<span id="cb10-133"><a href="#cb10-133"></a></span>
+<span id="cb10-136"><a href="#cb10-136"></a><span class="in">```{r}</span></span>
+<span id="cb10-137"><a href="#cb10-137"></a><span class="co">#| echo: false</span></span>
+<span id="cb10-138"><a href="#cb10-138"></a><span class="co">#| output: true</span></span>
+<span id="cb10-139"><a href="#cb10-139"></a><span class="co">#| label: fig-1977-c4</span></span>
+<span id="cb10-140"><a href="#cb10-140"></a><span class="co">#| fig-width: 12</span></span>
+<span id="cb10-141"><a href="#cb10-141"></a><span class="co">#| fig-height: 8</span></span>
+<span id="cb10-142"><a href="#cb10-142"></a><span class="co">#| fig-cap: As in @fig-1977-c1 but for cycle 4.</span></span>
+<span id="cb10-143"><a href="#cb10-143"></a><span class="fu">plotter</span>(<span class="st">"c4"</span>, coculture_gcurves_sm_1977)</span>
+<span id="cb10-144"><a href="#cb10-144"></a><span class="in">```</span></span>
+<span id="cb10-145"><a href="#cb10-145"></a></span>
+<span id="cb10-146"><a href="#cb10-146"></a><span class="fu">### Cycle 5</span></span>
+<span id="cb10-147"><a href="#cb10-147"></a></span>
+<span id="cb10-150"><a href="#cb10-150"></a><span class="in">```{r}</span></span>
+<span id="cb10-151"><a href="#cb10-151"></a><span class="co">#| echo: false</span></span>
+<span id="cb10-152"><a href="#cb10-152"></a><span class="co">#| output: true</span></span>
+<span id="cb10-153"><a href="#cb10-153"></a><span class="co">#| label: fig-1977-c5</span></span>
+<span id="cb10-154"><a href="#cb10-154"></a><span class="co">#| fig-width: 12</span></span>
+<span id="cb10-155"><a href="#cb10-155"></a><span class="co">#| fig-height: 8</span></span>
+<span id="cb10-156"><a href="#cb10-156"></a><span class="co">#| fig-cap: As in @fig-1977-c1 but for cycle 5.</span></span>
+<span id="cb10-157"><a href="#cb10-157"></a><span class="fu">plotter</span>(<span class="st">"c5"</span>, coculture_gcurves_sm_1977)</span>
+<span id="cb10-158"><a href="#cb10-158"></a><span class="in">```</span></span>
+<span id="cb10-159"><a href="#cb10-159"></a></span>
+<span id="cb10-160"><a href="#cb10-160"></a>:::</span>
+<span id="cb10-161"><a href="#cb10-161"></a></span>
+<span id="cb10-162"><a href="#cb10-162"></a><span class="fu">## *Citrobacter koseri* 1287</span></span>
+<span id="cb10-163"><a href="#cb10-163"></a></span>
+<span id="cb10-164"><a href="#cb10-164"></a>::: {.panel-tabset}</span>
+<span id="cb10-165"><a href="#cb10-165"></a></span>
+<span id="cb10-166"><a href="#cb10-166"></a><span class="fu">### Cycle 1</span></span>
+<span id="cb10-167"><a href="#cb10-167"></a></span>
+<span id="cb10-170"><a href="#cb10-170"></a><span class="in">```{r}</span></span>
+<span id="cb10-171"><a href="#cb10-171"></a><span class="co">#| echo: false</span></span>
+<span id="cb10-172"><a href="#cb10-172"></a><span class="co">#| output: true</span></span>
+<span id="cb10-173"><a href="#cb10-173"></a><span class="co">#| label: fig-1287-c1</span></span>
+<span id="cb10-174"><a href="#cb10-174"></a><span class="co">#| fig-width: 12</span></span>
+<span id="cb10-175"><a href="#cb10-175"></a><span class="co">#| fig-height: 8</span></span>
+<span id="cb10-176"><a href="#cb10-176"></a><span class="co">#| fig-cap: "Growth curves for *C. koseri* 1287, cycle 1. X-axis is time in hours (48 hour cycle). Blue line is smoothed with a moving average window of five points, orange dashed is non-smoothed raw data."</span></span>
+<span id="cb10-177"><a href="#cb10-177"></a><span class="fu">plotter</span>(<span class="st">"c1"</span>, coculture_gcurves_sm_1287)</span>
+<span id="cb10-178"><a href="#cb10-178"></a><span class="in">```</span></span>
+<span id="cb10-179"><a href="#cb10-179"></a></span>
+<span id="cb10-180"><a href="#cb10-180"></a><span class="fu">### Cycle 2</span></span>
+<span id="cb10-181"><a href="#cb10-181"></a></span>
+<span id="cb10-184"><a href="#cb10-184"></a><span class="in">```{r}</span></span>
+<span id="cb10-185"><a href="#cb10-185"></a><span class="co">#| echo: false</span></span>
+<span id="cb10-186"><a href="#cb10-186"></a><span class="co">#| output: true</span></span>
+<span id="cb10-187"><a href="#cb10-187"></a><span class="co">#| label: fig-1287-c2</span></span>
+<span id="cb10-188"><a href="#cb10-188"></a><span class="co">#| fig-width: 12</span></span>
+<span id="cb10-189"><a href="#cb10-189"></a><span class="co">#| fig-height: 8</span></span>
+<span id="cb10-190"><a href="#cb10-190"></a><span class="co">#| fig-cap: As in @fig-1287-c1 but for cycle 2.</span></span>
+<span id="cb10-191"><a href="#cb10-191"></a><span class="fu">plotter</span>(<span class="st">"c2"</span>, coculture_gcurves_sm_1287)</span>
+<span id="cb10-192"><a href="#cb10-192"></a><span class="in">```</span></span>
+<span id="cb10-193"><a href="#cb10-193"></a></span>
+<span id="cb10-194"><a href="#cb10-194"></a><span class="fu">### Cycle 3</span></span>
+<span id="cb10-195"><a href="#cb10-195"></a></span>
+<span id="cb10-198"><a href="#cb10-198"></a><span class="in">```{r}</span></span>
+<span id="cb10-199"><a href="#cb10-199"></a><span class="co">#| echo: false</span></span>
+<span id="cb10-200"><a href="#cb10-200"></a><span class="co">#| output: true</span></span>
+<span id="cb10-201"><a href="#cb10-201"></a><span class="co">#| label: fig-1287-c3</span></span>
+<span id="cb10-202"><a href="#cb10-202"></a><span class="co">#| fig-width: 12</span></span>
+<span id="cb10-203"><a href="#cb10-203"></a><span class="co">#| fig-height: 8</span></span>
+<span id="cb10-204"><a href="#cb10-204"></a><span class="co">#| fig-cap: As in @fig-1287-c1 but for cycle 3.</span></span>
+<span id="cb10-205"><a href="#cb10-205"></a><span class="fu">plotter</span>(<span class="st">"c3"</span>, coculture_gcurves_sm_1287)</span>
+<span id="cb10-206"><a href="#cb10-206"></a><span class="in">```</span></span>
+<span id="cb10-207"><a href="#cb10-207"></a></span>
+<span id="cb10-208"><a href="#cb10-208"></a><span class="fu">### Cycle 4</span></span>
+<span id="cb10-209"><a href="#cb10-209"></a></span>
+<span id="cb10-212"><a href="#cb10-212"></a><span class="in">```{r}</span></span>
+<span id="cb10-213"><a href="#cb10-213"></a><span class="co">#| echo: false</span></span>
+<span id="cb10-214"><a href="#cb10-214"></a><span class="co">#| output: true</span></span>
+<span id="cb10-215"><a href="#cb10-215"></a><span class="co">#| label: fig-1287-c4</span></span>
+<span id="cb10-216"><a href="#cb10-216"></a><span class="co">#| fig-width: 12</span></span>
+<span id="cb10-217"><a href="#cb10-217"></a><span class="co">#| fig-height: 8</span></span>
+<span id="cb10-218"><a href="#cb10-218"></a><span class="co">#| fig-cap: As in @fig-1287-c1 but for cycle 4.</span></span>
+<span id="cb10-219"><a href="#cb10-219"></a><span class="fu">plotter</span>(<span class="st">"c4"</span>, coculture_gcurves_sm_1287)</span>
+<span id="cb10-220"><a href="#cb10-220"></a><span class="in">```</span></span>
+<span id="cb10-221"><a href="#cb10-221"></a></span>
+<span id="cb10-222"><a href="#cb10-222"></a><span class="fu">### Cycle 5</span></span>
+<span id="cb10-223"><a href="#cb10-223"></a></span>
+<span id="cb10-226"><a href="#cb10-226"></a><span class="in">```{r}</span></span>
+<span id="cb10-227"><a href="#cb10-227"></a><span class="co">#| echo: false</span></span>
+<span id="cb10-228"><a href="#cb10-228"></a><span class="co">#| output: true</span></span>
+<span id="cb10-229"><a href="#cb10-229"></a><span class="co">#| label: fig-1287-c5</span></span>
+<span id="cb10-230"><a href="#cb10-230"></a><span class="co">#| fig-width: 12</span></span>
+<span id="cb10-231"><a href="#cb10-231"></a><span class="co">#| fig-height: 8</span></span>
+<span id="cb10-232"><a href="#cb10-232"></a><span class="co">#| fig-cap: As in @fig-1287-c1 but for cycle 5.</span></span>
+<span id="cb10-233"><a href="#cb10-233"></a><span class="fu">plotter</span>(<span class="st">"c5"</span>, coculture_gcurves_sm_1287)</span>
+<span id="cb10-234"><a href="#cb10-234"></a><span class="in">```</span></span>
+<span id="cb10-235"><a href="#cb10-235"></a></span>
+<span id="cb10-236"><a href="#cb10-236"></a>:::</span>
+<span id="cb10-237"><a href="#cb10-237"></a></span>
+<span id="cb10-238"><a href="#cb10-238"></a><span class="fu"># Blacklists</span></span>
+<span id="cb10-239"><a href="#cb10-239"></a></span>
+<span id="cb10-240"><a href="#cb10-240"></a>These are well pairs where there was growth where there should be none,</span>
+<span id="cb10-241"><a href="#cb10-241"></a>identified by inspecting the plots above.</span>
+<span id="cb10-242"><a href="#cb10-242"></a></span>
+<span id="cb10-245"><a href="#cb10-245"></a><span class="in">```{r}</span></span>
+<span id="cb10-246"><a href="#cb10-246"></a>blacklist_1287 <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb10-247"><a href="#cb10-247"></a>  <span class="sc">~</span>strainID , <span class="sc">~</span>plate_name , <span class="sc">~</span>joined_well_pair ,</span>
+<span id="cb10-248"><a href="#cb10-248"></a>  <span class="st">"H1287"</span>   , <span class="st">"c2"</span>        , <span class="st">"C05C06"</span>          ,</span>
+<span id="cb10-249"><a href="#cb10-249"></a>  <span class="st">"H1287"</span>   , <span class="st">"c2"</span>        , <span class="st">"E05E06"</span>          ,</span>
+<span id="cb10-250"><a href="#cb10-250"></a>  <span class="st">"H1287"</span>   , <span class="st">"c2"</span>        , <span class="st">"F05F06"</span>          ,</span>
+<span id="cb10-251"><a href="#cb10-251"></a>  <span class="st">"H1287"</span>   , <span class="st">"c2"</span>        , <span class="st">"E09E10"</span>          ,</span>
+<span id="cb10-252"><a href="#cb10-252"></a>  <span class="st">"H1287"</span>   , <span class="st">"c3"</span>        , <span class="st">"C05C06"</span>          ,</span>
+<span id="cb10-253"><a href="#cb10-253"></a>  <span class="st">"H1287"</span>   , <span class="st">"c3"</span>        , <span class="st">"E09E10"</span>          ,</span>
+<span id="cb10-254"><a href="#cb10-254"></a>  <span class="st">"H1287"</span>   , <span class="st">"c4"</span>        , <span class="st">"C05C06"</span>          ,</span>
+<span id="cb10-255"><a href="#cb10-255"></a>  <span class="st">"H1287"</span>   , <span class="st">"c4"</span>        , <span class="st">"E09E10"</span>          ,</span>
+<span id="cb10-256"><a href="#cb10-256"></a>  <span class="st">"H1287"</span>   , <span class="st">"c5"</span>        , <span class="st">"C05C06"</span>          ,</span>
+<span id="cb10-257"><a href="#cb10-257"></a>  <span class="st">"H1287"</span>   , <span class="st">"c5"</span>        , <span class="st">"E09E10"</span></span>
+<span id="cb10-258"><a href="#cb10-258"></a>)</span>
+<span id="cb10-259"><a href="#cb10-259"></a></span>
+<span id="cb10-260"><a href="#cb10-260"></a>blacklist_1977 <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb10-261"><a href="#cb10-261"></a>  <span class="sc">~</span>strainID , <span class="sc">~</span>plate_name , <span class="sc">~</span>joined_well_pair ,</span>
+<span id="cb10-262"><a href="#cb10-262"></a>  <span class="st">"H1977"</span>   , <span class="st">"c2"</span>        , <span class="st">"D05D06"</span>          ,</span>
+<span id="cb10-263"><a href="#cb10-263"></a>  <span class="st">"H1977"</span>   , <span class="st">"c2"</span>        , <span class="st">"E05E06"</span>          ,</span>
+<span id="cb10-264"><a href="#cb10-264"></a>  <span class="st">"H1977"</span>   , <span class="st">"c3"</span>        , <span class="st">"D05D06"</span>          ,</span>
+<span id="cb10-265"><a href="#cb10-265"></a>  <span class="st">"H1977"</span>   , <span class="st">"c3"</span>        , <span class="st">"E05E06"</span>          ,</span>
+<span id="cb10-266"><a href="#cb10-266"></a>  <span class="st">"H1977"</span>   , <span class="st">"c3"</span>        , <span class="st">"G05G06"</span>          ,</span>
+<span id="cb10-267"><a href="#cb10-267"></a>  <span class="st">"H1977"</span>   , <span class="st">"c3"</span>        , <span class="st">"B09B10"</span>          ,</span>
+<span id="cb10-268"><a href="#cb10-268"></a>  <span class="st">"H1977"</span>   , <span class="st">"c3"</span>        , <span class="st">"C09C10"</span>          ,</span>
+<span id="cb10-269"><a href="#cb10-269"></a>  <span class="st">"H1977"</span>   , <span class="st">"c4"</span>        , <span class="st">"D05D06"</span>          ,</span>
+<span id="cb10-270"><a href="#cb10-270"></a>  <span class="st">"H1977"</span>   , <span class="st">"c4"</span>        , <span class="st">"E05E06"</span>          ,</span>
+<span id="cb10-271"><a href="#cb10-271"></a>  <span class="st">"H1977"</span>   , <span class="st">"c4"</span>        , <span class="st">"G05G06"</span>          ,</span>
+<span id="cb10-272"><a href="#cb10-272"></a>  <span class="st">"H1977"</span>   , <span class="st">"c4"</span>        , <span class="st">"B09B10"</span>          ,</span>
+<span id="cb10-273"><a href="#cb10-273"></a>  <span class="st">"H1977"</span>   , <span class="st">"c4"</span>        , <span class="st">"C09C10"</span>          ,</span>
+<span id="cb10-274"><a href="#cb10-274"></a>  <span class="st">"H1977"</span>   , <span class="st">"c5"</span>        , <span class="st">"D05D06"</span>          ,</span>
+<span id="cb10-275"><a href="#cb10-275"></a>  <span class="st">"H1977"</span>   , <span class="st">"c5"</span>        , <span class="st">"E05E06"</span>          ,</span>
+<span id="cb10-276"><a href="#cb10-276"></a>  <span class="st">"H1977"</span>   , <span class="st">"c5"</span>        , <span class="st">"G05G06"</span>          ,</span>
+<span id="cb10-277"><a href="#cb10-277"></a>  <span class="st">"H1977"</span>   , <span class="st">"c5"</span>        , <span class="st">"B09B10"</span>          ,</span>
+<span id="cb10-278"><a href="#cb10-278"></a>  <span class="st">"H1977"</span>   , <span class="st">"c5"</span>        , <span class="st">"C09C10"</span></span>
+<span id="cb10-279"><a href="#cb10-279"></a>)</span>
+<span id="cb10-280"><a href="#cb10-280"></a><span class="in">```</span></span>
+<span id="cb10-281"><a href="#cb10-281"></a></span>
+<span id="cb10-282"><a href="#cb10-282"></a>::: {.callout-note}</span>
+<span id="cb10-283"><a href="#cb10-283"></a>Now that I think about this there is no need to include monocultures on these</span>
+<span id="cb10-284"><a href="#cb10-284"></a>plates, because we have that information from the previous non-serial transfer</span>
+<span id="cb10-285"><a href="#cb10-285"></a>runs. This might save us some plates in the future.</span>
+<span id="cb10-286"><a href="#cb10-286"></a>:::</span>
+<span id="cb10-287"><a href="#cb10-287"></a></span>
+<span id="cb10-288"><a href="#cb10-288"></a>Drop the blacklisted well pairs and keep only the wells that actually hold a</span>
+<span id="cb10-289"><a href="#cb10-289"></a>culture. The pruned tables are written under their own names so that re-running</span>
+<span id="cb10-290"><a href="#cb10-290"></a>this notebook never destroys the output of the formatting step.</span>
+<span id="cb10-291"><a href="#cb10-291"></a></span>
+<span id="cb10-294"><a href="#cb10-294"></a><span class="in">```{r}</span></span>
+<span id="cb10-295"><a href="#cb10-295"></a>prune_wells <span class="ot">&lt;-</span> <span class="cf">function</span>(df, blacklist) {</span>
+<span id="cb10-296"><a href="#cb10-296"></a>  df <span class="sc">|&gt;</span></span>
+<span id="cb10-297"><a href="#cb10-297"></a>    <span class="fu">anti_join</span>(blacklist, <span class="at">by =</span> <span class="fu">join_by</span>(joined_well_pair, plate_name)) <span class="sc">|&gt;</span></span>
+<span id="cb10-298"><a href="#cb10-298"></a>    <span class="fu">filter</span>(</span>
+<span id="cb10-299"><a href="#cb10-299"></a>      (culture_type <span class="sc">==</span> <span class="st">"monoculture"</span> <span class="sc">&amp;</span></span>
+<span id="cb10-300"><a href="#cb10-300"></a>        <span class="fu">str_detect</span>(well, <span class="st">"[BCD]01|[BCD]05|[BCD]09"</span>) <span class="sc">|</span></span>
+<span id="cb10-301"><a href="#cb10-301"></a>        <span class="fu">str_detect</span>(well, <span class="st">"[EFG]02|[EFG]06|[EFG]10"</span>)) <span class="sc">|</span></span>
+<span id="cb10-302"><a href="#cb10-302"></a>        culture_type <span class="sc">==</span> <span class="st">"coculture"</span></span>
+<span id="cb10-303"><a href="#cb10-303"></a>    )</span>
+<span id="cb10-304"><a href="#cb10-304"></a>}</span>
+<span id="cb10-305"><a href="#cb10-305"></a></span>
+<span id="cb10-306"><a href="#cb10-306"></a>coculture_gcurves_pruned_1287 <span class="ot">&lt;-</span> <span class="fu">prune_wells</span>(</span>
+<span id="cb10-307"><a href="#cb10-307"></a>  coculture_gcurves_sm_1287,</span>
+<span id="cb10-308"><a href="#cb10-308"></a>  blacklist_1287</span>
+<span id="cb10-309"><a href="#cb10-309"></a>)</span>
+<span id="cb10-310"><a href="#cb10-310"></a></span>
+<span id="cb10-311"><a href="#cb10-311"></a>coculture_gcurves_pruned_1977 <span class="ot">&lt;-</span> <span class="fu">prune_wells</span>(</span>
+<span id="cb10-312"><a href="#cb10-312"></a>  coculture_gcurves_sm_1977,</span>
+<span id="cb10-313"><a href="#cb10-313"></a>  blacklist_1977</span>
+<span id="cb10-314"><a href="#cb10-314"></a>)</span>
+<span id="cb10-315"><a href="#cb10-315"></a></span>
+<span id="cb10-316"><a href="#cb10-316"></a>readr<span class="sc">::</span><span class="fu">write_tsv</span>(</span>
+<span id="cb10-317"><a href="#cb10-317"></a>  coculture_gcurves_pruned_1287,</span>
+<span id="cb10-318"><a href="#cb10-318"></a>  here<span class="sc">::</span><span class="fu">here</span>(data_processed, <span class="st">"20260410_1287_gcurves_pruned.tsv"</span>)</span>
+<span id="cb10-319"><a href="#cb10-319"></a>)</span>
+<span id="cb10-320"><a href="#cb10-320"></a></span>
+<span id="cb10-321"><a href="#cb10-321"></a>readr<span class="sc">::</span><span class="fu">write_tsv</span>(</span>
+<span id="cb10-322"><a href="#cb10-322"></a>  coculture_gcurves_pruned_1977,</span>
+<span id="cb10-323"><a href="#cb10-323"></a>  here<span class="sc">::</span><span class="fu">here</span>(data_processed, <span class="st">"20260410_1977_gcurves_pruned.tsv"</span>)</span>
+<span id="cb10-324"><a href="#cb10-324"></a>)</span>
+<span id="cb10-325"><a href="#cb10-325"></a><span class="in">```</span></span>
+<span id="cb10-326"><a href="#cb10-326"></a></span>
+<span id="cb10-327"><a href="#cb10-327"></a><span class="fu"># Growth curves with transfers combined</span></span>
+<span id="cb10-328"><a href="#cb10-328"></a></span>
+<span id="cb10-331"><a href="#cb10-331"></a><span class="in">```{r}</span></span>
+<span id="cb10-332"><a href="#cb10-332"></a>cyclelines <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb10-333"><a href="#cb10-333"></a>  <span class="at">plate_name =</span> <span class="fu">c</span>(<span class="st">"c1"</span>, <span class="st">"c2"</span>, <span class="st">"c3"</span>, <span class="st">"c4"</span>, <span class="st">"c5"</span>),</span>
+<span id="cb10-334"><a href="#cb10-334"></a>  <span class="at">cycle_hour =</span> <span class="fu">c</span>(<span class="dv">48</span>, <span class="dv">96</span>, <span class="dv">144</span>, <span class="dv">192</span>, <span class="dv">240</span>)</span>
+<span id="cb10-335"><a href="#cb10-335"></a>)</span>
+<span id="cb10-336"><a href="#cb10-336"></a></span>
+<span id="cb10-337"><a href="#cb10-337"></a>plot_competition_timecourse <span class="ot">&lt;-</span> <span class="cf">function</span>(df, title) {</span>
+<span id="cb10-338"><a href="#cb10-338"></a>  df <span class="sc">|&gt;</span></span>
+<span id="cb10-339"><a href="#cb10-339"></a>    <span class="fu">mutate</span>(<span class="at">hours_agg =</span> hours <span class="sc">+</span> start_hrs_from_0) <span class="sc">%&gt;%</span></span>
+<span id="cb10-340"><a href="#cb10-340"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb10-341"><a href="#cb10-341"></a>      <span class="at">strainID =</span> <span class="fu">paste0</span>(</span>
+<span id="cb10-342"><a href="#cb10-342"></a>        <span class="fu">str_to_upper</span>(<span class="fu">str_sub</span>(evolution, <span class="dv">1</span>, <span class="dv">1</span>)),</span>
+<span id="cb10-343"><a href="#cb10-343"></a>        <span class="fu">str_sub</span>(strain, <span class="dv">2</span>, <span class="dv">5</span>)</span>
+<span id="cb10-344"><a href="#cb10-344"></a>      ),</span>
+<span id="cb10-345"><a href="#cb10-345"></a>      <span class="at">growthenv =</span> <span class="fu">paste</span>(media, strep_conc_ugml, <span class="at">sep =</span> <span class="st">"_"</span>)</span>
+<span id="cb10-346"><a href="#cb10-346"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb10-347"><a href="#cb10-347"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb10-348"><a href="#cb10-348"></a>      <span class="at">strainID =</span> <span class="fu">factor</span>(</span>
+<span id="cb10-349"><a href="#cb10-349"></a>        strainID,</span>
+<span id="cb10-350"><a href="#cb10-350"></a>        <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"A1287"</span>, <span class="st">"E1287"</span>, <span class="st">"A1977"</span>, <span class="st">"E1977"</span>)</span>
+<span id="cb10-351"><a href="#cb10-351"></a>      )</span>
+<span id="cb10-352"><a href="#cb10-352"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb10-353"><a href="#cb10-353"></a>    <span class="fu">summarize</span>(</span>
+<span id="cb10-354"><a href="#cb10-354"></a>      <span class="at">y =</span> <span class="fu">mean</span>(OD600_rollmean),</span>
+<span id="cb10-355"><a href="#cb10-355"></a>      <span class="at">sd =</span> <span class="fu">sd</span>(OD600_rollmean),</span>
+<span id="cb10-356"><a href="#cb10-356"></a>      <span class="at">.by =</span> <span class="fu">c</span>(</span>
+<span id="cb10-357"><a href="#cb10-357"></a>        hours_agg,</span>
+<span id="cb10-358"><a href="#cb10-358"></a>        strainID,</span>
+<span id="cb10-359"><a href="#cb10-359"></a>        evolution,</span>
+<span id="cb10-360"><a href="#cb10-360"></a>        growthenv,</span>
+<span id="cb10-361"><a href="#cb10-361"></a>        dilution,</span>
+<span id="cb10-362"><a href="#cb10-362"></a>        culture_type</span>
+<span id="cb10-363"><a href="#cb10-363"></a>      )</span>
+<span id="cb10-364"><a href="#cb10-364"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb10-365"><a href="#cb10-365"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(</span>
+<span id="cb10-366"><a href="#cb10-366"></a>      <span class="at">x =</span> hours_agg,</span>
+<span id="cb10-367"><a href="#cb10-367"></a>    )) <span class="sc">+</span></span>
+<span id="cb10-368"><a href="#cb10-368"></a>    <span class="fu">geom_vline</span>(<span class="at">data =</span> cyclelines, <span class="fu">aes</span>(<span class="at">xintercept =</span> cycle_hour), <span class="at">lty =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb10-369"><a href="#cb10-369"></a>    ggplot2<span class="sc">::</span><span class="fu">geom_ribbon</span>(</span>
+<span id="cb10-370"><a href="#cb10-370"></a>      <span class="fu">aes</span>(<span class="at">ymin =</span> y <span class="sc">-</span> sd, <span class="at">ymax =</span> y <span class="sc">+</span> sd, <span class="at">fill =</span> <span class="fu">factor</span>(evolution)),</span>
+<span id="cb10-371"><a href="#cb10-371"></a>      <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
+<span id="cb10-372"><a href="#cb10-372"></a>      <span class="at">show.legend =</span> <span class="cn">FALSE</span></span>
+<span id="cb10-373"><a href="#cb10-373"></a>    ) <span class="sc">+</span></span>
+<span id="cb10-374"><a href="#cb10-374"></a>    ggplot2<span class="sc">::</span><span class="fu">geom_line</span>(</span>
+<span id="cb10-375"><a href="#cb10-375"></a>      <span class="fu">aes</span>(<span class="at">y =</span> y, <span class="at">color =</span> <span class="fu">factor</span>(evolution)),</span>
+<span id="cb10-376"><a href="#cb10-376"></a>      <span class="at">linewidth =</span> <span class="fl">0.75</span></span>
+<span id="cb10-377"><a href="#cb10-377"></a>    ) <span class="sc">+</span></span>
+<span id="cb10-378"><a href="#cb10-378"></a>    <span class="fu">facet_grid</span>(growthenv <span class="sc">~</span> culture_type) <span class="sc">+</span></span>
+<span id="cb10-379"><a href="#cb10-379"></a>    <span class="fu">labs</span>(</span>
+<span id="cb10-380"><a href="#cb10-380"></a>      <span class="at">y =</span> <span class="st">"OD"</span>,</span>
+<span id="cb10-381"><a href="#cb10-381"></a>      <span class="at">x =</span> <span class="st">"Total hours from start"</span>,</span>
+<span id="cb10-382"><a href="#cb10-382"></a>      <span class="at">color =</span> <span class="st">"Evolution"</span>,</span>
+<span id="cb10-383"><a href="#cb10-383"></a>      <span class="at">title =</span> {{ title }}</span>
+<span id="cb10-384"><a href="#cb10-384"></a>    )</span>
+<span id="cb10-385"><a href="#cb10-385"></a>}</span>
+<span id="cb10-386"><a href="#cb10-386"></a><span class="in">```</span></span>
+<span id="cb10-387"><a href="#cb10-387"></a></span>
+<span id="cb10-388"><a href="#cb10-388"></a><span class="fu">## *Citrobacter koseri* 1287</span></span>
+<span id="cb10-389"><a href="#cb10-389"></a></span>
+<span id="cb10-392"><a href="#cb10-392"></a><span class="in">```{r}</span></span>
+<span id="cb10-393"><a href="#cb10-393"></a>p1287 <span class="ot">&lt;-</span> <span class="fu">plot_competition_timecourse</span>(</span>
+<span id="cb10-394"><a href="#cb10-394"></a>  coculture_gcurves_pruned_1287,</span>
+<span id="cb10-395"><a href="#cb10-395"></a>  <span class="at">title =</span> <span class="st">"Citrobacter 1287"</span></span>
+<span id="cb10-396"><a href="#cb10-396"></a>)</span>
+<span id="cb10-397"><a href="#cb10-397"></a></span>
+<span id="cb10-398"><a href="#cb10-398"></a><span class="fu">ggsave</span>(</span>
+<span id="cb10-399"><a href="#cb10-399"></a>  here<span class="sc">::</span><span class="fu">here</span>(figs, <span class="st">"20260410_1287_competition_timecourse.svg"</span>),</span>
+<span id="cb10-400"><a href="#cb10-400"></a>  p1287,</span>
+<span id="cb10-401"><a href="#cb10-401"></a>  <span class="at">device =</span> <span class="st">"svg"</span>,</span>
+<span id="cb10-402"><a href="#cb10-402"></a>  <span class="at">dpi =</span> <span class="dv">300</span>,</span>
+<span id="cb10-403"><a href="#cb10-403"></a>  <span class="at">width =</span> <span class="dv">10</span>,</span>
+<span id="cb10-404"><a href="#cb10-404"></a>  <span class="at">height =</span> <span class="dv">6</span></span>
+<span id="cb10-405"><a href="#cb10-405"></a>)</span>
+<span id="cb10-406"><a href="#cb10-406"></a><span class="in">```</span></span>
+<span id="cb10-407"><a href="#cb10-407"></a></span>
+<span id="cb10-410"><a href="#cb10-410"></a><span class="in">```{r}</span></span>
+<span id="cb10-411"><a href="#cb10-411"></a><span class="co">#| echo: false</span></span>
+<span id="cb10-412"><a href="#cb10-412"></a><span class="co">#| output: true</span></span>
+<span id="cb10-413"><a href="#cb10-413"></a><span class="co">#| label: fig-01</span></span>
+<span id="cb10-414"><a href="#cb10-414"></a><span class="co">#| fig-width: 10</span></span>
+<span id="cb10-415"><a href="#cb10-415"></a><span class="co">#| fig-height: 6</span></span>
+<span id="cb10-416"><a href="#cb10-416"></a><span class="co">#| fig-cap: Serial transfer growth curves (OD600) over five 48 hour growth cycles (240 hours total) for *Citrobacter koseri* 1287. Columns in the plot grid depict growth in monoculture or co-culture. Grid rows depict the growth medium and streptomycin concentrations. Heavy line corresponds to mean growth and the ribbon around each mean line corresponds to one standard deviation. Dashed vertical lines depict the serial transfer events. Color depicts the streptomycin resistance status (evo = resistant, anc = streptomycin sensitive).</span></span>
+<span id="cb10-417"><a href="#cb10-417"></a>p1287</span>
+<span id="cb10-418"><a href="#cb10-418"></a><span class="in">```</span></span>
+<span id="cb10-419"><a href="#cb10-419"></a></span>
+<span id="cb10-420"><a href="#cb10-420"></a><span class="fu">## *Pseudomonas chlororaphis* 1977</span></span>
+<span id="cb10-421"><a href="#cb10-421"></a></span>
+<span id="cb10-424"><a href="#cb10-424"></a><span class="in">```{r}</span></span>
+<span id="cb10-425"><a href="#cb10-425"></a>p1977 <span class="ot">&lt;-</span> <span class="fu">plot_competition_timecourse</span>(</span>
+<span id="cb10-426"><a href="#cb10-426"></a>  coculture_gcurves_pruned_1977,</span>
+<span id="cb10-427"><a href="#cb10-427"></a>  <span class="at">title =</span> <span class="st">"Pseudomonas 1977"</span></span>
+<span id="cb10-428"><a href="#cb10-428"></a>)</span>
+<span id="cb10-429"><a href="#cb10-429"></a></span>
+<span id="cb10-430"><a href="#cb10-430"></a><span class="fu">ggsave</span>(</span>
+<span id="cb10-431"><a href="#cb10-431"></a>  here<span class="sc">::</span><span class="fu">here</span>(figs, <span class="st">"20260410_1977_competition_timecourse.svg"</span>),</span>
+<span id="cb10-432"><a href="#cb10-432"></a>  p1977,</span>
+<span id="cb10-433"><a href="#cb10-433"></a>  <span class="at">device =</span> <span class="st">"svg"</span>,</span>
+<span id="cb10-434"><a href="#cb10-434"></a>  <span class="at">dpi =</span> <span class="dv">300</span>,</span>
+<span id="cb10-435"><a href="#cb10-435"></a>  <span class="at">width =</span> <span class="dv">10</span>,</span>
+<span id="cb10-436"><a href="#cb10-436"></a>  <span class="at">height =</span> <span class="dv">6</span></span>
+<span id="cb10-437"><a href="#cb10-437"></a>)</span>
+<span id="cb10-438"><a href="#cb10-438"></a><span class="in">```</span></span>
+<span id="cb10-439"><a href="#cb10-439"></a></span>
+<span id="cb10-442"><a href="#cb10-442"></a><span class="in">```{r}</span></span>
+<span id="cb10-443"><a href="#cb10-443"></a><span class="co">#| echo: false</span></span>
+<span id="cb10-444"><a href="#cb10-444"></a><span class="co">#| output: true</span></span>
+<span id="cb10-445"><a href="#cb10-445"></a><span class="co">#| label: fig-02</span></span>
+<span id="cb10-446"><a href="#cb10-446"></a><span class="co">#| fig-width: 10</span></span>
+<span id="cb10-447"><a href="#cb10-447"></a><span class="co">#| fig-height: 6</span></span>
+<span id="cb10-448"><a href="#cb10-448"></a><span class="co">#| fig-cap: As in @fig-01 but for *Pseudomonas chlororaphis* 1977.</span></span>
+<span id="cb10-449"><a href="#cb10-449"></a>p1977</span>
+<span id="cb10-450"><a href="#cb10-450"></a><span class="in">```</span></span>
+</code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -35,10 +35,14 @@ straincols <- c(
   "E1977" = "limegreen"
 )
 
-# Evolutionary history alone, used where the species is already faceted out
+# Evolutionary history alone, used where the species is already faceted out.
+# The samplesheets use lowercase (anc/evo) but the imported bioscreen tables use
+# uppercase (ANC/EVO), so both are keyed here.
 histcols <- c(
   "anc" = "orange",
-  "evo" = "purple"
+  "evo" = "purple",
+  "ANC" = "orange",
+  "EVO" = "purple"
 )
 
 # Default project plot styling

@@ -50,7 +50,21 @@ This is how we did our experiment...
 
 ## Analysis overview
 
-This is how we did our data analysis...
+Every figure and processed data file in this repository is produced by the
+notebooks under `scripts/`. Each notebook reads from `data/raw/`, writes
+analysis-ready tables to `data/processed/`, caches expensive model fits in
+`data/interim/`, and saves publication figures to `output/figures/`. Raw
+instrument output in `data/raw/` is never modified. Shared helper functions
+live in `R/`.
+
+The notebooks are grouped into four tracks, run in order within each track:
+
+| Track | What it covers |
+|---|---|
+| `scripts/01_bioscreen_strains` | Monoculture growth across a streptomycin gradient (Bioscreen) |
+| `scripts/02_biolog_ecoplates` | Carbon substrate use in monoculture (Biolog Ecoplates, Synergy H1) |
+| `scripts/03_coculture_plates` | Competition in membrane-separated co-culture plates (Logphase 600) |
+| `scripts/04_serial_transfer_coculture` | Serial transfer co-culture over five 48 hour cycles |
 
 ## Availability
 

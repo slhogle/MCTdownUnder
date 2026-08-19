@@ -1,98 +1,218 @@
-# Setup ------------------------------------------------------------------
+---
+title: "04.C Serial transfer of co-culture pairs"
+subtitle: "Pruning and competition time courses, 2026-04-10 experiment"
+author: "Shane Hogle"
+date: today
+---
 
+# Introduction
+
+Strain naming convention: 1287 = *Citrobacter koseri* 1287, 1977 = *Pseudomonas chlororaphis* 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.
+
+Growth media convention: M9MM = M9 minimal media with glucose as the sole carbon source and supplemented with casamino acids. R2A = Reasoner's 2 broth (complex growth medium).
+
+This experiment ran for five 48-hour growth cycles (240 hours of growth total) where each well was serially diluted to a concentration of 10^-4^ (10,000 fold dilution) and then placed back in the incubating plate reader.
+
+Here we inspect every cycle, drop the well pairs that grew where nothing should have grown, and plot the competition time course with all five cycles joined end to end.
+
+# Setup
+
+## Libraries
+
+```{r}
 library(here)
 library(tidyverse)
 library(fs)
 library(ggforce)
+source(here::here("R", "gcurves.R"))
+source(here::here("R", "generic.R"))
+```
 
-source(here::here("R", "utils_gcurves.R"))
+## Global variables
 
-# Global vars
-data_raw <- here::here(
-  "data_raw",
-  "serial_transfer_coculture",
-  "20260410_serial_transfer"
-)
-data <- here::here(
+```{r}
+data_processed <- here::here(
   "data",
-  "serial_transfer_coculture",
-  "20260410_serial_transfer"
+  "processed",
+  "04_serial_transfer_coculture"
 )
-figs <- here::here(
-  "figs",
-  "serial_transfer_coculture",
-  "20260410_serial_transfer"
-)
+figs <- here::here("output", "figures")
 
-# make processed data and figs directories if they don't exist
-fs::dir_create(data)
+# make output directories if they don't exist
+fs::dir_create(data_processed)
 fs::dir_create(figs)
+```
 
-# Read data --------------------------------------------------------------
+## Read data
 
-# 1977
+Formatted in the [prior step](02_20260410_format_growthcurves.qmd).
+
+```{r}
 coculture_gcurves_sm_1977 <- readr::read_tsv(
-  here::here(data, "1977_coculture_gcurves_smooth.tsv")
+  here::here(data_processed, "20260410_1977_gcurves_smooth.tsv")
 )
 
-# 1287
 coculture_gcurves_sm_1287 <- readr::read_tsv(
-  here::here(data, "1287_coculture_gcurves_smooth.tsv")
+  here::here(data_processed, "20260410_1287_gcurves_smooth.tsv")
 )
+```
 
-# Plot individual growth curves for records ------------------------------
+# Inspect individual growth curves
 
-# quick function for saving files
-plotter <- function(id, sp, df) {
-  ggsave(
-    here::here(figs, paste0(sp, "_", id, ".svg")),
-    plotplate(
-      df,
-      dfxy = NULL,
-      unsmoothed = TRUE,
-      predicted = FALSE,
-      plate = id,
-      rows = 6,
-      cols = 12,
-      page = 1,
-      scales = "fixed"
-    ),
-    device = "svg",
-    width = 12,
-    height = 8
+```{r}
+plotter <- function(id, df) {
+  plotplate(
+    df,
+    dfxy = NULL,
+    unsmoothed = TRUE,
+    predicted = FALSE,
+    plate = id,
+    rows = 6,
+    cols = 12,
+    page = 1,
+    scales = "fixed"
   )
 }
+```
 
-# 1977
-map(
-  c(
-    "c1",
-    "c2",
-    "c3",
-    "c4",
-    "c5"
-  ),
-  \(x) plotter(x, "1977", coculture_gcurves_sm_1977)
-)
+## *Pseudomonas chlororaphis* 1977
 
-# 1287
-map(
-  c(
-    "c1",
-    "c2",
-    "c3",
-    "c4",
-    "c5"
-  ),
-  \(x) plotter(x, "1287", coculture_gcurves_sm_1287)
-)
+::: {.panel-tabset}
 
+### Cycle 1
 
-# Blacklists -------------------------------------------------------------
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-1977-c1
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Growth curves for *P. chlororaphis* 1977, cycle 1. X-axis is time in hours (48 hour cycle). Blue line is smoothed with a moving average window of five points, orange dashed is non-smoothed raw data."
+plotter("c1", coculture_gcurves_sm_1977)
+```
 
-# these are well pairs where there was growth where there should be none...
-# identified by inspecting the plots from above
+### Cycle 2
 
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-1977-c2
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-1977-c1 but for cycle 2.
+plotter("c2", coculture_gcurves_sm_1977)
+```
+
+### Cycle 3
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-1977-c3
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-1977-c1 but for cycle 3.
+plotter("c3", coculture_gcurves_sm_1977)
+```
+
+### Cycle 4
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-1977-c4
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-1977-c1 but for cycle 4.
+plotter("c4", coculture_gcurves_sm_1977)
+```
+
+### Cycle 5
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-1977-c5
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-1977-c1 but for cycle 5.
+plotter("c5", coculture_gcurves_sm_1977)
+```
+
+:::
+
+## *Citrobacter koseri* 1287
+
+::: {.panel-tabset}
+
+### Cycle 1
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-1287-c1
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Growth curves for *C. koseri* 1287, cycle 1. X-axis is time in hours (48 hour cycle). Blue line is smoothed with a moving average window of five points, orange dashed is non-smoothed raw data."
+plotter("c1", coculture_gcurves_sm_1287)
+```
+
+### Cycle 2
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-1287-c2
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-1287-c1 but for cycle 2.
+plotter("c2", coculture_gcurves_sm_1287)
+```
+
+### Cycle 3
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-1287-c3
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-1287-c1 but for cycle 3.
+plotter("c3", coculture_gcurves_sm_1287)
+```
+
+### Cycle 4
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-1287-c4
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-1287-c1 but for cycle 4.
+plotter("c4", coculture_gcurves_sm_1287)
+```
+
+### Cycle 5
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-1287-c5
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: As in @fig-1287-c1 but for cycle 5.
+plotter("c5", coculture_gcurves_sm_1287)
+```
+
+:::
+
+# Blacklists
+
+These are well pairs where there was growth where there should be none,
+identified by inspecting the plots above.
+
+```{r}
 blacklist_1287 <- tribble(
   ~strainID , ~plate_name , ~joined_well_pair ,
   "H1287"   , "c2"        , "C05C06"          ,
@@ -127,98 +247,162 @@ blacklist_1977 <- tribble(
   "H1977"   , "c5"        , "B09B10"          ,
   "H1977"   , "c5"        , "C09C10"
 )
+```
 
-# !! now that I think about this there is no need to include monocultures
-# on these plates Because we have that information from the previous non-serial
-# transfer runs. This might save us some plates in the future.
+::: {.callout-note}
+Now that I think about this there is no need to include monocultures on these
+plates, because we have that information from the previous non-serial transfer
+runs. This might save us some plates in the future.
+:::
 
-# write cleaned/filtered data
+Drop the blacklisted well pairs and keep only the wells that actually hold a
+culture. The pruned tables are written under their own names so that re-running
+this notebook never destroys the output of the formatting step.
 
-# 1287
-coculture_gcurves_sm_1287 <- coculture_gcurves_sm_1287 |>
-  anti_join(blacklist_1287, by = join_by(joined_well_pair, plate_name)) |>
-  filter(
-    (culture_type == "monoculture" &
-      str_detect(well, "[BCD]01|[BCD]05|[BCD]09") |
-      str_detect(well, "[EFG]02|[EFG]06|[EFG]10")) |
-      culture_type == "coculture"
-  )
+```{r}
+prune_wells <- function(df, blacklist) {
+  df |>
+    anti_join(blacklist, by = join_by(joined_well_pair, plate_name)) |>
+    filter(
+      (culture_type == "monoculture" &
+        str_detect(well, "[BCD]01|[BCD]05|[BCD]09") |
+        str_detect(well, "[EFG]02|[EFG]06|[EFG]10")) |
+        culture_type == "coculture"
+    )
+}
 
-readr::write_tsv(
+coculture_gcurves_pruned_1287 <- prune_wells(
   coculture_gcurves_sm_1287,
-  here::here(data, "1287_coculture_gcurves_smooth.tsv")
+  blacklist_1287
 )
 
-# 1977
-coculture_gcurves_sm_1977 <- coculture_gcurves_sm_1977 |>
-  anti_join(blacklist_1977, by = join_by(joined_well_pair, plate_name)) |>
-  filter(
-    (culture_type == "monoculture" &
-      str_detect(well, "[BCD]01|[BCD]05|[BCD]09") |
-      str_detect(well, "[EFG]02|[EFG]06|[EFG]10")) |
-      culture_type == "coculture"
-  )
+coculture_gcurves_pruned_1977 <- prune_wells(
+  coculture_gcurves_sm_1977,
+  blacklist_1977
+)
 
 readr::write_tsv(
-  coculture_gcurves_sm_1977,
-  here::here(data, "1977_coculture_gcurves_smooth.tsv")
+  coculture_gcurves_pruned_1287,
+  here::here(data_processed, "20260410_1287_gcurves_pruned.tsv")
 )
 
+readr::write_tsv(
+  coculture_gcurves_pruned_1977,
+  here::here(data_processed, "20260410_1977_gcurves_pruned.tsv")
+)
+```
 
-# Plot growth curves with transfers combined -----------------------------
+# Growth curves with transfers combined
 
+```{r}
 cyclelines <- tibble(
   plate_name = c("c1", "c2", "c3", "c4", "c5"),
   cycle_hour = c(48, 96, 144, 192, 240)
 )
 
-p <- coculture_gcurves_sm_1977 |>
-  mutate(hours_agg = hours + start_hrs_from_0) %>%
-  mutate(
-    strainID = paste0(
-      str_to_upper(str_sub(evolution, 1, 1)),
-      str_sub(strain, 2, 5)
-    ),
-    growthenv = paste(media, strep_conc_ugml, sep = "_")
-  ) %>%
-  mutate(
-    strainID = factor(strainID, levels = c("A1287", "E1287", "A1977", "E1977"))
-  ) %>%
-  summarize(
-    y = mean(OD600_rollmean),
-    sd = sd(OD600_rollmean),
-    .by = c(
-      hours_agg,
-      strainID,
-      evolution,
-      growthenv,
-      dilution,
-      culture_type
+plot_competition_timecourse <- function(df, title) {
+  df |>
+    mutate(hours_agg = hours + start_hrs_from_0) %>%
+    mutate(
+      strainID = paste0(
+        str_to_upper(str_sub(evolution, 1, 1)),
+        str_sub(strain, 2, 5)
+      ),
+      growthenv = paste(media, strep_conc_ugml, sep = "_")
+    ) %>%
+    mutate(
+      strainID = factor(
+        strainID,
+        levels = c("A1287", "E1287", "A1977", "E1977")
+      )
+    ) %>%
+    summarize(
+      y = mean(OD600_rollmean),
+      sd = sd(OD600_rollmean),
+      .by = c(
+        hours_agg,
+        strainID,
+        evolution,
+        growthenv,
+        dilution,
+        culture_type
+      )
+    ) %>%
+    ggplot(aes(
+      x = hours_agg,
+    )) +
+    geom_vline(data = cyclelines, aes(xintercept = cycle_hour), lty = 3) +
+    ggplot2::geom_ribbon(
+      aes(ymin = y - sd, ymax = y + sd, fill = factor(evolution)),
+      alpha = 0.5,
+      show.legend = FALSE
+    ) +
+    ggplot2::geom_line(
+      aes(y = y, color = factor(evolution)),
+      linewidth = 0.75
+    ) +
+    facet_grid(growthenv ~ culture_type) +
+    labs(
+      y = "OD",
+      x = "Total hours from start",
+      color = "Evolution",
+      title = {{ title }}
     )
-  ) %>%
-  ggplot(aes(
-    x = hours_agg,
-  )) +
-  geom_vline(data = cyclelines, aes(xintercept = cycle_hour), lty = 3) +
-  ggplot2::geom_ribbon(
-    aes(ymin = y - sd, ymax = y + sd, fill = factor(evolution)),
-    alpha = 0.5,
-    show.legend = FALSE
-  ) +
-  ggplot2::geom_line(aes(y = y, color = factor(evolution)), linewidth = 0.75) +
-  facet_grid(growthenv ~ culture_type) +
-  labs(
-    y = "OD",
-    x = "Total hours from start",
-    color = "Evolution",
-    title = "Pseudomonas 1977"
-  )
+}
+```
+
+## *Citrobacter koseri* 1287
+
+```{r}
+p1287 <- plot_competition_timecourse(
+  coculture_gcurves_pruned_1287,
+  title = "Citrobacter 1287"
+)
 
 ggsave(
-  here::here(figs, "1977_competition_timecourse.svg"),
-  p,
+  here::here(figs, "20260410_1287_competition_timecourse.svg"),
+  p1287,
   device = "svg",
   dpi = 300,
   width = 10,
   height = 6
 )
+```
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-01
+#| fig-width: 10
+#| fig-height: 6
+#| fig-cap: Serial transfer growth curves (OD600) over five 48 hour growth cycles (240 hours total) for *Citrobacter koseri* 1287. Columns in the plot grid depict growth in monoculture or co-culture. Grid rows depict the growth medium and streptomycin concentrations. Heavy line corresponds to mean growth and the ribbon around each mean line corresponds to one standard deviation. Dashed vertical lines depict the serial transfer events. Color depicts the streptomycin resistance status (evo = resistant, anc = streptomycin sensitive).
+p1287
+```
+
+## *Pseudomonas chlororaphis* 1977
+
+```{r}
+p1977 <- plot_competition_timecourse(
+  coculture_gcurves_pruned_1977,
+  title = "Pseudomonas 1977"
+)
+
+ggsave(
+  here::here(figs, "20260410_1977_competition_timecourse.svg"),
+  p1977,
+  device = "svg",
+  dpi = 300,
+  width = 10,
+  height = 6
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-02
+#| fig-width: 10
+#| fig-height: 6
+#| fig-cap: As in @fig-01 but for *Pseudomonas chlororaphis* 1977.
+p1977
+```

@@ -1,3 +1,25 @@
+---
+title: "04.B Formatting serial transfer growth curves"
+subtitle: "Quality control, 2026-04-10 experiment"
+author: "Shane Hogle"
+date: today
+---
+
+# Introduction
+
+Strain naming convention: 1287 = *Citrobacter koseri* 1287, 1977 = *Pseudomonas chlororaphis* 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.
+
+Growth media convention: M9MM = M9 minimal media with glucose as the sole carbon source and supplemented with casamino acids. R2A = Reasoner's 2 broth (complex growth medium).
+
+This experiment ran for five 48-hour growth cycles (240 hours of growth total) where each well was serially diluted to a concentration of 10^-4^ (10,000 fold dilution) and then placed back in the incubating plate reader.
+
+In this notebook we read the five cycle exports, join them to the samplesheet, and smooth them. Each cycle export holds the 1977 plate on sheet 2 and the 1287 plate on sheet 5.
+
+# Setup
+
+## Libraries
+
+```{r}
 library(here)
 library(tidyverse)
 library(readxl)
@@ -5,41 +27,42 @@ library(stringr)
 library(lubridate)
 library(fs)
 library(slider)
-source(here::here("R", "utils_gcurves.R"))
+source(here::here("R", "gcurves.R"))
+source(here::here("R", "generic.R"))
+```
 
-# Global vars
-data_raw <- here::here(
-  "data_raw",
-  "serial_transfer_coculture",
-  "20260410_serial_transfer"
-)
-data <- here::here(
+## Global variables
+
+```{r}
+data_raw <- here::here("data", "raw", "20260410_serial_transfer")
+data_processed <- here::here(
   "data",
-  "serial_transfer_coculture",
-  "20260410_serial_transfer"
+  "processed",
+  "04_serial_transfer_coculture"
 )
 
-# make processed data and figs directories if they don't exist
-fs::dir_create(data)
+# make processed data directory if it doesn't exist
+fs::dir_create(data_processed)
+```
 
-# Read data --------------------------------------------------------------
+## Read sample metadata
 
-# Read sample metadata
+```{r}
 samplesheet_coculture <- readxl::read_xlsx(here::here(
   data_raw,
   "coculture_samplesheet.xlsx"
 ))
+```
 
-# all dilutions done at 10,000 fold
+All dilutions done at 10,000 fold.
 
-# Cycle 1 ----------------------------------------------------------------
+# Cycle 1
 
-# 1977
+```{r}
 c1_1977 <- read_logphase_xlsx(
-  "",
-  "Serial_transfer_1_start_10-huhti-2026 12-14-59.xlsx",
-  2,
-  1
+  here::here(data_raw, "Serial_transfer_1_start_10-huhti-2026 12-14-59.xlsx"),
+  sheet = 2,
+  skip = 1
 ) %>%
   right_join(
     filter(samplesheet_coculture, strain == "H1977"),
@@ -47,27 +70,25 @@ c1_1977 <- read_logphase_xlsx(
   ) %>%
   mutate(dilution = 10000, plate_name = "c1", start_hrs_from_0 = 0)
 
-# 1287
 c1_1287 <- read_logphase_xlsx(
-  "",
-  "Serial_transfer_1_start_10-huhti-2026 12-14-59.xlsx",
-  5,
-  1
+  here::here(data_raw, "Serial_transfer_1_start_10-huhti-2026 12-14-59.xlsx"),
+  sheet = 5,
+  skip = 1
 ) %>%
   right_join(
     filter(samplesheet_coculture, strain == "H1287"),
     by = join_by(well)
   ) %>%
   mutate(dilution = 10000, plate_name = "c1", start_hrs_from_0 = 0)
+```
 
-# Cycle 2 ----------------------------------------------------------------
+# Cycle 2
 
-# 1977
+```{r}
 c2_1977 <- read_logphase_xlsx(
-  "",
-  "Serial_transfer_2_10.4_12-huhti-2026 13-12-32.xlsx",
-  2,
-  1
+  here::here(data_raw, "Serial_transfer_2_10.4_12-huhti-2026 13-12-32.xlsx"),
+  sheet = 2,
+  skip = 1
 ) %>%
   right_join(
     filter(samplesheet_coculture, strain == "H1977"),
@@ -75,27 +96,25 @@ c2_1977 <- read_logphase_xlsx(
   ) %>%
   mutate(dilution = 10000, plate_name = "c2", start_hrs_from_0 = 48)
 
-# 1287
 c2_1287 <- read_logphase_xlsx(
-  "",
-  "Serial_transfer_2_10.4_12-huhti-2026 13-12-32.xlsx",
-  5,
-  1
+  here::here(data_raw, "Serial_transfer_2_10.4_12-huhti-2026 13-12-32.xlsx"),
+  sheet = 5,
+  skip = 1
 ) %>%
   right_join(
     filter(samplesheet_coculture, strain == "H1287"),
     by = join_by(well)
   ) %>%
   mutate(dilution = 10000, plate_name = "c2", start_hrs_from_0 = 48)
+```
 
-# Cycle 3 ----------------------------------------------------------------
+# Cycle 3
 
-# 1977
+```{r}
 c3_1977 <- read_logphase_xlsx(
-  "",
-  "Serial_transfer_3_12.4_14-huhti-2026 13-05-36.xlsx",
-  2,
-  1
+  here::here(data_raw, "Serial_transfer_3_12.4_14-huhti-2026 13-05-36.xlsx"),
+  sheet = 2,
+  skip = 1
 ) %>%
   right_join(
     filter(samplesheet_coculture, strain == "H1977"),
@@ -103,27 +122,25 @@ c3_1977 <- read_logphase_xlsx(
   ) %>%
   mutate(dilution = 10000, plate_name = "c3", start_hrs_from_0 = 96)
 
-# 1287
 c3_1287 <- read_logphase_xlsx(
-  "",
-  "Serial_transfer_3_12.4_14-huhti-2026 13-05-36.xlsx",
-  5,
-  1
+  here::here(data_raw, "Serial_transfer_3_12.4_14-huhti-2026 13-05-36.xlsx"),
+  sheet = 5,
+  skip = 1
 ) %>%
   right_join(
     filter(samplesheet_coculture, strain == "H1287"),
     by = join_by(well)
   ) %>%
   mutate(dilution = 10000, plate_name = "c3", start_hrs_from_0 = 96)
+```
 
-# Cycle 4 ----------------------------------------------------------------
+# Cycle 4
 
-# 1977
+```{r}
 c4_1977 <- read_logphase_xlsx(
-  "",
-  "Serial_transfer_4_16-huhti-2026 13-33-18.xlsx",
-  2,
-  1
+  here::here(data_raw, "Serial_transfer_4_16-huhti-2026 13-33-18.xlsx"),
+  sheet = 2,
+  skip = 1
 ) %>%
   right_join(
     filter(samplesheet_coculture, strain == "H1977"),
@@ -131,27 +148,25 @@ c4_1977 <- read_logphase_xlsx(
   ) %>%
   mutate(dilution = 10000, plate_name = "c4", start_hrs_from_0 = 144)
 
-# 1287
 c4_1287 <- read_logphase_xlsx(
-  "",
-  "Serial_transfer_4_16-huhti-2026 13-33-18.xlsx",
-  5,
-  1
+  here::here(data_raw, "Serial_transfer_4_16-huhti-2026 13-33-18.xlsx"),
+  sheet = 5,
+  skip = 1
 ) %>%
   right_join(
     filter(samplesheet_coculture, strain == "H1287"),
     by = join_by(well)
   ) %>%
   mutate(dilution = 10000, plate_name = "c4", start_hrs_from_0 = 144)
+```
 
-# Cycle 5 ----------------------------------------------------------------
+# Cycle 5
 
-# 1977
+```{r}
 c5_1977 <- read_logphase_xlsx(
-  "",
-  "Serial_transfer_5_20-huhti-2026 07-42-52.xlsx",
-  2,
-  1
+  here::here(data_raw, "Serial_transfer_5_20-huhti-2026 07-42-52.xlsx"),
+  sheet = 2,
+  skip = 1
 ) %>%
   right_join(
     filter(samplesheet_coculture, strain == "H1977"),
@@ -159,65 +174,64 @@ c5_1977 <- read_logphase_xlsx(
   ) %>%
   mutate(dilution = 10000, plate_name = "c5", start_hrs_from_0 = 192)
 
-# 1287
 c5_1287 <- read_logphase_xlsx(
-  "",
-  "Serial_transfer_5_20-huhti-2026 07-42-52.xlsx",
-  5,
-  1
+  here::here(data_raw, "Serial_transfer_5_20-huhti-2026 07-42-52.xlsx"),
+  sheet = 5,
+  skip = 1
 ) %>%
   right_join(
     filter(samplesheet_coculture, strain == "H1287"),
     by = join_by(well)
   ) %>%
   mutate(dilution = 10000, plate_name = "c5", start_hrs_from_0 = 192)
+```
 
-# Combine, tidy, format --------------------------------------------------
+# Combine, tidy, format
 
-# combine all samples, group by plate + well, calculate rolling mean. This
-# reduces the jaggedness of the curves and also makes the resulting saved data
-# file smaller
+Combine all samples, group by plate + well, calculate rolling mean. This reduces
+the jaggedness of the curves and also makes the resulting saved data file
+smaller.
 
-# 1977
-coculture_gcurves_sm_1977 <- bind_rows(
+```{r}
+smooth_cycles <- function(...) {
+  bind_rows(...) %>%
+    dplyr::group_by(plate_name, well) %>%
+    arrange(plate_name, well) %>%
+    dplyr::mutate(
+      OD600_rollmean = slider::slide_dbl(OD600, mean, .before = 2, .after = 2)
+    ) %>%
+    ungroup() %>%
+    relocate(OD600_rollmean, .after = "OD600")
+}
+
+coculture_gcurves_sm_1977 <- smooth_cycles(
   c1_1977,
   c2_1977,
   c3_1977,
   c4_1977,
   c5_1977
-) %>%
-  dplyr::group_by(plate_name, well) %>%
-  arrange(plate_name, well) %>%
-  dplyr::mutate(
-    OD600_rollmean = slider::slide_dbl(OD600, mean, .before = 2, .after = 2)
-  ) %>%
-  ungroup() %>%
-  relocate(OD600_rollmean, .after = "OD600")
+)
 
-# 1287
-coculture_gcurves_sm_1287 <- bind_rows(
+coculture_gcurves_sm_1287 <- smooth_cycles(
   c1_1287,
   c2_1287,
   c3_1287,
   c4_1287,
   c5_1287
-) %>%
-  dplyr::group_by(plate_name, well) %>%
-  arrange(plate_name, well) %>%
-  dplyr::mutate(
-    OD600_rollmean = slider::slide_dbl(OD600, mean, .before = 2, .after = 2)
-  ) %>%
-  ungroup() %>%
-  relocate(OD600_rollmean, .after = "OD600")
+)
+```
 
-# save result for later
+```{r}
 readr::write_tsv(
   coculture_gcurves_sm_1977,
-  here::here(data, "1977_coculture_gcurves_smooth.tsv")
+  here::here(data_processed, "20260410_1977_gcurves_smooth.tsv")
 )
 
-# save result for later
 readr::write_tsv(
   coculture_gcurves_sm_1287,
-  here::here(data, "1287_coculture_gcurves_smooth.tsv")
+  here::here(data_processed, "20260410_1287_gcurves_smooth.tsv")
 )
+```
+
+The per-cycle plate grids and the competition time courses are plotted in the
+[next notebook](03_20260410_prune_and_plot.qmd).
