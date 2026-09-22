@@ -6,18 +6,31 @@ Etymology: 'MCT' = modern coexistence theory, 'downUnder' referring to Australia
 
 ## Structure:
 
-The `R` directory store analysis code/scripts for the project.
+```
+MCTdownUnder/
+├── R/               # shared helper functions only (no analysis, no paths)
+├── scripts/         # numbered, executable Quarto notebooks - all analysis lives here
+├── data/
+│   ├── raw/         # instrument exports, one dated directory per acquisition; never modified
+│   ├── interim/     # cached model fits and other expensive intermediates
+│   └── processed/   # cleaned, analysis-ready TSVs
+├── output/
+│   ├── figures/     # publication figures
+│   └── tables/      # publication tables
+└── _site/           # rendered project website, deployed to GitHub Pages by Actions
+```
 
-The `data_raw` directory includes raw data files obtained from instruments and is never modified directly
+Some raw data is shared with the sister project
+[hambiEvoEnvCoexist](https://github.com/slhogle/hambiEvoEnvCoexist), where the same plates were run: the
+single carbon source growth curves in `data/raw/20260601_single_carbon_growth/` and the bioscreen tables in
+`data/raw/20240328_bioscreen_strains/`.
 
-The `data` directory is where processed data projects should go. Usually, in an analysis workflow you will start with raw data,  clean/organize it, perhaps transform it in some way, then save that product in `data` for later branches of the workflow. 
+Every processed data file and figure is produced by a notebook in `scripts/`, so the analysis can be rebuilt
+from `data/raw/` by rendering the project:
 
-The `docs` directory holds the rendered project webpage. This directory is automatically generated when the notebooks are rendered.
-
-The `figs` directory holds figures generated in the analysis.
-
-The `notebooks` directory holds quarto notebooks for rendering the project webpage (hosted with github pages).
-
+```bash
+quarto render
+```
 
 ## Manuscript:
 

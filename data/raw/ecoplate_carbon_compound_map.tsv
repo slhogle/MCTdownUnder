@@ -1,0 +1,33 @@
+row	column	compound	class
+A	1	water	other
+A	2	β-MethylD-Glucoside	sugar
+A	3	D-Galactonic Acid γ-Lactone	organic_acid
+A	4	L-Arginine	amino_acid
+B	1	Pyruvic Acid Methyl Ester	organic_acid
+B	2	D-Xylose	sugar
+B	3	D-Galacturonic Acid	organic_acid
+B	4	L-Asparagine	amino_acid
+C	1	Tween 40	other
+C	2	i-Erythritol	sugar_alcohol
+C	3	2-Hydroxy Benzoic Acid	organic_acid
+C	4	L-Phenylalanine	amino_acid
+D	1	Tween 80	other
+D	2	D-Mannitol	sugar_alcohol
+D	3	4-Hydroxy Benzoic Acid	organic_acid
+D	4	L-Serine	amino_acid
+E	1	α-Cyclodextrin	sugar
+E	2	N-Acetyl-D-Glucosamine	sugar
+E	3	γ-Amino Butyric Acid	organic_acid
+E	4	L-Threonine	amino_acid
+F	1	Glycogen	sugar
+F	2	D-Glucosaminic Acid	organic_acid
+F	3	Itaconic Acid	organic_acid
+F	4	β-HydroxyGlycyl-L-Glutamic Acid	other
+G	1	D-Cellobiose	sugar
+G	2	Glucose1-Phosphate	sugar
+G	3	α-Keto Butyric Acid	organic_acid
+G	4	Phenylethylamine	other
+H	1	α-D-Lactose	sugar
+H	2	D,L-α-Glycerol Phosphate	other
+H	3	D-Malic Acid	organic_acid
+H	4	Putrescine	other

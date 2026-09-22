@@ -1,0 +1,97 @@
+species	evolution	sample_name	exp_ratio	replicate	exp_treatment	plating_condition	transfer_cycle	colonycount_10-5	colonycount_10-6	colonycount_10-7	Note
+1287	anc+evo	1:1_R1	1S_1R	A	R2A	no_str	5			80	
+1287	anc+evo	1:1_R2	1S_1R	B	R2A	no_str	5			67	
+1287	anc+evo	1(S):4(R)	1S_4R	A	R2A	no_str	5			72	
+1287	anc+evo	4(S):1(R)	4S_1R	A	R2A	no_str	5			57	
+1287	anc+evo	1:1_R1	1S_1R	A	R2A_512str	no_str	5			84	
+1287	anc+evo	1:1_R2	1S_1R	B	R2A_512str	no_str	5			51	
+1287	anc+evo	1(S):4(R)	1S_4R	A	R2A_512str	no_str	5			44	1 small
+1287	anc+evo	4(S):1(R)	4S_1R	A	R2A_512str	no_str	5			45	2 small
+1287	anc+evo	1:1_R1	1S_1R	A	M9	no_str	5		228	30	
+1287	anc+evo	1:1_R2	1S_1R	B	M9	no_str	5			29	
+1287	anc+evo	1(S):4(R)	1S_4R	A	M9	no_str	5			14	
+1287	anc+evo	4(S):1(R)	4S_1R	A	M9	no_str	5			43	
+1977	anc+evo	1:1_R1	1S_1R	A	R2A	no_str	5			31	
+1977	anc+evo	1:1_R2	1S_1R	B	R2A	no_str	5			67	
+1977	anc+evo	1(S):4(R)	1S_4R	A	R2A	no_str	5			29	
+1977	anc+evo	4(S):1(R)	4S_1R	A	R2A	no_str	5			48	
+1977	anc+evo	1:1_R1	1S_1R	A	R2A_10str	no_str	5			41	
+1977	anc+evo	1:1_R2	1S_1R	B	R2A_10str	no_str	5			31	
+1977	anc+evo	1(S):4(R)	1S_4R	A	R2A_10str	no_str	5		293	14	
+1977	anc+evo	4(S):1(R)	4S_1R	A	R2A_10str	no_str	5			52	
+1977	anc+evo	1:1_R1	1S_1R	A	M9	no_str	5		236	28	
+1977	anc+evo	1:1_R2	1S_1R	B	M9	no_str	5		257	23	
+1977	anc+evo	1(S):4(R)	1S_4R	A	M9	no_str	5			42	
+1977	anc+evo	4(S):1(R)	4S_1R	A	M9	no_str	5		256	36	
+1287	anc+evo	1:1_R1	1S_1R	A	R2A	no_str	1			79	6 small
+1287	anc+evo	1:1_R2	1S_1R	B	R2A	no_str	1			74	2 small
+1287	anc+evo	1(S):4(R)	1S_4R	A	R2A	no_str	1			36	8 small
+1287	anc+evo	4(S):1(R)	4S_1R	A	R2A	no_str	1			25	1 small
+1287	anc+evo	1:1_R1	1S_1R	A	R2A_512str	no_str	1			45	2 large
+1287	anc+evo	1:1_R2	1S_1R	B	R2A_512str	no_str	1			80	8 large
+1287	anc+evo	1(S):4(R)	1S_4R	A	R2A_512str	no_str	1			47	2 large
+1287	anc+evo	4(S):1(R)	4S_1R	A	R2A_512str	no_str	1			22	0 large
+1287	anc+evo	1:1_R1	1S_1R	A	M9	no_str	1			24	2 small
+1287	anc+evo	1:1_R2	1S_1R	B	M9	no_str	1			29	3 small
+1287	anc+evo	1(S):4(R)	1S_4R	A	M9	no_str	1			32	8 small
+1287	anc+evo	4(S):1(R)	4S_1R	A	M9	no_str	1			50	1 small
+1977	anc+evo	1:1_R1	1S_1R	A	R2A	no_str	1		285	35	
+1977	anc+evo	1:1_R2	1S_1R	B	R2A	no_str	1		272	28	
+1977	anc+evo	1(S):4(R)	1S_4R	A	R2A	no_str	1		260	23	
+1977	anc+evo	4(S):1(R)	4S_1R	A	R2A	no_str	1		199	15	
+1977	anc+evo	1:1_R1	1S_1R	A	R2A_10str	no_str	1		215	18	
+1977	anc+evo	1:1_R2	1S_1R	B	R2A_10str	no_str	1		160	12	
+1977	anc+evo	1(S):4(R)	1S_4R	A	R2A_10str	no_str	1		218	23	
+1977	anc+evo	4(S):1(R)	4S_1R	A	R2A_10str	no_str	1		254	32	
+1977	anc+evo	1:1_R1	1S_1R	A	M9	no_str	1		178	15	
+1977	anc+evo	1:1_R2	1S_1R	B	M9	no_str	1		187	25	
+1977	anc+evo	1(S):4(R)	1S_4R	A	M9	no_str	1		214	18	
+1977	anc+evo	4(S):1(R)	4S_1R	A	M9	no_str	1		231	20	
+1287	evo	1:1_R1	1S_1R	A	R2A	str	5	0	0	0	wet plate
+1287	evo	1:1_R2	1S_1R	B	R2A	str	5	0	0	0	
+1287	evo	1(S):4(R)	1S_4R	A	R2A	str	5	0	0	0	
+1287	evo	4(S):1(R)	4S_1R	A	R2A	str	5	0	0	0	wet plate
+1287	evo	1:1_R1	1S_1R	A	R2A_512str	str	5	3	0	0	
+1287	evo	1:1_R2	1S_1R	B	R2A_512str	str	5	3	3	0	
+1287	evo	1(S):4(R)	1S_4R	A	R2A_512str	str	5	0	0	0	wet plate
+1287	evo	4(S):1(R)	4S_1R	A	R2A_512str	str	5	3	1	0	
+1287	evo	1:1_R1	1S_1R	A	M9	str	5	0	0	0	
+1287	evo	1:1_R2	1S_1R	B	M9	str	5	0	0	0	
+1287	evo	1(S):4(R)	1S_4R	A	M9	str	5	0	0	0	
+1287	evo	4(S):1(R)	4S_1R	A	M9	str	5	0	0	0	
+1977	evo	1:1_R1	1S_1R	A	R2A	str	5	16	4	0	
+1977	evo	1:1_R2	1S_1R	B	R2A	str	5	18	1	0	
+1977	evo	1(S):4(R)	1S_4R	A	R2A	str	5	0	0	1	
+1977	evo	4(S):1(R)	4S_1R	A	R2A	str	5		25	6	
+1977	evo	1:1_R1	1S_1R	A	R2A_10str	str	5	10	1	0	
+1977	evo	1:1_R2	1S_1R	B	R2A_10str	str	5	2	1	0	
+1977	evo	1(S):4(R)	1S_4R	A	R2A_10str	str	5	7	2	0	
+1977	evo	4(S):1(R)	4S_1R	A	R2A_10str	str	5	1	1	0	
+1977	evo	1:1_R1	1S_1R	A	M9	str	5	1	0	0	
+1977	evo	1:1_R2	1S_1R	B	M9	str	5	1	0	0	
+1977	evo	1(S):4(R)	1S_4R	A	M9	str	5	1	1	0	
+1977	evo	4(S):1(R)	4S_1R	A	M9	str	5	0	0	0	
+1287	evo	1:1_R1	1S_1R	A	R2A	str	1		15	0	
+1287	evo	1:1_R2	1S_1R	B	R2A	str	1		6	1	
+1287	evo	1(S):4(R)	1S_4R	A	R2A	str	1		16	4	
+1287	evo	4(S):1(R)	4S_1R	A	R2A	str	1		2	0	
+1287	evo	1:1_R1	1S_1R	A	R2A_512str	str	1			6	
+1287	evo	1:1_R2	1S_1R	B	R2A_512str	str	1			18	
+1287	evo	1(S):4(R)	1S_4R	A	R2A_512str	str	1			9	
+1287	evo	4(S):1(R)	4S_1R	A	R2A_512str	str	1			9	
+1287	evo	1:1_R1	1S_1R	A	M9	str	1		11	0	
+1287	evo	1:1_R2	1S_1R	B	M9	str	1		7	0	
+1287	evo	1(S):4(R)	1S_4R	A	M9	str	1		13	2	
+1287	evo	4(S):1(R)	4S_1R	A	M9	str	1		8	0	
+1977	evo	1:1_R1	1S_1R	A	R2A	str	1		10	0	
+1977	evo	1:1_R2	1S_1R	B	R2A	str	1		8	1	
+1977	evo	1(S):4(R)	1S_4R	A	R2A	str	1		18	1	
+1977	evo	4(S):1(R)	4S_1R	A	R2A	str	1		1	0	
+1977	evo	1:1_R1	1S_1R	A	R2A_10str	str	1		47	4	
+1977	evo	1:1_R2	1S_1R	B	R2A_10str	str	1		19	1	
+1977	evo	1(S):4(R)	1S_4R	A	R2A_10str	str	1		49	5	
+1977	evo	4(S):1(R)	4S_1R	A	R2A_10str	str	1		10	1	
+1977	evo	1:1_R1	1S_1R	A	M9	str	1		10	1	
+1977	evo	1:1_R2	1S_1R	B	M9	str	1		11	1	
+1977	evo	1(S):4(R)	1S_4R	A	M9	str	1		30	4	
+1977	evo	4(S):1(R)	4S_1R	A	M9	str	1		6	0	

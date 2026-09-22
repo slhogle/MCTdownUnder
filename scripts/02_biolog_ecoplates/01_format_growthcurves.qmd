@@ -1,0 +1,195 @@
+---
+title: "02.A Formatting growth curves from Synergy H1"
+subtitle: "Quality control"
+author: "Shane Hogle"
+date: today
+---
+
+# Introduction
+
+The ancestral (streptomycin sensitive) and evolved (streptomycin resistant) forms of HAMBI_1287 and HAMBI_1977 were grown on [Biolog Ecoplates](https://www.biolog.com/products/community-analysis-microplates/ecoplate/). These are basically a set of 32 different carbon compounds in 3 replicated sets on a 96 well plate. Microbial species or communities grown on these carbon compounds respire and reduce some dye to a purple color which is then measured on a Synergy H1 multimode microplate reader.
+
+In this notebook we read the output from the Synergy H1 plate reader, join it to the samplesheets, smooth it, and inspect every well.
+
+# Setup
+
+## Libraries
+
+```{r}
+library(here)
+library(tidyverse)
+library(readxl)
+library(stringr)
+library(lubridate)
+library(fs)
+library(ggforce)
+library(slider)
+source(here::here("R", "gcurves.R"))
+source(here::here("R", "generic.R"))
+```
+
+## Global variables
+
+```{r}
+data_raw <- here::here("data", "raw")
+data_processed <- here::here("data", "processed", "02_biolog_ecoplates")
+
+# make processed data directory if it doesn't exist
+fs::dir_create(data_processed)
+```
+
+# Read and tidy Synergy output
+
+Each plate is a separate acquisition on the Synergy H1. `read_synergy_xlsx()`
+pulls the raw data sheet, sets the first reading as time zero, pivots to long
+form, and zero-pads the well ids so they join to the samplesheets.
+
+```{r}
+plate01 <- read_synergy_xlsx(
+  here::here(
+    data_raw,
+    "20250613_biolog_ecoplate_1287A",
+    "1287A_raw_data.xlsx"
+  )
+) %>%
+  # create a plate variable for later combining
+  mutate(plate_name = "plate01")
+
+plate02 <- read_synergy_xlsx(
+  here::here(
+    data_raw,
+    "20250619_biolog_ecoplate_1287E_1977A",
+    "1287E_1977A_rawdata.xlsx"
+  )
+) %>%
+  mutate(plate_name = "plate02")
+
+plate03 <- read_synergy_xlsx(
+  here::here(
+    data_raw,
+    "20250626_biolog_ecoplate_1977A_1977E",
+    "1977A_1977E_rawdata.xlsx"
+  )
+) %>%
+  mutate(plate_name = "plate03")
+```
+
+# Combine, tidy, format
+
+## Read sample metadata
+
+```{r}
+samplesheet01 <- readxl::read_xlsx(here::here(
+  data_raw,
+  "20250613_biolog_ecoplate_1287A",
+  "samplesheet_1287A.xlsx"
+)) %>%
+  mutate(strainID = paste0("HAMBI_", strain)) %>%
+  mutate(plate_name = "plate01")
+
+samplesheet02 <- readxl::read_xlsx(here::here(
+  data_raw,
+  "20250619_biolog_ecoplate_1287E_1977A",
+  "samplesheet_1287E_1977A.xlsx"
+)) %>%
+  mutate(strainID = paste0("HAMBI_", strain)) %>%
+  mutate(plate_name = "plate02")
+
+samplesheet03 <- readxl::read_xlsx(here::here(
+  data_raw,
+  "20250626_biolog_ecoplate_1977A_1977E",
+  "samplesheet_1977A_1977E.xlsx"
+)) %>%
+  mutate(strainID = paste0("HAMBI_", strain)) %>%
+  mutate(plate_name = "plate03")
+```
+
+## Join with metadata to remove unused samples
+
+Grouping by plate and well, we calculate a five point centered rolling mean.
+This reduces the jaggedness of the curves and also makes the resulting saved
+data file smaller.
+
+```{r}
+ecoplate_gcurves_sm <- bind_rows(plate01, plate02, plate03) %>%
+  left_join(
+    bind_rows(samplesheet01, samplesheet02, samplesheet03),
+    by = join_by(well, plate_name)
+  ) %>%
+  dplyr::group_by(plate_name, well) %>%
+  dplyr::mutate(
+    OD600_rollmean = slider::slide_dbl(OD600, mean, .before = 2, .after = 2)
+  ) %>%
+  ungroup() %>%
+  relocate(OD600_rollmean, .after = "OD600")
+
+# save output for later use
+readr::write_tsv(
+  ecoplate_gcurves_sm,
+  here::here(data_processed, "gcurves_smooth.tsv")
+)
+```
+
+# Inspect growth curves
+
+```{r}
+plotter <- function(id) {
+  plotplate(
+    ecoplate_gcurves_sm,
+    dfxy = NULL,
+    unsmoothed = TRUE,
+    predicted = FALSE,
+    plate = id,
+    rows = 8,
+    cols = 12,
+    page = 1,
+    scales = "fixed"
+  )
+}
+```
+
+## plate01
+
+This plate contains three replicates for the ancestral form of HAMBI_1287.
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-01
+#| fig-width: 12
+#| fig-height: 9
+#| fig-cap: Growth curves for the first ecoplate with the ancestral form of HAMBI_1287. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of five points. Orange is non-smoothed.
+plotter("plate01")
+```
+
+## plate02
+
+This plate contains EVO_1287 (columns 1-8) and ANC_1977 (columns 9-12).
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-02
+#| fig-width: 12
+#| fig-height: 9
+#| fig-cap: As in @fig-01 but for EVO_1287 (columns 1-8) and ANC_1977 (columns 9-12).
+plotter("plate02")
+```
+
+## plate03
+
+This plate contains ANC_1977 (columns 1-4) and EVO_1977 (columns 5-12).
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-03
+#| fig-width: 12
+#| fig-height: 9
+#| fig-cap: As in @fig-01 but for ANC_1977 (columns 1-4) and EVO_1977 (columns 5-12).
+plotter("plate03")
+```
+
+# Conclusions
+
+Growth curves all look mostly reasonable. For just a couple of the carbon substrates there are some strange features (e.g., L-asparagine for HAMBI_1977). Can proceed with the analysis.

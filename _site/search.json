@@ -1,0 +1,1184 @@
+[
+  {
+    "objectID": "scripts/06_cfu_competition/01_cfu_competition_outcomes.html",
+    "href": "scripts/06_cfu_competition/01_cfu_competition_outcomes.html",
+    "title": "06.A Traditional competition assay",
+    "section": "",
+    "text": "Strain naming convention: 1287 = Citrobacter koseri 1287, 1977 = Pseudomonas chlororaphis 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.\nGrowth media convention: M9MM = 0.25X strength M9 minimal media with 10 mM glucose and Casamino acids. R2A = Reasoner’s 2 broth (a more complex, but still low-nutrient growth medium).\nThe ancestral (streptomycin sensitive) and evolved (streptomycin resistant) forms of each species were mixed and grown in 6 ml microcosm vials under a serial transfer regime: every 48 hours 6 μl of culture was transferred into 6 ml of fresh medium (1000 fold dilution) at 30°C with gentle shaking. Only same-species competitions were performed, so vials contains A1287 + E1287 or A1977 + E1977\nThree media conditions were used,\n\n\n\n\n\n\n\n\nCondition\nMedium\nStreptomycin\n\n\n\n\nM9\n0.25X strength M9MM\nnone\n\n\nR2A\nR2A broth\nnone\n\n\nR2A_10str / R2A_512str\nR2A broth\n10 μg/ml (1977), 512 μg/ml (1287)\n\n\n\nEach species × medium combination was inoculated at three nominal starting ratios of sensitive to resistant cells — 1A:1E (two replicate vials), 1A:4E and 4A:1E (one vial each). This was done to ensure that the outcome is insensitive to the starting density.\nPopulations were plated at two time points, after 2 days and after 10 days. Total density was measured by spreading 100 μl on plain PPY agar; resistant density was measured by spotting 30 μl on PPY agar containing 5000 μg/ml streptomycin.\n\n\n\n\n\n\nImportant\n\n\n\nAfter looking at plating CFUs for the Evo strains I suspect that resolution isn’t good enough with the 30 μl drop. The small drop size means that the number of colonies counted can often be too low to reliably estimate the true CFU count. Also colonies can merge into each other…\n\n\nThe fraction of the population that is streptomycin resistant is just the ratio of the two plate counts.\nColony forming units are estimated with the maximum likelihood estimators of\n\nMartini KM, Boddu SS, Nemenman I, Vega NM. 2024. Maximum likelihood estimators for colony-forming units. Microbiol Spectr 12:e03946-23. https://doi.org/10.1128/spectrum.03946-23\n\nwhich pool information across the whole dilution series and correct for colony crowding, rather than relying on a single countable plate value.",
+    "crumbs": [
+      "06.A CFU competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/06_cfu_competition/01_cfu_competition_outcomes.html#libraries",
+    "href": "scripts/06_cfu_competition/01_cfu_competition_outcomes.html#libraries",
+    "title": "06.A Traditional competition assay",
+    "section": "2.1 Libraries",
+    "text": "2.1 Libraries\n\n\nShow/hide code\nlibrary(here)\nlibrary(tidyverse)\nlibrary(fs)\nlibrary(scales)\nlibrary(brms)\nsource(here::here(\"R\", \"cfus.R\"))\nsource(here::here(\"R\", \"generic.R\"))",
+    "crumbs": [
+      "06.A CFU competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/06_cfu_competition/01_cfu_competition_outcomes.html#global-variables",
+    "href": "scripts/06_cfu_competition/01_cfu_competition_outcomes.html#global-variables",
+    "title": "06.A Traditional competition assay",
+    "section": "2.2 Global variables",
+    "text": "2.2 Global variables\n\n\nShow/hide code\ndata_raw &lt;- here::here(\"data\", \"raw\", \"20260604_traditional_competition_cfu\")\ndata_processed &lt;- here::here(\"data\", \"processed\", \"06_traditional_competition\")\ndata_interim &lt;- here::here(\"data\", \"interim\", \"06_traditional_competition\")\nfigs &lt;- here::here(\"output\", \"figures\")\n\n# make output directories if they don't exist\nfs::dir_create(data_processed)\nfs::dir_create(data_interim)\nfs::dir_create(figs)\n\n\nEstimator settings differ between the two plate formats because a 100 mm spread plate and a 30 μl drop spot hold very different numbers of colonies.\nN is the Poisson cutoff — the count above which a plate is treated as too crowded to trust. NMLE is the number of resolvable colony positions, roughly the ratio of the plating area to the area of one colony, and is what the maximum likelihood estimator uses to correct for colonies landing on top of each other. sampling_vol converts the estimator output (CFU in the volume plated) to CFU/ml.\n\n\nShow/hide code\nplate_pars &lt;- tibble::tribble(\n  ~plating_condition , ~count_type    , ~N  , ~NMLE , ~sampling_vol ,\n  # 100 ul spread on a plain PPY 100 mm plate: everything that grew\n  \"no_str\"           , \"Sens. + Res.\" , 300 ,  5000 , 0.100         ,\n  # 30 ul drop spot on PPY + 5000 ug/ml streptomycin: resistant only\n  \"str\"              , \"Res. only\"    , 100 ,   500 , 0.030\n)\n\n# every column that identifies one plate count series\ncfu_groups &lt;- c(\n  \"species\",\n  \"exp_treatment\",\n  \"exp_ratio\",\n  \"replicate\",\n  \"transfer_cycle\",\n  \"plating_condition\",\n  \"count_type\",\n  \"N\",\n  \"NMLE\",\n  \"sampling_vol\"\n)\n\n\nThe 1000 fold transfer dilution means \\(\\mathrm{log_2(1000)} \\approx 9.97\\) generations elapse per 48 hour growth cycle. The first plating is from transfer_cycle=1 (i.e. day 2, 48 hours elapsed). The second plating is from transfer_cycle=5 (i.e., day 10, 240 hours elapsed).\n\n\nShow/hide code\ngen_per_cycle &lt;- log2(1000)\n\n# transfer_cycle\ncycle_map &lt;- tibble::tribble(\n  ~transfer_cycle , ~day ,\n                1 ,    2 ,\n                5 ,   10\n)\n\n# nominal resistant fraction of the inoculum\nstart_frac &lt;- c(\"1S_1R\" = 0.5, \"1S_4R\" = 0.8, \"4S_1R\" = 0.2)\n\n# media condition colors\ntreatcols &lt;- c(\n  \"M9MM\" = \"#0074D9\",\n  \"R2A\" = \"#FF4136\",\n  \"R2A + Str\" = \"#149109ff\"\n)\n\ncountcols &lt;- c(\n  \"Sens. + Res.\" = \"grey30\",\n  \"Res. only\" = \"purple\"\n)",
+    "crumbs": [
+      "06.A CFU competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/06_cfu_competition/01_cfu_competition_outcomes.html#functions",
+    "href": "scripts/06_cfu_competition/01_cfu_competition_outcomes.html#functions",
+    "title": "06.A Traditional competition assay",
+    "section": "2.3 Functions",
+    "text": "2.3 Functions\nCollapses the species specific streptomycin treatments (R2A_10str for 1977, R2A_512str for 1287) onto one label and orders the media conditions.\n\n\nShow/hide code\nlabel_treatment &lt;- function(df) {\n  df |&gt;\n    dplyr::mutate(\n      treatment = dplyr::case_when(\n        exp_treatment == \"M9\" ~ \"M9MM\",\n        exp_treatment == \"R2A\" ~ \"R2A\",\n        stringr::str_detect(exp_treatment, \"str\") ~ \"R2A + Str\"\n      )\n    ) |&gt;\n    dplyr::mutate(\n      treatment = factor(treatment, levels = names(treatcols)),\n      species_label = unname(sp_labels[species]),\n      # day is numeric, so facet strips need an explicitly ordered label\n      day_label = factor(paste(\"Day\", day), levels = c(\"Day 2\", \"Day 10\")),\n      cycle_label = factor(paste0(\"C\", transfer_cycle), levels = c(\"C1\", \"C5\"))\n    )\n}\n\n\nTurns the detection flag into something a legend can print.\n\n\nShow/hide code\nlabel_detected &lt;- function(x) {\n  factor(\n    dplyr::if_else(x, \"counted\", \"below detection\"),\n    levels = c(\"counted\", \"below detection\")\n  )\n}",
+    "crumbs": [
+      "06.A CFU competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/06_cfu_competition/01_cfu_competition_outcomes.html#detection-limits",
+    "href": "scripts/06_cfu_competition/01_cfu_competition_outcomes.html#detection-limits",
+    "title": "06.A Traditional competition assay",
+    "section": "5.1 Detection limits",
+    "text": "5.1 Detection limits\nSome samples will lack a density estimate because we did not plate high enough dilutions (e.g., the focal strain was very low abundance). To gather some kind of baseline we set the detection limit to be one colony on the most concentrated spot. This is then flagged so that downstream results are interpreted as an upper bound and not an actual measurement.\n\n\nShow/hide code\ncfu_detect &lt;- cfu_long |&gt;\n  summarize(\n    detected = sum(count) &gt; 0,\n    LOD = 1 / (max(dilution) * first(sampling_vol)),\n    .by = all_of(cfu_groups)\n  )\n\n# one series per row of the raw file, none lost to the reshape\nstopifnot(nrow(cfu_detect) == nrow(cfu_counts))\n\n\n\n\nShow/hide code\ncfu_detect |&gt;\n  filter(!detected) |&gt;\n  select(species, exp_treatment, exp_ratio, replicate, transfer_cycle, LOD)\n\n\n\n\nTable 2: Count series where no colonies grew at any dilution. These are reported at their detection limit.",
+    "crumbs": [
+      "06.A CFU competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/06_cfu_competition/01_cfu_competition_outcomes.html#maximum-likelihood-estimates",
+    "href": "scripts/06_cfu_competition/01_cfu_competition_outcomes.html#maximum-likelihood-estimates",
+    "title": "06.A Traditional competition assay",
+    "section": "5.2 Maximum likelihood estimates",
+    "text": "5.2 Maximum likelihood estimates\nBoth estimators are computed for every count series. A recorded 0 stays in the series: both estimators divide the pooled colony count by the pooled dilution factor. Dropping it would inflate the estimate — for the 1977 R2A 1:4 vial at day 10, which read 0, 0 and 1 colonies across the three dilutions, by 111 fold. Only series that are empty at every dilution are held back, because find_MLE() has no root for them, and they are re-attached at their detection limit below.\n\n\nShow/hide code\n# guard: find_MLE() brackets its root on c(1, 1e9) and fails outside it\nstopifnot(with(cfu_long, max(count / dilution)) &lt; 1e9)\n\ncfu_est &lt;- cfu_long |&gt;\n  filter(sum(count) &gt; 0, .by = all_of(cfu_groups)) |&gt;\n  nest(.by = all_of(cfu_groups)) |&gt;\n  mutate(\n    est = pmap(\n      list(data, N, NMLE),\n      \\(x, n, nmle) find_estimators(x$count, x$dilution, N = n, NMLE = nmle)\n    )\n  ) |&gt;\n  unnest(est) |&gt;\n  # the estimators return CFU in the volume plated, not CFU/ml\n  mutate(\n    CFU_ml = r / sampling_vol,\n    CFU_ml_stdev = stdev / sampling_vol\n  ) |&gt;\n  select(-data, -r, -stdev)\n\n\nThe crowding correction only matters when a plate is close to saturated, so the two estimators should agree closely here. They do — the ML estimate is at most a few percent above the Poisson cutoff estimate.\n\n\nShow/hide code\ncfu_compare &lt;- cfu_est |&gt;\n  select(all_of(cfu_groups), type, CFU_ml) |&gt;\n  pivot_wider(names_from = type, values_from = CFU_ml) |&gt;\n  mutate(ratio = ML_estimator / poisson_cutoff)\n\n\n\n\nShow/hide code\ncfu_compare |&gt;\n  summarize(\n    min = min(ratio, na.rm = TRUE),\n    median = median(ratio, na.rm = TRUE),\n    max = max(ratio, na.rm = TRUE),\n    n_undefined = sum(is.na(ratio)),\n    .by = count_type\n  )\n\n\n\n\nTable 3: Ratio of the maximum likelihood estimate to the simple Poisson cutoff estimate.\n\n\n\n\n  \n\n\n\n\n\n\nKeep the ML estimates and put the undetected series back at their detection limit.\n\n\nShow/hide code\ncfu_ml &lt;- cfu_est |&gt;\n  filter(type == \"ML_estimator\") |&gt;\n  right_join(cfu_detect, by = cfu_groups) |&gt;\n  mutate(\n    CFU_ml = if_else(detected, CFU_ml, LOD),\n    # a non-detect carries an uncertainty as large as the value itself\n    CFU_ml_stdev = if_else(detected, CFU_ml_stdev, LOD),\n    type = if_else(detected, type, \"detection_limit\")\n  ) |&gt;\n  left_join(cycle_map, by = join_by(transfer_cycle)) |&gt;\n  label_treatment()\n\nreadr::write_tsv(\n  cfu_ml,\n  here::here(data_processed, \"cfu_ml_estimates.tsv\")\n)",
+    "crumbs": [
+      "06.A CFU competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/06_cfu_competition/01_cfu_competition_outcomes.html#population-densities",
+    "href": "scripts/06_cfu_competition/01_cfu_competition_outcomes.html#population-densities",
+    "title": "06.A Traditional competition assay",
+    "section": "5.3 Population densities",
+    "text": "5.3 Population densities\n\n\nShow/hide code\npdensity &lt;- cfu_ml |&gt;\n  mutate(\n    count_type = factor(count_type, levels = names(countcols)),\n    detected = label_detected(detected)\n  ) |&gt;\n  ggplot(aes(x = treatment, y = CFU_ml, color = count_type)) +\n  geom_linerange(\n    aes(\n      ymin = CFU_ml - CFU_ml_stdev,\n      ymax = CFU_ml + CFU_ml_stdev,\n      lty = detected,\n      group = interaction(treatment)\n    ),\n    position = position_jitterdodge(jitter.width = 0.25, seed = 123)\n    #position = position_dodge(width = 0.6)\n  ) +\n  geom_point(\n    aes(shape = exp_ratio, group = treatment),\n    size = 2,\n    position = position_jitterdodge(jitter.width = 0.25, seed = 123)\n  ) +\n  facet_grid(species_label ~ cycle_label) +\n  scale_y_log10(labels = scales::label_log()) +\n  scale_color_manual(values = countcols) +\n  # scale_shape_manual(values = c(\"counted\" = 16, \"below detection\" = 6)) +\n  labs(\n    y = \"CFU/ml\",\n    x = \"Media condition\",\n    color = \"Plate count\",\n    shape = \"Selective plate\"\n  ) +\n  theme_mct()\n\n# ggsave(\n#   here::here(figs, \"traditional_competition_densities.svg\"),\n#   plot = pdensity,\n#   device = \"svg\",\n#   width = 8,\n#   height = 6\n# )\n\n\n\n\n\n\n\n\n\n\nFigure 1: Population density (CFU/ml, maximum likelihood estimate) in each microcosm vial. Grid rows are species, grid columns are the plating day. Color separates total density counted on plain PPY agar (grey) from resistant density counted on PPY agar with 5000 μg/ml streptomycin (purple). Points are nested within media condition (x axis) and correspond to the individual vials (three starting ratios, with two replicate vials at 1S_1R ratio). Dashed lines denote vials where no colonies grew at any dilution and the value plotted is the upper bound of the detection limit (estimated as the lowest observed density estimate at the highest dilution). Vertical bars are the standard error of the estimator. The streptomycin dose in the R2A + Str condition is 512 μg/ml for 1287 and 10 μg/ml for 1977.\n\n\n\n\n\nTotal density is \\(1.4\\)–\\(8.5\\times10^{9}\\) CFU/ml everywhere and does not change appreciably between day 2 and day 10 or across media conditions, so every vial supported a dense population for the whole experiment. The resistant counts, in contrast, drop by one to three orders of magnitude between the two plating days in nearly every vial.",
+    "crumbs": [
+      "06.A CFU competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/01_analyze_gcurves.html",
+    "href": "scripts/05_one_carbon_gcurves/01_analyze_gcurves.html",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "",
+    "text": "amino acids\norganic acids\nsugars\n\n\n\n\n\namino acids\norganic acids\nsugars",
+    "crumbs": [
+      "05.A Single carbon analysis"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/01_analyze_gcurves.html#libraries",
+    "href": "scripts/05_one_carbon_gcurves/01_analyze_gcurves.html#libraries",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "3.1 Libraries",
+    "text": "3.1 Libraries\n\n\nShow/hide code\nlibrary(here)\nlibrary(tidyverse)\nlibrary(growthrates)\nlibrary(fs)\nlibrary(glue)\nlibrary(marquee)\nlibrary(bayesboot)\nsource(here::here(\"R\", \"gcurves.R\"))\nsource(here::here(\"R\", \"generic.R\"))",
+    "crumbs": [
+      "05.A Single carbon analysis"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/01_analyze_gcurves.html#global-variables",
+    "href": "scripts/05_one_carbon_gcurves/01_analyze_gcurves.html#global-variables",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "3.2 Global variables",
+    "text": "3.2 Global variables\n\n\nShow/hide code\ndata_interim &lt;- here::here(\"data\", \"interim\", \"05_one_carbon_gcurves\")\ndata_processed &lt;- here::here(\"data\", \"processed\", \"05_one_carbon_gcurves\")\nfigs &lt;- here::here(\"output\", \"figures\")\n\n# make output directories if they don't exist\nfs::dir_create(data_interim)\nfs::dir_create(data_processed)\nfs::dir_create(figs)",
+    "crumbs": [
+      "05.A Single carbon analysis"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/01_analyze_gcurves.html#sec-h1287",
+    "href": "scripts/05_one_carbon_gcurves/01_analyze_gcurves.html#sec-h1287",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "6.1 C. koseri HAMBI_1287",
+    "text": "6.1 C. koseri HAMBI_1287\nFor coexistence, 1287 is the interesting case. Under drug, which strain is fitter flips with the carbon source: sugars, malate and amides favor EVO; other amino acids and succinate favor ANC.\n\n6.1.1 Amino acids\n\n\n\n\n\n\n\n\nFigure 1: Mean OD600 (rolling average) over time for C. koseri HAMBI_1287 grown on 16 amino acid carbon sources, at 0 and 512 μg/ml streptomycin. Lines show the mean across replicate wells; ribbons show an estimate of the 95% CI (mean ± 1.96 SE). Orange = ancestral (streptomycin sensitive), purple = evolved (streptomycin resistant).\n\n\n\n\n\n\n\n6.1.2 Organic acids\n\n\n\n\n\n\n\n\nFigure 2: Mean OD600 (rolling average) over time for C. koseri HAMBI_1287 grown on 11 organic acid carbon sources, at 0 and 512 μg/ml streptomycin. Lines show the mean across replicate wells; ribbons show an estimate of the 95% CI (mean ± 1.96 SE). Orange = ancestral (streptomycin sensitive), purple = evolved (streptomycin resistant).\n\n\n\n\n\n\n\n6.1.3 Sugars\n\n\n\n\n\n\n\n\nFigure 3: Mean OD600 (rolling average) over time for C. koseri HAMBI_1287 grown on 7 sugar carbon sources, at 0 and 512 μg/ml streptomycin. Lines show the mean across replicate wells; ribbons show an estimate of the 95% CI (mean ± 1.96 SE). Orange = ancestral (streptomycin sensitive), purple = evolved (streptomycin resistant).",
+    "crumbs": [
+      "05.A Single carbon analysis"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/01_analyze_gcurves.html#sec-h1977",
+    "href": "scripts/05_one_carbon_gcurves/01_analyze_gcurves.html#sec-h1977",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "6.2 P. chlororaphis HAMBI_1977",
+    "text": "6.2 P. chlororaphis HAMBI_1977\n\n6.2.1 Amino acids\n\n\n\n\n\n\n\n\nFigure 4: Mean OD600 (rolling average) over time for P. chlororaphis HAMBI_1977 grown on 16 amino acid carbon sources, at 0 and 10 μg/ml streptomycin. Lines show the mean across replicate wells; ribbons show an estimate of the 95% CI (mean ± 1.96 SE). Orange = ancestral (streptomycin sensitive), purple = evolved (streptomycin resistant).\n\n\n\n\n\n\n\n6.2.2 Organic acids\n\n\n\n\n\n\n\n\nFigure 5: Mean OD600 (rolling average) over time for P. chlororaphis HAMBI_1977 grown on 11 organic acid carbon sources, at 0 and 10 μg/ml streptomycin. Lines show the mean across replicate wells; ribbons show an estimate of the 95% CI (mean ± 1.96 SE). Orange = ancestral (streptomycin sensitive), purple = evolved (streptomycin resistant).\n\n\n\n\n\n\n\n6.2.3 Sugars\n\n\n\n\n\n\n\n\nFigure 6: Mean OD600 (rolling average) over time for P. chlororaphis HAMBI_1977 grown on 7 sugar carbon sources, at 0 and 10 μg/ml streptomycin. Lines show the mean across replicate wells; ribbons show an estimate of the 95% CI (mean ± 1.96 SE). Orange = ancestral (streptomycin sensitive), purple = evolved (streptomycin resistant).",
+    "crumbs": [
+      "05.A Single carbon analysis"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/02_20260410_format_growthcurves.html",
+    "href": "scripts/04_serial_transfer_coculture/02_20260410_format_growthcurves.html",
+    "title": "04.B Formatting serial transfer growth curves",
+    "section": "",
+    "text": "Strain naming convention: 1287 = Citrobacter koseri 1287, 1977 = Pseudomonas chlororaphis 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.\nGrowth media convention: M9MM = M9 minimal media with glucose as the sole carbon source and supplemented with casamino acids. R2A = Reasoner’s 2 broth (complex growth medium).\nThis experiment ran for five 48-hour growth cycles (240 hours of growth total) where each well was serially diluted to a concentration of 10-4 (10,000 fold dilution) and then placed back in the incubating plate reader.\nIn this notebook we read the five cycle exports, join them to the samplesheet, and smooth them. Each cycle export holds the 1977 plate on sheet 2 and the 1287 plate on sheet 5.",
+    "crumbs": [
+      "04.B Serial transfer QC"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/02_20260410_format_growthcurves.html#libraries",
+    "href": "scripts/04_serial_transfer_coculture/02_20260410_format_growthcurves.html#libraries",
+    "title": "04.B Formatting serial transfer growth curves",
+    "section": "2.1 Libraries",
+    "text": "2.1 Libraries\n\n\nShow/hide code\nlibrary(here)\nlibrary(tidyverse)\nlibrary(readxl)\nlibrary(stringr)\nlibrary(lubridate)\nlibrary(fs)\nlibrary(slider)\nsource(here::here(\"R\", \"gcurves.R\"))\nsource(here::here(\"R\", \"generic.R\"))",
+    "crumbs": [
+      "04.B Serial transfer QC"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/02_20260410_format_growthcurves.html#global-variables",
+    "href": "scripts/04_serial_transfer_coculture/02_20260410_format_growthcurves.html#global-variables",
+    "title": "04.B Formatting serial transfer growth curves",
+    "section": "2.2 Global variables",
+    "text": "2.2 Global variables\n\n\nShow/hide code\ndata_raw &lt;- here::here(\"data\", \"raw\", \"20260410_serial_transfer\")\ndata_processed &lt;- here::here(\n  \"data\",\n  \"processed\",\n  \"04_serial_transfer_coculture\"\n)\n\n# make processed data directory if it doesn't exist\nfs::dir_create(data_processed)",
+    "crumbs": [
+      "04.B Serial transfer QC"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/02_20260410_format_growthcurves.html#read-sample-metadata",
+    "href": "scripts/04_serial_transfer_coculture/02_20260410_format_growthcurves.html#read-sample-metadata",
+    "title": "04.B Formatting serial transfer growth curves",
+    "section": "2.3 Read sample metadata",
+    "text": "2.3 Read sample metadata\n\n\nShow/hide code\nsamplesheet_coculture &lt;- readxl::read_xlsx(here::here(\n  data_raw,\n  \"coculture_samplesheet.xlsx\"\n))\n\n\nAll dilutions done at 10,000 fold.",
+    "crumbs": [
+      "04.B Serial transfer QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/03_competition_outcomes.html",
+    "href": "scripts/03_coculture_plates/03_competition_outcomes.html",
+    "title": "03.C Growth in pairs and monoculture",
+    "section": "",
+    "text": "Strain naming convention: 1287 = Citrobacter koseri 1287, 1977 = Pseudomonas chlororaphis 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.\nHere we compare the growth of each strain in monoculture against its growth when sharing a membrane-separated well with a competitor, across a range of streptomycin concentrations.",
+    "crumbs": [
+      "03.C Competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/03_competition_outcomes.html#libraries",
+    "href": "scripts/03_coculture_plates/03_competition_outcomes.html#libraries",
+    "title": "03.C Growth in pairs and monoculture",
+    "section": "2.1 Libraries",
+    "text": "2.1 Libraries\n\n\nShow/hide code\nlibrary(here)\nlibrary(tidyverse)\nlibrary(fs)\nlibrary(scales)\nsource(here::here(\"R\", \"gcurves.R\"))\nsource(here::here(\"R\", \"generic.R\"))",
+    "crumbs": [
+      "03.C Competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/03_competition_outcomes.html#global-variables",
+    "href": "scripts/03_coculture_plates/03_competition_outcomes.html#global-variables",
+    "title": "03.C Growth in pairs and monoculture",
+    "section": "2.2 Global variables",
+    "text": "2.2 Global variables\n\n\nShow/hide code\ndata_processed &lt;- here::here(\"data\", \"processed\", \"03_coculture_plates\")\nfigs &lt;- here::here(\"output\", \"figures\")\n\n# make output directories if they don't exist\nfs::dir_create(data_processed)\nfs::dir_create(figs)",
+    "crumbs": [
+      "03.C Competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/03_competition_outcomes.html#functions",
+    "href": "scripts/03_coculture_plates/03_competition_outcomes.html#functions",
+    "title": "03.C Growth in pairs and monoculture",
+    "section": "2.3 Functions",
+    "text": "2.3 Functions\nThis function collects all the data from monocultures and cocultures for the selected species pair. Only monoculture data from streptomycin concentrations tested in co-cultures is included.\n\n\nShow/hide code\ncollect_sp_pairs &lt;- function(df, competition_pair, strep_thresh) {\n  strainpairs &lt;- stringr::str_split(competition_pair, \"_\")[[1]]\n  df %&gt;%\n    mutate(streptomycin = if_else(plate_name == \"plate01\", 0, streptomycin)) %&gt;%\n    mutate(strainID = make_strainID(evolution, strain)) %&gt;%\n    filter(strainID %in% strainpairs) %&gt;%\n    filter(str_detect(culture_type, \"diffusion\", negate = T)) %&gt;%\n    filter(streptomycin &lt;= {{ strep_thresh }}) %&gt;%\n    filter(\n      (culture_type == \"coculture\" &\n        competition_pair == {{ competition_pair }}) |\n        culture_type == \"monoculture\"\n    ) %&gt;%\n    mutate(\n      culture_type = factor(\n        culture_type,\n        levels = c(\"monoculture\", \"coculture\")\n      )\n    )\n}\n\n\nThis function plots the output from the collect_sp_pairs function.\n\n\nShow/hide code\nplot_sp_pairs &lt;- function(df, title) {\n  df_cl &lt;- df %&gt;%\n    mutate(seconds = seconds - seconds %% 1200) %&gt;%\n    mutate(hours = seconds / 3600) %&gt;%\n    summarize(\n      y = mean(OD600_rollmean),\n      sd = sd(OD600_rollmean),\n      n = n(),\n      .by = c(hours, strainID, streptomycin, competition_pair, culture_type)\n    ) %&gt;%\n    mutate(ymin = y - 1.96 * sd / sqrt(n), ymax = y + 1.96 * sd / sqrt(n))\n\n  ggplot2::ggplot() +\n    ggplot2::geom_line(\n      data = df_cl,\n      aes(\n        x = hours,\n        y = y,\n        color = strainID\n      ),\n    ) +\n    ggplot2::geom_ribbon(\n      data = df_cl,\n      aes(\n        x = hours,\n        ymin = ymin,\n        ymax = ymax,\n        fill = strainID,\n        group = interaction(strainID, streptomycin, culture_type)\n      ),\n      alpha = 0.5\n    ) +\n    ggplot2::geom_line(\n      data = df,\n      aes(\n        x = hours,\n        y = OD600_rollmean,\n        color = strainID,\n        group = interaction(well, plate_name)\n      ),\n      alpha = 0.25,\n      linewidth = 0.25\n    ) +\n    ggplot2::labs(x = \"Hours\", y = \"OD600\") +\n    ggplot2::scale_x_continuous(\n      breaks = seq(0, 48, 12),\n      labels = seq(0, 48, 12)\n    ) +\n    ggplot2::labs(\n      y = \"Optical density (600 nm), log scale\",\n      x = \"Hours\",\n      title = {{ title }}\n    ) +\n    ggplot2::scale_color_manual(values = straincols) +\n    ggplot2::scale_fill_manual(values = straincols) +\n    ggplot2::scale_y_continuous(trans = \"log\", breaks = c(0, 0.25, 0.5, 1)) +\n    ggplot2::facet_grid(culture_type ~ streptomycin) +\n    ggplot2::theme_bw() +\n    theme(legend.position = \"bottom\")\n}",
+    "crumbs": [
+      "03.C Competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/03_competition_outcomes.html#read-data",
+    "href": "scripts/03_coculture_plates/03_competition_outcomes.html#read-data",
+    "title": "03.C Growth in pairs and monoculture",
+    "section": "2.4 Read data",
+    "text": "2.4 Read data\n\n\nShow/hide code\ngcurves &lt;- readr::read_tsv(here::here(data_processed, \"gcurves_smooth.tsv\"))",
+    "crumbs": [
+      "03.C Competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/03_competition_outcomes.html#a1287-e1287",
+    "href": "scripts/03_coculture_plates/03_competition_outcomes.html#a1287-e1287",
+    "title": "03.C Growth in pairs and monoculture",
+    "section": "4.1 A1287 + E1287",
+    "text": "4.1 A1287 + E1287\n\n\nShow/hide code\nA1287E1287 &lt;- collect_sp_pairs(\n  gcurves,\n  competition_pair = \"A1287_E1287\",\n  strep_thresh = 256\n) %&gt;%\n  filter(streptomycin != 10) %&gt;%\n  write_tsv(here::here(data_processed, \"competition_A1287_E1287_final.tsv\"))\n\npA1287E1287 &lt;- plot_sp_pairs(\n  A1287E1287,\n  title = \"Sensitive 1287 (A1287) + Resistant 1287 (E1287)\"\n)\n\nggsave(\n  here::here(figs, \"A1287_E1287.svg\"),\n  plot = pA1287E1287,\n  device = \"svg\",\n  width = 9,\n  height = 4\n)\n\n\n\n\n\n\n\n\n\n\nFigure 2: Growth curves (OD600 over 48 hours) of two strains in a competing pair (denoted by color and plot title). Columns in the plot grid depict different streptomycin concentrations (μg/ml) under which growth was measured. Grid rows depict whether strains were grown in co-culture (strains inoculated into adjacent wells) or in monoculture (single strain inoculated into well with adjacent well containing sterile media only). Heavy line corresponds to mean growth while lighter lines correspond to individual replicates. The ribbon around each mean line corresponds to the 95% confidence interval (CI) around the mean. Line color corresponds to species/strain identity.",
+    "crumbs": [
+      "03.C Competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/03_competition_outcomes.html#a1977-e1977",
+    "href": "scripts/03_coculture_plates/03_competition_outcomes.html#a1977-e1977",
+    "title": "03.C Growth in pairs and monoculture",
+    "section": "4.2 A1977 + E1977",
+    "text": "4.2 A1977 + E1977\n\n\nShow/hide code\nA1977E1977 &lt;- collect_sp_pairs(\n  gcurves,\n  competition_pair = \"A1977_E1977\",\n  strep_thresh = 24\n) %&gt;%\n  # no co-cultures for these pairs done at 10 ug/ml\n  filter(streptomycin != 10) %&gt;%\n  # filter out the strange streptomycin 8 ug/ml monoculture samples\n  filter(\n    !(streptomycin == 8 & plate_name == \"plate08\" & strainID == \"A1977\")\n  ) %&gt;%\n  write_tsv(here::here(data_processed, \"competition_A1977_E1977_final.tsv\"))\n\npA1977E1977 &lt;- plot_sp_pairs(\n  A1977E1977,\n  title = \"Sensitive 1977 (A1977) + Resistant 1977 (E1977)\"\n)\n\nggsave(\n  here::here(figs, \"A1977_E1977.svg\"),\n  plot = pA1977E1977,\n  device = \"svg\",\n  width = 8,\n  height = 4\n)\n\n\n\n\n\n\n\n\n\n\nFigure 3: As in Figure 2 but for A1977 and E1977.",
+    "crumbs": [
+      "03.C Competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/03_competition_outcomes.html#a1287-a1977",
+    "href": "scripts/03_coculture_plates/03_competition_outcomes.html#a1287-a1977",
+    "title": "03.C Growth in pairs and monoculture",
+    "section": "4.3 A1287 + A1977",
+    "text": "4.3 A1287 + A1977\n\n\nShow/hide code\nA1287A1977 &lt;- collect_sp_pairs(\n  gcurves,\n  competition_pair = \"A1287_A1977\",\n  strep_thresh = 24\n) %&gt;%\n  # filter out the strange streptomycin 8 ug/ml monoculture samples\n  filter(\n    !(streptomycin == 8 & plate_name == \"plate08\" & strainID == \"A1977\")\n  ) %&gt;%\n  write_tsv(here::here(data_processed, \"competition_A1287_A1977_final.tsv\"))\n\npA1287A1977 &lt;- plot_sp_pairs(\n  A1287A1977,\n  title = \"Sensitive 1287 (A1287) + Sensitive 1977 (A1977)\"\n)\n\nggsave(\n  here::here(figs, \"A1287_A1977.svg\"),\n  plot = pA1287A1977,\n  device = \"svg\",\n  width = 8,\n  height = 4\n)\n\n\n\n\n\n\n\n\n\n\nFigure 4: As in Figure 2 but for A1287 and A1977.",
+    "crumbs": [
+      "03.C Competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/03_competition_outcomes.html#e1287-a1977",
+    "href": "scripts/03_coculture_plates/03_competition_outcomes.html#e1287-a1977",
+    "title": "03.C Growth in pairs and monoculture",
+    "section": "4.4 E1287 + A1977",
+    "text": "4.4 E1287 + A1977\n\n\nShow/hide code\nE1287A1977 &lt;- collect_sp_pairs(\n  gcurves,\n  competition_pair = \"E1287_A1977\",\n  strep_thresh = 24\n) %&gt;%\n  # no co-cultures for these pairs done at 10 ug/ml\n  filter(streptomycin != 10) %&gt;%\n  # filter out the strange streptomycin 8 ug/ml monoculture samples\n  filter(\n    !(streptomycin == 8 & plate_name == \"plate08\" & strainID == \"A1977\")\n  ) %&gt;%\n  write_tsv(here::here(data_processed, \"competition_E1287_A1977_final.tsv\"))\n\npE1287A1977 &lt;- plot_sp_pairs(\n  E1287A1977,\n  title = \"Resistant 1287 (E1287) + Sensitive 1977 (A1977)\"\n)\n\nggsave(\n  here::here(figs, \"E1287_A1977.svg\"),\n  plot = pE1287A1977,\n  device = \"svg\",\n  width = 8,\n  height = 4\n)\n\n\n\n\n\n\n\n\n\n\nFigure 5: As in Figure 2 but for E1287 and A1977.",
+    "crumbs": [
+      "03.C Competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/03_competition_outcomes.html#a1287-e1977",
+    "href": "scripts/03_coculture_plates/03_competition_outcomes.html#a1287-e1977",
+    "title": "03.C Growth in pairs and monoculture",
+    "section": "4.5 A1287 + E1977",
+    "text": "4.5 A1287 + E1977\n\n\nShow/hide code\nA1287E1977 &lt;- collect_sp_pairs(\n  gcurves,\n  competition_pair = \"A1287_E1977\",\n  strep_thresh = 256\n) %&gt;%\n  # no co-cultures for these pairs done at 10 ug/ml\n  filter(streptomycin != 10) %&gt;%\n  # filter out the strange streptomycin 8 ug/ml monoculture samples\n  filter(\n    !(streptomycin == 8 & plate_name == \"plate08\" & strainID == \"A1977\")\n  ) %&gt;%\n  write_tsv(here::here(data_processed, \"competition_A1287_E1977_final.tsv\"))\n\npA1287E1977 &lt;- plot_sp_pairs(\n  A1287E1977,\n  title = \"Sensitive 1287 (A1287) + Resistant 1977 (E1977)\"\n)\n\nggsave(\n  here::here(figs, \"A1287_E1977.svg\"),\n  plot = pA1287E1977,\n  device = \"svg\",\n  width = 9,\n  height = 4\n)\n\n\n\n\n\n\n\n\n\n\nFigure 6: As in Figure 2 but for A1287 and E1977.",
+    "crumbs": [
+      "03.C Competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/03_competition_outcomes.html#e1287-e1977",
+    "href": "scripts/03_coculture_plates/03_competition_outcomes.html#e1287-e1977",
+    "title": "03.C Growth in pairs and monoculture",
+    "section": "4.6 E1287 + E1977",
+    "text": "4.6 E1287 + E1977\n\n\nShow/hide code\nE1287E1977 &lt;- collect_sp_pairs(\n  gcurves,\n  competition_pair = \"E1287_E1977\",\n  strep_thresh = 8025600\n) %&gt;%\n  filter(streptomycin != 10) %&gt;%\n  # filter out the strange streptomycin 8 ug/ml monoculture samples\n  filter(\n    !(streptomycin == 8 & plate_name == \"plate08\" & strainID == \"A1977\")\n  ) %&gt;%\n  # removes a bad replicate where OD is over 0.8 at time 0\n  filter(\n    !(culture_type == \"monoculture\" &\n      plate_name == \"plate11\" &\n      joined_well_pair == \"E07E08\")\n  ) %&gt;%\n  write_tsv(here::here(data_processed, \"competition_E1287_E1977_final.tsv\"))\n\npE1287E1977 &lt;- plot_sp_pairs(\n  E1287E1977,\n  title = \"Resistant 1287 (E1287) + Resistant 1977 (E1977)\"\n)\n\nggsave(\n  here::here(figs, \"E1287_E1977.svg\"),\n  plot = pE1287E1977,\n  device = \"svg\",\n  width = 10,\n  height = 4\n)\n\n\n\n\n\n\n\n\n\n\nFigure 7: As in Figure 2 but for E1287 and E1977.",
+    "crumbs": [
+      "03.C Competition outcomes"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "",
+    "text": "The ancestral (streptomycin sensitive) and evolved (streptomycin resistant) forms of HAMBI_1287 and HAMBI_1977 were grown on adjacent 0.22 μm membrane-separated wells in a Verasys co-culture plate. The membrane allows free diffusion of resources and metabolic byproducts but not cells. Note that due to the unique format of the plate rows A and H do not contain any data. The plates differ by streptomycin concentration as indicated below. Measurements were collected with a Biotek Logphase 600 microplate reader.\nIn this notebook we read the plate reader exports, join them to the samplesheets, smooth them, and inspect every well.",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#libraries",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#libraries",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "2.1 Libraries",
+    "text": "2.1 Libraries\n\n\nShow/hide code\nlibrary(here)\nlibrary(tidyverse)\nlibrary(readxl)\nlibrary(stringr)\nlibrary(lubridate)\nlibrary(fs)\nlibrary(ggforce)\nlibrary(slider)\nsource(here::here(\"R\", \"gcurves.R\"))\nsource(here::here(\"R\", \"generic.R\"))",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#global-variables",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#global-variables",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "2.2 Global variables",
+    "text": "2.2 Global variables\n\n\nShow/hide code\ndata_raw &lt;- here::here(\"data\", \"raw\")\ndata_processed &lt;- here::here(\"data\", \"processed\", \"03_coculture_plates\")\n\n# make processed data directory if it doesn't exist\nfs::dir_create(data_processed)",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#read-sample-metadata",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#read-sample-metadata",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "3.1 Read sample metadata",
+    "text": "3.1 Read sample metadata\n\n\nShow/hide code\nbatch &lt;- here::here(data_raw, \"20250920_coculture_batch01\")\n\nsamplesheet_diff_test &lt;- readxl::read_xlsx(here::here(\n  batch,\n  \"diffusion_test_2_samplesheet.xlsx\"\n))\n\nsamplesheet_coculture &lt;- readxl::read_xlsx(here::here(\n  batch,\n  \"coculture_samplesheet.xlsx\"\n))",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#read-growth-curves",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#read-growth-curves",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "3.2 Read growth curves",
+    "text": "3.2 Read growth curves\nDiffusion test plate01.\n\n\nShow/hide code\nplate01 &lt;- read_logphase_xlsx(\n  here::here(\n    batch,\n    \"diffusion_test_2_Co-culture_1977_1287AE_12.9_15-syys-2025 09-00-26.xlsx\"\n  ),\n  sheet = 2,\n  skip = 1\n) %&gt;%\n  # remove rows A and H\n  filter(str_detect(well, \"^A|^H\", negate = TRUE)) %&gt;%\n  left_join(samplesheet_diff_test, by = join_by(well)) %&gt;%\n  mutate(plate_name = \"plate01\")\n\n\nExperiment plate02 - 0 μg/ml streptomycin.\n\n\nShow/hide code\nplate02 &lt;- read_logphase_xlsx(\n  here::here(batch, \"Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx\"),\n  sheet = 2,\n  skip = 1\n) %&gt;%\n  # rows A and H not collected here so they are NA\n  drop_na() %&gt;%\n  left_join(samplesheet_coculture, by = join_by(well)) %&gt;%\n  mutate(streptomycin = 0) %&gt;%\n  mutate(plate_name = \"plate02\")\n\n\nExperiment plate03 - 4 μg/ml streptomycin.\n\n\nShow/hide code\nplate03 &lt;- read_logphase_xlsx(\n  here::here(batch, \"Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx\"),\n  sheet = 5,\n  skip = 1\n) %&gt;%\n  drop_na() %&gt;%\n  left_join(samplesheet_coculture, by = join_by(well)) %&gt;%\n  mutate(streptomycin = 4) %&gt;%\n  mutate(plate_name = \"plate03\")\n\n\nExperiment plate04 - 8 μg/ml streptomycin.\n\n\nShow/hide code\nplate04 &lt;- read_logphase_xlsx(\n  here::here(batch, \"Co-culture_0_4_8ug_plates_22-syys-2025 08-17-10.xlsx\"),\n  sheet = 8,\n  skip = 1\n) %&gt;%\n  drop_na() %&gt;%\n  left_join(samplesheet_coculture, by = join_by(well)) %&gt;%\n  mutate(streptomycin = 8) %&gt;%\n  mutate(plate_name = \"plate04\")",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#read-sample-metadata-1",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#read-sample-metadata-1",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "4.1 Read sample metadata",
+    "text": "4.1 Read sample metadata\n\n\nShow/hide code\nbatch &lt;- here::here(data_raw, \"20250925_coculture_batch02\")\n\nsamplesheet_coculture &lt;- readxl::read_xlsx(here::here(\n  batch,\n  \"coculture_samplesheet.xlsx\"\n))",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#read-growth-curves-1",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#read-growth-curves-1",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "4.2 Read growth curves",
+    "text": "4.2 Read growth curves\nExperiment plate05 - 12 μg/ml streptomycin.\n\n\nShow/hide code\nplate05 &lt;- read_logphase_xlsx(\n  here::here(batch, \"Co-culture_12_16_24_ug_plates_25-syys-2025 13-42-42.xlsx\"),\n  sheet = 2,\n  skip = 1\n) %&gt;%\n  drop_na() %&gt;%\n  left_join(samplesheet_coculture, by = join_by(well)) %&gt;%\n  mutate(streptomycin = 12) %&gt;%\n  mutate(plate_name = \"plate05\")\n\n\nExperiment plate06 - 16 μg/ml streptomycin.\n\n\nShow/hide code\nplate06 &lt;- read_logphase_xlsx(\n  here::here(batch, \"Co-culture_12_16_24_ug_plates_25-syys-2025 13-42-42.xlsx\"),\n  sheet = 5,\n  skip = 1\n) %&gt;%\n  drop_na() %&gt;%\n  left_join(samplesheet_coculture, by = join_by(well)) %&gt;%\n  mutate(streptomycin = 16) %&gt;%\n  mutate(plate_name = \"plate06\")\n\n\nExperiment plate07 - 24 μg/ml streptomycin.\n\n\nShow/hide code\nplate07 &lt;- read_logphase_xlsx(\n  here::here(batch, \"Co-culture_12_16_24_ug_plates_25-syys-2025 13-42-42.xlsx\"),\n  sheet = 8,\n  skip = 1\n) %&gt;%\n  drop_na() %&gt;%\n  left_join(samplesheet_coculture, by = join_by(well)) %&gt;%\n  mutate(streptomycin = 24) %&gt;%\n  mutate(plate_name = \"plate07\")",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#plate01",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#plate01",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "8.1 plate01",
+    "text": "8.1 plate01\nGrowth curves for the “diffusion test” co-culture plate. Columns 1, 3, 5, and 7 have only M9 salts. Columns 2, 4, 6, 8, 9, 10, 11, and 12 had R2A medium. Bacteria were inoculated into rows B-D, columns 1, 3, 5, and 7 and rows E-F columns 2, 4, 6, and 8. Columns 9 and 11 were not inoculated with any bacteria.\n\n\n\n\n\n\n\n\nFigure 1: Plate01 co-culture plate growth curves. Column \\(n=\\{1\\dots11\\}\\) is connected to column \\(n+1\\) with a 0.22 μm membrane allowing free diffusion of resources and metabolic byproducts but not cells. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of five points. Orange is non-smoothed raw data.",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#plate02",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#plate02",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "8.2 plate02",
+    "text": "8.2 plate02\nGrowth curves from bacterial competition at 0 μg/ml streptomycin.\n\n\n\n\n\n\n\n\nFigure 2: As in Figure 1 but for plate02 with 0 μg/ml streptomycin.",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#plate03",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#plate03",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "8.3 plate03",
+    "text": "8.3 plate03\nGrowth curves from bacterial competition at 4 μg/ml streptomycin.\n\n\n\n\n\n\n\n\nFigure 3: As in Figure 1 but for plate03 with 4 μg/ml streptomycin.",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#plate04",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#plate04",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "8.4 plate04",
+    "text": "8.4 plate04\nGrowth curves from bacterial competition at 8 μg/ml streptomycin.\n\n\n\n\n\n\n\n\nFigure 4: As in Figure 1 but for plate04 with 8 μg/ml streptomycin.",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#plate05",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#plate05",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "8.5 plate05",
+    "text": "8.5 plate05\nGrowth curves from bacterial competition at 12 μg/ml streptomycin.\n\n\n\n\n\n\n\n\nFigure 5: As in Figure 1 but for plate05 with 12 μg/ml streptomycin.",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#plate06",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#plate06",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "8.6 plate06",
+    "text": "8.6 plate06\nGrowth curves from bacterial competition at 16 μg/ml streptomycin.\n\n\n\n\n\n\n\n\nFigure 6: As in Figure 1 but for plate06 with 16 μg/ml streptomycin.",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#plate07",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#plate07",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "8.7 plate07",
+    "text": "8.7 plate07\nGrowth curves from bacterial competition at 24 μg/ml streptomycin.\n\n\n\n\n\n\n\n\nFigure 7: As in Figure 1 but for plate07 with 24 μg/ml streptomycin.",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#plate08",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#plate08",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "8.8 plate08",
+    "text": "8.8 plate08\nGrowth curves from bacterial monocultures at 0, 4, 8 μg/ml streptomycin. Here each well pair contains only one bacterial strain.\n\n\n\n\n\n\n\n\nFigure 8: As in Figure 1 but for plate08.",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#plate09",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#plate09",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "8.9 plate09",
+    "text": "8.9 plate09\nGrowth curves from bacterial monocultures at 12, 16, 24 μg/ml streptomycin. Here each well pair contains only one bacterial strain.\n\n\n\n\n\n\n\n\nFigure 9: As in Figure 1 but for plate09.",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#plate10",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#plate10",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "8.10 plate10",
+    "text": "8.10 plate10\nGrowth curves from bacterial competition co-cultures at 64 and 256 μg/ml streptomycin.\n\n\n\n\n\n\n\n\nFigure 10: As in Figure 1 but for plate10.",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#plate11",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#plate11",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "8.11 plate11",
+    "text": "8.11 plate11\n\nmonocultures at 64 and 256 μg/ml streptomycin\ncocultures at 1028 and 4096 μg/ml streptomycin\n\n\n\n\n\n\n\n\n\nFigure 11: As in Figure 1 but for plate11.",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/01_format_growthcurves.html#plate12",
+    "href": "scripts/03_coculture_plates/01_format_growthcurves.html#plate12",
+    "title": "03.A Formatting co-culture growth curves from Logphase 600",
+    "section": "8.12 plate12",
+    "text": "8.12 plate12\n\nmonocultures at 64 and 256 μg/ml streptomycin\ncocultures at 8 and 10 μg/ml streptomycin\n\n\n\n\n\n\n\n\n\nFigure 12: As in Figure 1 but for plate12.",
+    "crumbs": [
+      "03.A Co-culture QC"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/02_growth_curve_stats.html",
+    "href": "scripts/02_biolog_ecoplates/02_growth_curve_stats.html",
+    "title": "02.B Growth statistics on Biolog Ecoplates",
+    "section": "",
+    "text": "Here we estimate maximum specific growth rate (\\(\\mathrm{\\mu_{max}}\\)) and total metabolic output (area under the growth curve) for every well of the Biolog Ecoplates formatted in the prior step.\nWe use growthrates to estimate \\(\\mathrm{\\mu_{max}}\\). I have found this works a lot better than gcplyr and is more convenient than using another tool outside of R. Nonparametric estimation of growth rates by spline is very fast. Fitting to a model takes more time resources. Generally it is best to try multiple approaches and to visualize/check the data to make sure it makes sense (Frontiers in Ecology and Evolution).",
+    "crumbs": [
+      "02.B Ecoplates growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/02_growth_curve_stats.html#libraries",
+    "href": "scripts/02_biolog_ecoplates/02_growth_curve_stats.html#libraries",
+    "title": "02.B Growth statistics on Biolog Ecoplates",
+    "section": "2.1 Libraries",
+    "text": "2.1 Libraries\n\n\nShow/hide code\nlibrary(here)\nlibrary(tidyverse)\nlibrary(growthrates)\nlibrary(DescTools)\nlibrary(ggforce)\nlibrary(fs)\nsource(here::here(\"R\", \"gcurves.R\"))\nsource(here::here(\"R\", \"generic.R\"))",
+    "crumbs": [
+      "02.B Ecoplates growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/02_growth_curve_stats.html#global-variables",
+    "href": "scripts/02_biolog_ecoplates/02_growth_curve_stats.html#global-variables",
+    "title": "02.B Growth statistics on Biolog Ecoplates",
+    "section": "2.2 Global variables",
+    "text": "2.2 Global variables\n\n\nShow/hide code\ndata_interim &lt;- here::here(\"data\", \"interim\", \"02_biolog_ecoplates\")\ndata_processed &lt;- here::here(\"data\", \"processed\", \"02_biolog_ecoplates\")\n\n# make data directories if they don't exist\nfs::dir_create(data_interim)\nfs::dir_create(data_processed)",
+    "crumbs": [
+      "02.B Ecoplates growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/02_growth_curve_stats.html#read-data",
+    "href": "scripts/02_biolog_ecoplates/02_growth_curve_stats.html#read-data",
+    "title": "02.B Growth statistics on Biolog Ecoplates",
+    "section": "2.3 Read data",
+    "text": "2.3 Read data\n\n\nShow/hide code\ngcurves_sm &lt;- readr::read_tsv(\n  here::here(data_processed, \"gcurves_smooth.tsv\")\n) %&gt;%\n  # make uniq id\n  mutate(id = paste0(plate_name, \"|\", well))",
+    "crumbs": [
+      "02.B Ecoplates growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/02_growth_curve_stats.html#plate01",
+    "href": "scripts/02_biolog_ecoplates/02_growth_curve_stats.html#plate01",
+    "title": "02.B Growth statistics on Biolog Ecoplates",
+    "section": "5.1 plate01",
+    "text": "5.1 plate01\n\n\n\n\n\n\n\n\nFigure 1: Fitted growth curves for plate01 (ancestral HAMBI_1287), showing only smoothed data (blue line, five point moving average). Orange is slope of the maximum predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.",
+    "crumbs": [
+      "02.B Ecoplates growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/02_growth_curve_stats.html#plate02",
+    "href": "scripts/02_biolog_ecoplates/02_growth_curve_stats.html#plate02",
+    "title": "02.B Growth statistics on Biolog Ecoplates",
+    "section": "5.2 plate02",
+    "text": "5.2 plate02\n\n\n\n\n\n\n\n\nFigure 2: As in Figure 1 but for EVO_1287 (columns 1-8) and ANC_1977 (columns 9-12).",
+    "crumbs": [
+      "02.B Ecoplates growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/02_growth_curve_stats.html#plate03",
+    "href": "scripts/02_biolog_ecoplates/02_growth_curve_stats.html#plate03",
+    "title": "02.B Growth statistics on Biolog Ecoplates",
+    "section": "5.3 plate03",
+    "text": "5.3 plate03\n\n\n\n\n\n\n\n\nFigure 3: As in Figure 1 but for ANC_1977 (columns 1-4) and EVO_1977 (columns 5-12).",
+    "crumbs": [
+      "02.B Ecoplates growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/01_bioscreen_strains/01_plot_analyze_growth.html",
+    "href": "scripts/01_bioscreen_strains/01_plot_analyze_growth.html",
+    "title": "01.A Monoculture growth at a range of streptomycin concentrations",
+    "section": "",
+    "text": "Inspect the monoculture growth of both Streptomycin-sensitive (Sens/Anc) and Streptomycin-resistant (Res/Evo) forms of Citrobacter koseri 1287 and Pseudomonas chlororaphis 1977 at different streptomycin concentrations.\nThese are high resolution growth curves (every 10 minutes) collected on a very nice instrument (Bioscreen). Here we examine how the monoculture growth changed with respect to evolutionary history and streptomycin concentrations.\n\n\n\n\n\n\nNoteProvenance of the input data\n\n\n\nThe three TSVs read below are not produced by any notebook in this repository. They are an export from the sister project hambiEvoEnvCoexist, subset to the two species used here, and are treated as immutable raw input. The formatting and growth-rate estimation that produced them lives in scripts/01_r2a_gcurves_bioscreen/ of that project.",
+    "crumbs": [
+      "01.A Growth vs streptomycin"
+    ]
+  },
+  {
+    "objectID": "scripts/01_bioscreen_strains/01_plot_analyze_growth.html#libraries",
+    "href": "scripts/01_bioscreen_strains/01_plot_analyze_growth.html#libraries",
+    "title": "01.A Monoculture growth at a range of streptomycin concentrations",
+    "section": "2.1 Libraries",
+    "text": "2.1 Libraries\n\n\nShow/hide code\nlibrary(here)\nlibrary(tidyverse)\nlibrary(fs)\nlibrary(scales)\nsource(here::here(\"R\", \"generic.R\"))",
+    "crumbs": [
+      "01.A Growth vs streptomycin"
+    ]
+  },
+  {
+    "objectID": "scripts/01_bioscreen_strains/01_plot_analyze_growth.html#global-variables",
+    "href": "scripts/01_bioscreen_strains/01_plot_analyze_growth.html#global-variables",
+    "title": "01.A Monoculture growth at a range of streptomycin concentrations",
+    "section": "2.2 Global variables",
+    "text": "2.2 Global variables\n\n\nShow/hide code\ndata_raw &lt;- here::here(\"data\", \"raw\", \"20240328_bioscreen_strains\")\ndata_processed &lt;- here::here(\"data\", \"processed\", \"01_bioscreen_strains\")\nfigs &lt;- here::here(\"output\", \"figures\")\n\n# make processed data and figure directories if they don't exist\nfs::dir_create(data_processed)\nfs::dir_create(figs)",
+    "crumbs": [
+      "01.A Growth vs streptomycin"
+    ]
+  },
+  {
+    "objectID": "scripts/01_bioscreen_strains/01_plot_analyze_growth.html#read-data",
+    "href": "scripts/01_bioscreen_strains/01_plot_analyze_growth.html#read-data",
+    "title": "01.A Monoculture growth at a range of streptomycin concentrations",
+    "section": "2.3 Read data",
+    "text": "2.3 Read data\n\n\nShow/hide code\nmany_auc_res &lt;- readr::read_tsv(here::here(data_raw, \"gcurve_auc_results.tsv\"))\n\nmany_spline_res &lt;- readr::read_tsv(here::here(\n  data_raw,\n  \"gcurve_spline_results.tsv\"\n))\n\ngcurves &lt;- readr::read_tsv(here::here(\n  data_raw,\n  \"gcurves_formatted_thinned.tsv\"\n))",
+    "crumbs": [
+      "01.A Growth vs streptomycin"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Data analysis for the project MCTdownUnder",
+    "section": "",
+    "text": "TBD\n\n\n\nTBD"
+  },
+  {
+    "objectID": "index.html#manuscript",
+    "href": "index.html#manuscript",
+    "title": "Data analysis for the project MCTdownUnder",
+    "section": "",
+    "text": "TBD\n\n\n\nTBD"
+  },
+  {
+    "objectID": "index.html#introduction",
+    "href": "index.html#introduction",
+    "title": "Data analysis for the project MCTdownUnder",
+    "section": "2 Introduction",
+    "text": "2 Introduction\nThe goal of this project is to examine how …"
+  },
+  {
+    "objectID": "index.html#experiment-overview",
+    "href": "index.html#experiment-overview",
+    "title": "Data analysis for the project MCTdownUnder",
+    "section": "3 Experiment overview",
+    "text": "3 Experiment overview\nThis is how we did our experiment…"
+  },
+  {
+    "objectID": "index.html#analysis-overview",
+    "href": "index.html#analysis-overview",
+    "title": "Data analysis for the project MCTdownUnder",
+    "section": "4 Analysis overview",
+    "text": "4 Analysis overview\nEvery figure and processed data file in this repository is produced by the notebooks under scripts/. Each notebook reads from data/raw/, writes analysis-ready tables to data/processed/, caches expensive model fits in data/interim/, and saves publication figures to output/figures/. Raw instrument output in data/raw/ is never modified. Shared helper functions live in R/.\nThe notebooks are grouped into six tracks, run in order within each track:\n\n\n\n\n\n\n\nTrack\nWhat it covers\n\n\n\n\nscripts/01_bioscreen_strains\nMonoculture growth across a streptomycin gradient (Bioscreen)\n\n\nscripts/02_biolog_ecoplates\nCarbon substrate use in monoculture (Biolog Ecoplates, Synergy H1)\n\n\nscripts/03_coculture_plates\nCompetition in membrane-separated co-culture plates (Logphase 600)\n\n\nscripts/04_serial_transfer_coculture\nSerial transfer co-culture over five 48 hour cycles\n\n\nscripts/05_one_carbon_gcurves\nGrowth on 20 single carbon sources across streptomycin concentrations\n\n\nscripts/06_traditional_competition\nCFU-based competition between sensitive and resistant forms of the same species"
+  },
+  {
+    "objectID": "index.html#availability",
+    "href": "index.html#availability",
+    "title": "Data analysis for the project MCTdownUnder",
+    "section": "5 Availability",
+    "text": "5 Availability\nData and code in this GitHub repository (https://github.com/slhogle/MCTdownUnder) are provided under GNU AGPL3. - An archived release of the code is available from Zenodo: https://zenodo.org/records/EVENTUAL_ZENODO_RECORD"
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/01_format_growthcurves.html",
+    "href": "scripts/02_biolog_ecoplates/01_format_growthcurves.html",
+    "title": "02.A Formatting growth curves from Synergy H1",
+    "section": "",
+    "text": "The ancestral (streptomycin sensitive) and evolved (streptomycin resistant) forms of HAMBI_1287 and HAMBI_1977 were grown on Biolog Ecoplates. These are basically a set of 32 different carbon compounds in 3 replicated sets on a 96 well plate. Microbial species or communities grown on these carbon compounds respire and reduce some dye to a purple color which is then measured on a Synergy H1 multimode microplate reader.\nIn this notebook we read the output from the Synergy H1 plate reader, join it to the samplesheets, smooth it, and inspect every well.",
+    "crumbs": [
+      "02.A Ecoplates QC"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/01_format_growthcurves.html#libraries",
+    "href": "scripts/02_biolog_ecoplates/01_format_growthcurves.html#libraries",
+    "title": "02.A Formatting growth curves from Synergy H1",
+    "section": "2.1 Libraries",
+    "text": "2.1 Libraries\n\n\nShow/hide code\nlibrary(here)\nlibrary(tidyverse)\nlibrary(readxl)\nlibrary(stringr)\nlibrary(lubridate)\nlibrary(fs)\nlibrary(ggforce)\nlibrary(slider)\nsource(here::here(\"R\", \"gcurves.R\"))\nsource(here::here(\"R\", \"generic.R\"))",
+    "crumbs": [
+      "02.A Ecoplates QC"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/01_format_growthcurves.html#global-variables",
+    "href": "scripts/02_biolog_ecoplates/01_format_growthcurves.html#global-variables",
+    "title": "02.A Formatting growth curves from Synergy H1",
+    "section": "2.2 Global variables",
+    "text": "2.2 Global variables\n\n\nShow/hide code\ndata_raw &lt;- here::here(\"data\", \"raw\")\ndata_processed &lt;- here::here(\"data\", \"processed\", \"02_biolog_ecoplates\")\n\n# make processed data directory if it doesn't exist\nfs::dir_create(data_processed)",
+    "crumbs": [
+      "02.A Ecoplates QC"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/01_format_growthcurves.html#read-sample-metadata",
+    "href": "scripts/02_biolog_ecoplates/01_format_growthcurves.html#read-sample-metadata",
+    "title": "02.A Formatting growth curves from Synergy H1",
+    "section": "4.1 Read sample metadata",
+    "text": "4.1 Read sample metadata\n\n\nShow/hide code\nsamplesheet01 &lt;- readxl::read_xlsx(here::here(\n  data_raw,\n  \"20250613_biolog_ecoplate_1287A\",\n  \"samplesheet_1287A.xlsx\"\n)) %&gt;%\n  mutate(strainID = paste0(\"HAMBI_\", strain)) %&gt;%\n  mutate(plate_name = \"plate01\")\n\nsamplesheet02 &lt;- readxl::read_xlsx(here::here(\n  data_raw,\n  \"20250619_biolog_ecoplate_1287E_1977A\",\n  \"samplesheet_1287E_1977A.xlsx\"\n)) %&gt;%\n  mutate(strainID = paste0(\"HAMBI_\", strain)) %&gt;%\n  mutate(plate_name = \"plate02\")\n\nsamplesheet03 &lt;- readxl::read_xlsx(here::here(\n  data_raw,\n  \"20250626_biolog_ecoplate_1977A_1977E\",\n  \"samplesheet_1977A_1977E.xlsx\"\n)) %&gt;%\n  mutate(strainID = paste0(\"HAMBI_\", strain)) %&gt;%\n  mutate(plate_name = \"plate03\")",
+    "crumbs": [
+      "02.A Ecoplates QC"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/01_format_growthcurves.html#join-with-metadata-to-remove-unused-samples",
+    "href": "scripts/02_biolog_ecoplates/01_format_growthcurves.html#join-with-metadata-to-remove-unused-samples",
+    "title": "02.A Formatting growth curves from Synergy H1",
+    "section": "4.2 Join with metadata to remove unused samples",
+    "text": "4.2 Join with metadata to remove unused samples\nGrouping by plate and well, we calculate a five point centered rolling mean. This reduces the jaggedness of the curves and also makes the resulting saved data file smaller.\n\n\nShow/hide code\necoplate_gcurves_sm &lt;- bind_rows(plate01, plate02, plate03) %&gt;%\n  left_join(\n    bind_rows(samplesheet01, samplesheet02, samplesheet03),\n    by = join_by(well, plate_name)\n  ) %&gt;%\n  dplyr::group_by(plate_name, well) %&gt;%\n  dplyr::mutate(\n    OD600_rollmean = slider::slide_dbl(OD600, mean, .before = 2, .after = 2)\n  ) %&gt;%\n  ungroup() %&gt;%\n  relocate(OD600_rollmean, .after = \"OD600\")\n\n# save output for later use\nreadr::write_tsv(\n  ecoplate_gcurves_sm,\n  here::here(data_processed, \"gcurves_smooth.tsv\")\n)",
+    "crumbs": [
+      "02.A Ecoplates QC"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/01_format_growthcurves.html#plate01",
+    "href": "scripts/02_biolog_ecoplates/01_format_growthcurves.html#plate01",
+    "title": "02.A Formatting growth curves from Synergy H1",
+    "section": "5.1 plate01",
+    "text": "5.1 plate01\nThis plate contains three replicates for the ancestral form of HAMBI_1287.\n\n\n\n\n\n\n\n\nFigure 1: Growth curves for the first ecoplate with the ancestral form of HAMBI_1287. X-axis is time in hours (48 hour incubation). Y axis is the absorbance scaled for each well. Blue line is smoothed with a moving average window of five points. Orange is non-smoothed.",
+    "crumbs": [
+      "02.A Ecoplates QC"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/01_format_growthcurves.html#plate02",
+    "href": "scripts/02_biolog_ecoplates/01_format_growthcurves.html#plate02",
+    "title": "02.A Formatting growth curves from Synergy H1",
+    "section": "5.2 plate02",
+    "text": "5.2 plate02\nThis plate contains EVO_1287 (columns 1-8) and ANC_1977 (columns 9-12).\n\n\n\n\n\n\n\n\nFigure 2: As in Figure 1 but for EVO_1287 (columns 1-8) and ANC_1977 (columns 9-12).",
+    "crumbs": [
+      "02.A Ecoplates QC"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/01_format_growthcurves.html#plate03",
+    "href": "scripts/02_biolog_ecoplates/01_format_growthcurves.html#plate03",
+    "title": "02.A Formatting growth curves from Synergy H1",
+    "section": "5.3 plate03",
+    "text": "5.3 plate03\nThis plate contains ANC_1977 (columns 1-4) and EVO_1977 (columns 5-12).\n\n\n\n\n\n\n\n\nFigure 3: As in Figure 1 but for ANC_1977 (columns 1-4) and EVO_1977 (columns 5-12).",
+    "crumbs": [
+      "02.A Ecoplates QC"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/03_plot_analyze_growth.html",
+    "href": "scripts/02_biolog_ecoplates/03_plot_analyze_growth.html",
+    "title": "02.C Strain growth on Biolog Ecoplates",
+    "section": "",
+    "text": "The Biolog Ecoplates utilize tetrazolium reduction to measure the metabolic response of bacterial cells to different carbon substrates. Oxidized tetrazolium salt is water soluble, colorless in solution, and can freely diffuse into bacterial cells. Once inside the cell, tetrazolium is reduced by reducing agents like NADH an NADPH which are generated via cellular metabolism and catabolism. Once reduced tetrazolium is transformed into pink product. This assay measures the accumulation of reduced tetrazolium (colormetric absorbance at 590 nm) and hence the accumulation and concentration of reducing agents from cellular metabolism. This process will reflect both the concentration of cells in solution and per-capita concentration of reductant from central metabolism. There is a useful overview of the Tetrazolium colorometric procedure available here.\nIn the prior step we imported, smoothed, and calculated summary statistics for the species growth on Biolog Ecoplates. Here we will do some simple plots and analysis of the growth data on different carbon sources from the ecoplates.",
+    "crumbs": [
+      "02.C Ecoplates carbon use"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/03_plot_analyze_growth.html#libraries",
+    "href": "scripts/02_biolog_ecoplates/03_plot_analyze_growth.html#libraries",
+    "title": "02.C Strain growth on Biolog Ecoplates",
+    "section": "2.1 Libraries",
+    "text": "2.1 Libraries\n\n\nShow/hide code\nlibrary(here)\nlibrary(tidyverse)\nlibrary(ggforce)\nlibrary(errors)\nlibrary(fs)\nsource(here::here(\"R\", \"gcurves.R\"))\nsource(here::here(\"R\", \"generic.R\"))",
+    "crumbs": [
+      "02.C Ecoplates carbon use"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/03_plot_analyze_growth.html#global-variables",
+    "href": "scripts/02_biolog_ecoplates/03_plot_analyze_growth.html#global-variables",
+    "title": "02.C Strain growth on Biolog Ecoplates",
+    "section": "2.2 Global variables",
+    "text": "2.2 Global variables\n\n\nShow/hide code\ndata_raw &lt;- here::here(\"data\", \"raw\")\ndata_processed &lt;- here::here(\"data\", \"processed\", \"02_biolog_ecoplates\")\nfigs &lt;- here::here(\"output\", \"figures\")\n\n# make output directories if they don't exist\nfs::dir_create(data_processed)\nfs::dir_create(figs)",
+    "crumbs": [
+      "02.C Ecoplates carbon use"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/03_plot_analyze_growth.html#read-data",
+    "href": "scripts/02_biolog_ecoplates/03_plot_analyze_growth.html#read-data",
+    "title": "02.C Strain growth on Biolog Ecoplates",
+    "section": "2.3 Read data",
+    "text": "2.3 Read data\nGrowth summary data (e.g., AUC and growth rates).\n\n\nShow/hide code\nmany_auc_res &lt;- readr::read_tsv(here::here(\n  data_processed,\n  \"gcurve_auc_results.tsv\"\n))\n\nmany_spline_res &lt;- readr::read_tsv(here::here(\n  data_processed,\n  \"gcurve_spline_results.tsv\"\n))\n\n\nFull growth curves.\n\n\nShow/hide code\ngcurves &lt;- readr::read_tsv(here::here(data_processed, \"gcurves_smooth.tsv\")) %&gt;%\n  arrange(strainID, well, plate_name) %&gt;%\n  group_by(strainID, evolution, plate_name, `carbon source`, well) %&gt;%\n  mutate(id = dplyr::cur_group_id()) %&gt;%\n  group_by(strainID, evolution, `carbon source`) %&gt;%\n  mutate(\n    replicate = case_when(\n      id == min(id) ~ 1,\n      id == max(id) ~ n_distinct(id),\n      TRUE ~ 2\n    )\n  ) %&gt;%\n  mutate(replicate = LETTERS[replicate]) %&gt;%\n  dplyr::select(-id) %&gt;%\n  ungroup() %&gt;%\n  rename(carbon_source = `carbon source`) %&gt;%\n  mutate(\n    hist = if_else(str_detect(evolution, \"anc\"), \"Str Sens.\", \"Str Res.\")\n  )\n\n\nRead which wells correspond to which compounds.\n\n\nShow/hide code\ncc &lt;- readr::read_tsv(here::here(data_raw, \"carbon_compound_map.tsv\")) %&gt;%\n  dplyr::select(compound, class)",
+    "crumbs": [
+      "02.C Ecoplates carbon use"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/03_plot_analyze_growth.html#hambi_1287",
+    "href": "scripts/02_biolog_ecoplates/03_plot_analyze_growth.html#hambi_1287",
+    "title": "02.C Strain growth on Biolog Ecoplates",
+    "section": "3.1 HAMBI_1287",
+    "text": "3.1 HAMBI_1287\n\n\nShow/hide code\np1287ecoplates_gcurves &lt;- gcurves %&gt;%\n  filter(strainID == \"HAMBI_1287\") %&gt;%\n  ggplot() +\n  ggplot2::geom_line(aes(\n    x = hours,\n    y = OD600_rollmean,\n    color = hist,\n    linetype = replicate,\n    group = interaction(well, plate_name)\n  )) +\n  ggplot2::labs(x = \"Hours\", y = \"OD600\") +\n  ggplot2::scale_x_continuous(\n    breaks = seq(0, 48, 12),\n    labels = seq(0, 48, 12)\n  ) +\n  labs(\n    y = \"Metabolic performance (absorbance units, λ = 590 nm)\",\n    x = \"Hours\",\n    color = \"\",\n    lintype = \"Replicate\",\n    title = \"Citrobacter koseri HAMBI_1287\"\n  ) +\n  facet_wrap(\n    ~carbon_source,\n    labeller = labeller(carbon_source = label_wrap_gen(20))\n  ) +\n  theme_mct()\n\nggsave(\n  here::here(figs, \"H1287_ecoplates_gcurves.svg\"),\n  plot = p1287ecoplates_gcurves,\n  device = \"svg\",\n  width = 7,\n  height = 8\n)\n\n\n\n\n\n\n\n\n\n\nFigure 1: Full growth curves of Citrobacter koseri HAMBI_1287 on 31 different carbon substrates and water in Biolog Ecoplates over 48 hours of growth. Metabolic activity via tetrazolium reduction is colorometrically tracked with absorbance at 590 nm. Line type denotes the biological replicate, while line color denotes adaptation to the antibiotic streptomycin.",
+    "crumbs": [
+      "02.C Ecoplates carbon use"
+    ]
+  },
+  {
+    "objectID": "scripts/02_biolog_ecoplates/03_plot_analyze_growth.html#hambi_1977",
+    "href": "scripts/02_biolog_ecoplates/03_plot_analyze_growth.html#hambi_1977",
+    "title": "02.C Strain growth on Biolog Ecoplates",
+    "section": "3.2 HAMBI_1977",
+    "text": "3.2 HAMBI_1977\n\n\nShow/hide code\np1977ecoplates_gcurves &lt;- gcurves %&gt;%\n  filter(strainID == \"HAMBI_1977\") %&gt;%\n  ggplot() +\n  ggplot2::geom_line(aes(\n    x = hours,\n    y = OD600_rollmean,\n    color = hist,\n    linetype = replicate,\n    group = interaction(well, plate_name)\n  )) +\n  ggplot2::labs(x = \"Hours\", y = \"OD600\") +\n  ggplot2::scale_x_continuous(\n    breaks = seq(0, 48, 12),\n    labels = seq(0, 48, 12)\n  ) +\n  labs(\n    y = \"Metabolic performance (absorbance units, λ = 590 nm)\",\n    x = \"Hours\",\n    color = \"\",\n    lintype = \"Replicate\",\n    title = \"Pseudomonas chlororaphis HAMBI_1977\"\n  ) +\n  facet_wrap(\n    ~carbon_source,\n    labeller = labeller(carbon_source = label_wrap_gen(20))\n  ) +\n  theme_mct()\n\nggsave(\n  here::here(figs, \"H1977_ecoplates_gcurves.svg\"),\n  plot = p1977ecoplates_gcurves,\n  device = \"svg\",\n  width = 7,\n  height = 8\n)\n\n\n\n\n\n\n\n\n\n\nFigure 2: As in Figure 1 but for Pseudomonas chlororaphis HAMBI_1977.",
+    "crumbs": [
+      "02.C Ecoplates carbon use"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/02_growth_curve_stats.html",
+    "href": "scripts/03_coculture_plates/02_growth_curve_stats.html",
+    "title": "03.B Growth statistics for co-culture plates",
+    "section": "",
+    "text": "Here we estimate maximum specific growth rate (\\(\\mathrm{\\mu_{max}}\\)) and total growth (area under the growth curve) for every well of the co-culture plates formatted in the prior step.\nWe use growthrates to estimate \\(\\mathrm{\\mu_{max}}\\). I have found this works a lot better than gcplyr and is more convenient than using another tool outside of R. Nonparametric estimation of growth rates by spline is very fast. Fitting to a model takes more time resources. Generally it is best to try multiple approaches and to visualize/check the data to make sure it makes sense (Frontiers in Ecology and Evolution).",
+    "crumbs": [
+      "03.B Co-culture growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/02_growth_curve_stats.html#libraries",
+    "href": "scripts/03_coculture_plates/02_growth_curve_stats.html#libraries",
+    "title": "03.B Growth statistics for co-culture plates",
+    "section": "2.1 Libraries",
+    "text": "2.1 Libraries\n\n\nShow/hide code\nlibrary(here)\nlibrary(tidyverse)\nlibrary(growthrates)\nlibrary(DescTools)\nlibrary(ggforce)\nlibrary(fs)\nsource(here::here(\"R\", \"gcurves.R\"))\nsource(here::here(\"R\", \"generic.R\"))",
+    "crumbs": [
+      "03.B Co-culture growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/02_growth_curve_stats.html#global-variables",
+    "href": "scripts/03_coculture_plates/02_growth_curve_stats.html#global-variables",
+    "title": "03.B Growth statistics for co-culture plates",
+    "section": "2.2 Global variables",
+    "text": "2.2 Global variables\n\n\nShow/hide code\ndata_interim &lt;- here::here(\"data\", \"interim\", \"03_coculture_plates\")\ndata_processed &lt;- here::here(\"data\", \"processed\", \"03_coculture_plates\")\n\n# make data directories if they don't exist\nfs::dir_create(data_interim)\nfs::dir_create(data_processed)",
+    "crumbs": [
+      "03.B Co-culture growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/02_growth_curve_stats.html#read-data",
+    "href": "scripts/03_coculture_plates/02_growth_curve_stats.html#read-data",
+    "title": "03.B Growth statistics for co-culture plates",
+    "section": "2.3 Read data",
+    "text": "2.3 Read data\n\n\nShow/hide code\ngcurves_sm &lt;- readr::read_tsv(\n  here::here(data_processed, \"gcurves_smooth.tsv\")\n) %&gt;%\n  # make uniq id\n  mutate(id = paste0(plate_name, \"|\", well))",
+    "crumbs": [
+      "03.B Co-culture growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate01",
+    "href": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate01",
+    "title": "03.B Growth statistics for co-culture plates",
+    "section": "5.1 plate01",
+    "text": "5.1 plate01\n\n\n\n\n\n\n\n\nFigure 1: Fitted growth curves for plate01, the diffusion test plate. Only smoothed data is shown (blue line, five point moving average). Orange is slope of the maximum predicted growth rate from the first derivative of a smoothing spline. Red dot is hours and OD600 at which maximum growth rate is reached.",
+    "crumbs": [
+      "03.B Co-culture growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate02",
+    "href": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate02",
+    "title": "03.B Growth statistics for co-culture plates",
+    "section": "5.2 plate02",
+    "text": "5.2 plate02\n\n\n\n\n\n\n\n\nFigure 2: As in Figure 1 but for plate02, competition at 0 μg/ml streptomycin.",
+    "crumbs": [
+      "03.B Co-culture growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate03",
+    "href": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate03",
+    "title": "03.B Growth statistics for co-culture plates",
+    "section": "5.3 plate03",
+    "text": "5.3 plate03\n\n\n\n\n\n\n\n\nFigure 3: As in Figure 1 but for plate03, competition at 4 μg/ml streptomycin.",
+    "crumbs": [
+      "03.B Co-culture growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate04",
+    "href": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate04",
+    "title": "03.B Growth statistics for co-culture plates",
+    "section": "5.4 plate04",
+    "text": "5.4 plate04\n\n\n\n\n\n\n\n\nFigure 4: As in Figure 1 but for plate04, competition at 8 μg/ml streptomycin.",
+    "crumbs": [
+      "03.B Co-culture growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate05",
+    "href": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate05",
+    "title": "03.B Growth statistics for co-culture plates",
+    "section": "5.5 plate05",
+    "text": "5.5 plate05\n\n\n\n\n\n\n\n\nFigure 5: As in Figure 1 but for plate05, competition at 12 μg/ml streptomycin.",
+    "crumbs": [
+      "03.B Co-culture growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate06",
+    "href": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate06",
+    "title": "03.B Growth statistics for co-culture plates",
+    "section": "5.6 plate06",
+    "text": "5.6 plate06\n\n\n\n\n\n\n\n\nFigure 6: As in Figure 1 but for plate06, competition at 16 μg/ml streptomycin.",
+    "crumbs": [
+      "03.B Co-culture growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate07",
+    "href": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate07",
+    "title": "03.B Growth statistics for co-culture plates",
+    "section": "5.7 plate07",
+    "text": "5.7 plate07\n\n\n\n\n\n\n\n\nFigure 7: As in Figure 1 but for plate07, competition at 24 μg/ml streptomycin.",
+    "crumbs": [
+      "03.B Co-culture growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate08",
+    "href": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate08",
+    "title": "03.B Growth statistics for co-culture plates",
+    "section": "5.8 plate08",
+    "text": "5.8 plate08\n\n\n\n\n\n\n\n\nFigure 8: As in Figure 1 but for plate08, monocultures at 0, 4, 8 μg/ml streptomycin.",
+    "crumbs": [
+      "03.B Co-culture growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate09",
+    "href": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate09",
+    "title": "03.B Growth statistics for co-culture plates",
+    "section": "5.9 plate09",
+    "text": "5.9 plate09\n\n\n\n\n\n\n\n\nFigure 9: As in Figure 1 but for plate09, monocultures at 12, 16, 24 μg/ml streptomycin.",
+    "crumbs": [
+      "03.B Co-culture growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate10",
+    "href": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate10",
+    "title": "03.B Growth statistics for co-culture plates",
+    "section": "5.10 plate10",
+    "text": "5.10 plate10\n\n\n\n\n\n\n\n\nFigure 10: As in Figure 1 but for plate10, cocultures at 64 and 256 μg/ml streptomycin.",
+    "crumbs": [
+      "03.B Co-culture growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate11",
+    "href": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate11",
+    "title": "03.B Growth statistics for co-culture plates",
+    "section": "5.11 plate11",
+    "text": "5.11 plate11\n\n\n\n\n\n\n\n\nFigure 11: As in Figure 1 but for plate11, monocultures at 64 and 256, cocultures at 1028 and 4096 μg/ml streptomycin.",
+    "crumbs": [
+      "03.B Co-culture growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate12",
+    "href": "scripts/03_coculture_plates/02_growth_curve_stats.html#plate12",
+    "title": "03.B Growth statistics for co-culture plates",
+    "section": "5.12 plate12",
+    "text": "5.12 plate12\n\n\n\n\n\n\n\n\nFigure 12: As in Figure 1 but for plate12, monocultures at 64 and 256, cocultures at 8 and 10 μg/ml streptomycin.",
+    "crumbs": [
+      "03.B Co-culture growth stats"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/01_pilot_20260202.html",
+    "href": "scripts/04_serial_transfer_coculture/01_pilot_20260202.html",
+    "title": "04.A Serial transfer pilot",
+    "section": "",
+    "text": "Strain naming convention: 1287 = Citrobacter koseri 1287, 1977 = Pseudomonas chlororaphis 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.\nThis is the pilot that preceded the main serial transfer experiment. Its purpose was to pick a serial dilution factor: each transfer was carried out at three different dilutions in parallel so we could see which one gives a full growth cycle inside a 48 hour window.\n\nd1 = 100,000 fold dilution\nd2 = 1,000 fold dilution\nd3 = 50 fold dilution\n\nPlates are named h&lt;hours&gt;_d&lt;dilution&gt;, so h96_d2 is the 1,000 fold dilution read at the 96 hour timepoint.",
+    "crumbs": [
+      "04.A Pilot 2026-02-02"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/01_pilot_20260202.html#libraries",
+    "href": "scripts/04_serial_transfer_coculture/01_pilot_20260202.html#libraries",
+    "title": "04.A Serial transfer pilot",
+    "section": "2.1 Libraries",
+    "text": "2.1 Libraries\n\n\nShow/hide code\nlibrary(here)\nlibrary(tidyverse)\nlibrary(readxl)\nlibrary(stringr)\nlibrary(lubridate)\nlibrary(fs)\nlibrary(ggforce)\nlibrary(slider)\nsource(here::here(\"R\", \"gcurves.R\"))\nsource(here::here(\"R\", \"generic.R\"))",
+    "crumbs": [
+      "04.A Pilot 2026-02-02"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/01_pilot_20260202.html#global-variables",
+    "href": "scripts/04_serial_transfer_coculture/01_pilot_20260202.html#global-variables",
+    "title": "04.A Serial transfer pilot",
+    "section": "2.2 Global variables",
+    "text": "2.2 Global variables\n\n\nShow/hide code\ndata_raw &lt;- here::here(\"data\", \"raw\", \"20260202_serial_transfer_pilot\")\ndata_processed &lt;- here::here(\n  \"data\",\n  \"processed\",\n  \"04_serial_transfer_coculture\"\n)\nfigs &lt;- here::here(\"output\", \"figures\")\n\n# make output directories if they don't exist\nfs::dir_create(data_processed)\nfs::dir_create(figs)",
+    "crumbs": [
+      "04.A Pilot 2026-02-02"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/01_pilot_20260202.html#read-sample-metadata",
+    "href": "scripts/04_serial_transfer_coculture/01_pilot_20260202.html#read-sample-metadata",
+    "title": "04.A Serial transfer pilot",
+    "section": "2.3 Read sample metadata",
+    "text": "2.3 Read sample metadata\n\n\nShow/hide code\nsamplesheet_coculture &lt;- readxl::read_xlsx(here::here(\n  data_raw,\n  \"coculture_samplesheet.xlsx\"\n))",
+    "crumbs": [
+      "04.A Pilot 2026-02-02"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/01_pilot_20260202.html#hours",
+    "href": "scripts/04_serial_transfer_coculture/01_pilot_20260202.html#hours",
+    "title": "04.A Serial transfer pilot",
+    "section": "3.1 48 hours",
+    "text": "3.1 48 hours\n\n\nShow/hide code\nh48_d1 &lt;- read_pilot_plate(\n  \"Coculture_45h_04-helmi-2026 11-54-19.xlsx\", 2, 100000, \"h48_d1\", 0\n)\n\nh48_d3 &lt;- read_pilot_plate(\n  \"Coculture_45h_04-helmi-2026 11-54-19.xlsx\", 5, 50, \"h48_d3\", 0\n)",
+    "crumbs": [
+      "04.A Pilot 2026-02-02"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/01_pilot_20260202.html#hours-1",
+    "href": "scripts/04_serial_transfer_coculture/01_pilot_20260202.html#hours-1",
+    "title": "04.A Serial transfer pilot",
+    "section": "3.2 96 hours",
+    "text": "3.2 96 hours\n\n\nShow/hide code\nh96_d1 &lt;- read_pilot_plate(\n  \"Co-culture_96h_06-helmi-2026 11-54-27.xlsx\", 2, 100000, \"h96_d1\", 45\n)\n\nh96_d2 &lt;- read_pilot_plate(\n  \"Co-culture_96h_06-helmi-2026 11-54-27.xlsx\", 5, 1000, \"h96_d2\", 45\n)\n\nh96_d3 &lt;- read_pilot_plate(\n  \"Co-culture_96h_06-helmi-2026 11-54-27.xlsx\", 8, 50, \"h96_d3\", 45\n)",
+    "crumbs": [
+      "04.A Pilot 2026-02-02"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/01_pilot_20260202.html#hours-2",
+    "href": "scripts/04_serial_transfer_coculture/01_pilot_20260202.html#hours-2",
+    "title": "04.A Serial transfer pilot",
+    "section": "3.3 144 hours",
+    "text": "3.3 144 hours\n\n\nShow/hide code\nh144_d1 &lt;- read_pilot_plate(\n  \"Co-culture_6.2_09-helmi-2026 15-48-52.xlsx\", 2, 100000, \"h144_d1\", 96\n)\n\nh144_d2 &lt;- read_pilot_plate(\n  \"Co-culture_6.2_09-helmi-2026 15-48-52.xlsx\", 5, 1000, \"h144_d2\", 96\n)\n\nh144_d3 &lt;- read_pilot_plate(\n  \"Co-culture_6.2_09-helmi-2026 15-48-52.xlsx\", 8, 50, \"h144_d3\", 96\n)",
+    "crumbs": [
+      "04.A Pilot 2026-02-02"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html",
+    "href": "scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html",
+    "title": "04.C Serial transfer of co-culture pairs",
+    "section": "",
+    "text": "Strain naming convention: 1287 = Citrobacter koseri 1287, 1977 = Pseudomonas chlororaphis 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.\nGrowth media convention: M9MM = M9 minimal media with glucose as the sole carbon source and supplemented with casamino acids. R2A = Reasoner’s 2 broth (complex growth medium).\nThis experiment ran for five 48-hour growth cycles (240 hours of growth total) where each well was serially diluted to a concentration of 10-4 (10,000 fold dilution) and then placed back in the incubating plate reader.\nHere we inspect every cycle, drop the well pairs that grew where nothing should have grown, and plot the competition time course with all five cycles joined end to end.",
+    "crumbs": [
+      "04.C Serial transfer results"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html#libraries",
+    "href": "scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html#libraries",
+    "title": "04.C Serial transfer of co-culture pairs",
+    "section": "2.1 Libraries",
+    "text": "2.1 Libraries\n\n\nShow/hide code\nlibrary(here)\nlibrary(tidyverse)\nlibrary(fs)\nlibrary(ggforce)\nsource(here::here(\"R\", \"gcurves.R\"))\nsource(here::here(\"R\", \"generic.R\"))",
+    "crumbs": [
+      "04.C Serial transfer results"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html#global-variables",
+    "href": "scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html#global-variables",
+    "title": "04.C Serial transfer of co-culture pairs",
+    "section": "2.2 Global variables",
+    "text": "2.2 Global variables\n\n\nShow/hide code\ndata_processed &lt;- here::here(\n  \"data\",\n  \"processed\",\n  \"04_serial_transfer_coculture\"\n)\nfigs &lt;- here::here(\"output\", \"figures\")\n\n# make output directories if they don't exist\nfs::dir_create(data_processed)\nfs::dir_create(figs)",
+    "crumbs": [
+      "04.C Serial transfer results"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html#read-data",
+    "href": "scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html#read-data",
+    "title": "04.C Serial transfer of co-culture pairs",
+    "section": "2.3 Read data",
+    "text": "2.3 Read data\nFormatted in the prior step.\n\n\nShow/hide code\ncoculture_gcurves_sm_1977 &lt;- readr::read_tsv(\n  here::here(data_processed, \"20260410_1977_gcurves_smooth.tsv\")\n)\n\ncoculture_gcurves_sm_1287 &lt;- readr::read_tsv(\n  here::here(data_processed, \"20260410_1287_gcurves_smooth.tsv\")\n)",
+    "crumbs": [
+      "04.C Serial transfer results"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html#pseudomonas-chlororaphis-1977",
+    "href": "scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html#pseudomonas-chlororaphis-1977",
+    "title": "04.C Serial transfer of co-culture pairs",
+    "section": "3.1 Pseudomonas chlororaphis 1977",
+    "text": "3.1 Pseudomonas chlororaphis 1977\n\nCycle 1Cycle 2Cycle 3Cycle 4Cycle 5\n\n\n\n\n\n\n\n\n\n\nFigure 1: Growth curves for P. chlororaphis 1977, cycle 1. X-axis is time in hours (48 hour cycle). Blue line is smoothed with a moving average window of five points, orange dashed is non-smoothed raw data.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 2: As in Figure 1 but for cycle 2.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 3: As in Figure 1 but for cycle 3.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 4: As in Figure 1 but for cycle 4.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 5: As in Figure 1 but for cycle 5.",
+    "crumbs": [
+      "04.C Serial transfer results"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html#citrobacter-koseri-1287",
+    "href": "scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html#citrobacter-koseri-1287",
+    "title": "04.C Serial transfer of co-culture pairs",
+    "section": "3.2 Citrobacter koseri 1287",
+    "text": "3.2 Citrobacter koseri 1287\n\nCycle 1Cycle 2Cycle 3Cycle 4Cycle 5\n\n\n\n\n\n\n\n\n\n\nFigure 6: Growth curves for C. koseri 1287, cycle 1. X-axis is time in hours (48 hour cycle). Blue line is smoothed with a moving average window of five points, orange dashed is non-smoothed raw data.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 7: As in Figure 6 but for cycle 2.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 8: As in Figure 6 but for cycle 3.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 9: As in Figure 6 but for cycle 4.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 10: As in Figure 6 but for cycle 5.",
+    "crumbs": [
+      "04.C Serial transfer results"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html#citrobacter-koseri-1287-1",
+    "href": "scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html#citrobacter-koseri-1287-1",
+    "title": "04.C Serial transfer of co-culture pairs",
+    "section": "5.1 Citrobacter koseri 1287",
+    "text": "5.1 Citrobacter koseri 1287\n\n\nShow/hide code\np1287 &lt;- plot_competition_timecourse(\n  coculture_gcurves_pruned_1287,\n  title = \"Citrobacter 1287\"\n)\n\nggsave(\n  here::here(figs, \"20260410_1287_competition_timecourse.svg\"),\n  p1287,\n  device = \"svg\",\n  dpi = 300,\n  width = 10,\n  height = 6\n)\n\n\n\n\n\n\n\n\n\n\nFigure 11: Serial transfer growth curves (OD600) over five 48 hour growth cycles (240 hours total) for Citrobacter koseri 1287. Columns in the plot grid depict growth in monoculture or co-culture. Grid rows depict the growth medium and streptomycin concentrations. Heavy line corresponds to mean growth and the ribbon around each mean line corresponds to one standard deviation. Dashed vertical lines depict the serial transfer events. Color depicts the streptomycin resistance status (evo = resistant, anc = streptomycin sensitive).",
+    "crumbs": [
+      "04.C Serial transfer results"
+    ]
+  },
+  {
+    "objectID": "scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html#pseudomonas-chlororaphis-1977-1",
+    "href": "scripts/04_serial_transfer_coculture/03_20260410_prune_and_plot.html#pseudomonas-chlororaphis-1977-1",
+    "title": "04.C Serial transfer of co-culture pairs",
+    "section": "5.2 Pseudomonas chlororaphis 1977",
+    "text": "5.2 Pseudomonas chlororaphis 1977\n\n\nShow/hide code\np1977 &lt;- plot_competition_timecourse(\n  coculture_gcurves_pruned_1977,\n  title = \"Pseudomonas 1977\"\n)\n\nggsave(\n  here::here(figs, \"20260410_1977_competition_timecourse.svg\"),\n  p1977,\n  device = \"svg\",\n  dpi = 300,\n  width = 10,\n  height = 6\n)\n\n\n\n\n\n\n\n\n\n\nFigure 12: As in Figure 11 but for Pseudomonas chlororaphis 1977.",
+    "crumbs": [
+      "04.C Serial transfer results"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html",
+    "href": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "",
+    "text": "Ancestral (streptomycin sensitive) and evolved (streptomycin resistant) forms of Citrobacter koseri HAMBI_1287 and Pseudomonas chlororaphis HAMBI_1977 were grown on 33 single carbon sources in M9 minimal medium, with and without streptomycin.",
+    "crumbs": [
+      "05.B Growth summaries"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#libraries",
+    "href": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#libraries",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "2.1 Libraries",
+    "text": "2.1 Libraries\n\n\nShow/hide code\nlibrary(here)\nlibrary(tidyverse)\nlibrary(growthrates)\nlibrary(fs)\nlibrary(glue)\nlibrary(marquee)\nlibrary(bayesboot)\nsource(here::here(\"R\", \"gcurves.R\"))\nsource(here::here(\"R\", \"generic.R\"))",
+    "crumbs": [
+      "05.B Growth summaries"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#global-variables",
+    "href": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#global-variables",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "2.2 Global variables",
+    "text": "2.2 Global variables\n\n\nShow/hide code\ndata_interim &lt;- here::here(\"data\", \"interim\", \"05_one_carbon_gcurves\")\ndata_processed &lt;- here::here(\"data\", \"processed\", \"05_one_carbon_gcurves\")\nfigs &lt;- here::here(\"output\", \"figures\")\n\n# make output directories if they don't exist\nfs::dir_create(data_interim)\nfs::dir_create(data_processed)\nfs::dir_create(figs)",
+    "crumbs": [
+      "05.B Growth summaries"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#growth-rates-per-well-spline-based-estimate",
+    "href": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#growth-rates-per-well-spline-based-estimate",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "4.1 Growth rates per well (spline based estimate)",
+    "text": "4.1 Growth rates per well (spline based estimate)\nUsing the tool growthrates to estimate mu_max. I have found this works a lot better than gcplyr and is more convenient than using another tool outside of R. Nonparametric estimate growth rates by spline is very fast. Fitting to a model takes more time resources. Generally it is best to try multiple approaches and to visualize/check the data to make sure it makes sense.\nUnlike upstream, the streptomycin-dosed wells are kept here.\n\n\nShow/hide code\ngcurves_thin_sm &lt;- df |&gt;\n  # exclude blanks, but keep every streptomycin concentration\n  filter(strainID != \"blank\") |&gt;\n  # need to add a small floor for numerical stability for the spline fit\n  mutate(\n    OD600_rollmean_spline = if_else(OD600_rollmean == 0, 1e-3, OD600_rollmean)\n  ) |&gt;\n  # make uniq id\n  mutate(id = paste0(plate_name, \"|\", well))\n\n\nSmoothing splines are a quick method to estimate maximum growth. The method is called nonparametric, because the growth rate is directly estimated from the smoothed data without being restricted to a specific model formula. From growthrates documentation:\n\nThe method was inspired by an algorithm of Kahm et al. (2010), with different settings and assumptions. In the moment, spline fitting is always done with log-transformed data, assuming exponential growth at the time point of the maximum of the first derivative of the spline fit. All the hard work is done by function smooth.spline from package stats, that is highly user configurable. Normally, smoothness is automatically determined via cross-validation. This works well in many cases, whereas manual adjustment is required otherwise, e.g. by setting spar to a fixed value [0, 1] that also disables cross-validation.\n\n\n\nShow/hide code\nset.seed(45278)\nmany_spline &lt;- growthrates::all_splines(\n  OD600_rollmean_spline ~ hours | id,\n  data = gcurves_thin_sm,\n  spar = 0.5\n)\n\nreadr::write_rds(\n  many_spline,\n  here::here(data_interim, \"one_carbon_spline_fits.rds\")\n)\n\n\n\n\nShow/hide code\n# get results\ngr_per_well &lt;- growthrates::results(many_spline) |&gt;\n  tidyr::separate('id', into = c(\"plate_name\", \"well\")) |&gt;\n  left_join(distinct(dplyr::select(\n    df,\n    -seconds,\n    -hours,\n    -OD600,\n    -OD600_rollmean\n  )))",
+    "crumbs": [
+      "05.B Growth summaries"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#compute-k-per-well",
+    "href": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#compute-k-per-well",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "4.2 Compute K per well",
+    "text": "4.2 Compute K per well\nSimply take the maximum observed OD600 value to get a “dumb” empirical estimate of the carrying capacity.\n\n\nShow/hide code\nk_per_well &lt;- df |&gt;\n  filter(strainID != \"blank\") |&gt;\n  arrange(plate_file, well, hours) |&gt;\n  summarize(\n    max_od = max(OD600_rollmean),\n    .by = c(\n      plate_name,\n      well,\n      strainID,\n      evo_hist,\n      streptomycin_ug_ml,\n      carbon_source,\n      carbon_class\n    )\n  )",
+    "crumbs": [
+      "05.B Growth summaries"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#compute-auc-per-well",
+    "href": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#compute-auc-per-well",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "4.3 Compute AUC per well",
+    "text": "4.3 Compute AUC per well\nArea under the growth curve (AUC) is computed per unique well using the trapezoidal rule over time in hours. OD600_rollmean values are used to reduce noise.\n\n\nShow/hide code\nauc_per_well &lt;- df |&gt;\n  filter(strainID != \"blank\") |&gt;\n  arrange(plate_file, well, hours) |&gt;\n  summarize(\n    auc = trap_auc(hours, OD600_rollmean),\n    .by = c(\n      plate_name,\n      well,\n      strainID,\n      evo_hist,\n      streptomycin_ug_ml,\n      carbon_source,\n      carbon_class\n    )\n  )",
+    "crumbs": [
+      "05.B Growth summaries"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#write-growth-summaries-to-disc",
+    "href": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#write-growth-summaries-to-disc",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "4.4 Write growth summaries to disc",
+    "text": "4.4 Write growth summaries to disc\nstreptomycin_ug_ml is carried into the summary table here — upstream it was a constant 0 and could be dropped.\n\n\nShow/hide code\nmyformatter &lt;- function(df, grvar) {\n  df |&gt;\n    dplyr::select(\n      species = strainID,\n      evo_hist,\n      streptomycin_ug_ml,\n      carbon_source,\n      carbon_class,\n      {{ grvar }}\n    ) |&gt;\n    mutate(\n      genotype = str_sub(evo_hist, 1, 1),\n    ) |&gt;\n    arrange(\n      species,\n      genotype,\n      streptomycin_ug_ml,\n      carbon_source,\n      carbon_class\n    ) |&gt;\n    group_by(\n      species,\n      genotype,\n      streptomycin_ug_ml,\n      carbon_source,\n      carbon_class\n    ) |&gt;\n    mutate(replicate = LETTERS[1:n()]) |&gt;\n    ungroup() |&gt;\n    dplyr::select(\n      species,\n      genotype,\n      streptomycin_ug_ml,\n      carbon_source,\n      carbon_class,\n      replicate,\n      {{ grvar }}\n    )\n}\n\nleft_join(myformatter(gr_per_well, mumax), myformatter(k_per_well, max_od)) |&gt;\n  left_join(myformatter(auc_per_well, auc)) |&gt;\n  rename(\n    growth_rate = mumax,\n    carrying_capacity = max_od,\n    area_under_growth_curve = auc\n  ) |&gt;\n  write_tsv(here::here(data_processed, \"growth_summaries_carbon.tsv\"))",
+    "crumbs": [
+      "05.B Growth summaries"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#bootstrap-summary-by-strainid-evo_hist-streptomycin_ug_ml-carbon_source",
+    "href": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#bootstrap-summary-by-strainid-evo_hist-streptomycin_ug_ml-carbon_source",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "4.5 Bootstrap summary by strainID, evo_hist, streptomycin_ug_ml, carbon_source",
+    "text": "4.5 Bootstrap summary by strainID, evo_hist, streptomycin_ug_ml, carbon_source\n\n\nShow/hide code\nset.seed(7391)\n\nauc_summary &lt;- auc_per_well |&gt;\n  summarize(\n    tidy_bayes_boot(auc, weighted.mean, use.weights = TRUE),\n    .by = c(strainID, evo_hist, streptomycin_ug_ml, carbon_source, carbon_class)\n  )\n\nk_summary &lt;- k_per_well |&gt;\n  summarize(\n    tidy_bayes_boot(max_od, weighted.mean, use.weights = TRUE),\n    .by = c(strainID, evo_hist, streptomycin_ug_ml, carbon_source, carbon_class)\n  )\n\n\nReplicate counts per point, so the figure captions do not have to assert one.",
+    "crumbs": [
+      "05.B Growth summaries"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#growth-summaries",
+    "href": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#growth-summaries",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "5.1 Growth summaries",
+    "text": "5.1 Growth summaries\nEach panel is one species at one streptomycin concentration. Species are never compared across panels at matched dose, because no such dose exists.\n\n\nShow/hide code\npanel_levels &lt;- c(\n  \"HAMBI_1287\\n0 μg/ml Str\",\n  \"HAMBI_1287\\n512 μg/ml Str\",\n  \"HAMBI_1977\\n0 μg/ml Str\",\n  \"HAMBI_1977\\n10 μg/ml Str\"\n)\n\nadd_panel &lt;- function(df) {\n  df |&gt;\n    mutate(\n      panel = factor(\n        paste0(\n          str_replace(strainID, \"^H\", \"HAMBI_\"),\n          \"\\n\",\n          streptomycin_ug_ml,\n          \" μg/ml Str\"\n        ),\n        levels = panel_levels\n      )\n    )\n}\n\n\n\n\nShow/hide code\nplotter &lt;- function(df, lab) {\n  dw &lt;- 0.5\n  psize &lt;- 3\n  lsize &lt;- 1\n\n  df |&gt;\n    add_panel() |&gt;\n    #mutate(carbon_source = factor(carbon_source, levels = carbon_levels)) |&gt;\n    # fill in the untested species/streptomycin/carbon combinations as explicit\n    # NA rows. Without this the connecting line is drawn straight across the\n    # four carbon sources that were never run with streptomycin, which reads as\n    # an interpolated value rather than a gap.\n    mutate(carbon_source = factor(carbon_source, levels = carbon_levels)) |&gt;\n    tidyr::complete(panel, evo_hist, carbon_source) |&gt;\n    # tidy_bayes_boot() names its point estimate `md` (median), not `mn`\n    ggplot(aes(y = md, x = carbon_source, color = evo_hist)) +\n    geom_linerange(\n      aes(ymin = ci_lo, ymax = ci_hi),\n      position = position_dodge(width = dw),\n      linewidth = lsize\n    ) +\n    geom_point(position = position_dodge(width = dw), size = psize) +\n    geom_line(\n      aes(group = evo_hist),\n      alpha = 0.5,\n      linewidth = lsize - 0.5,\n      position = position_dodge(width = dw)\n    ) +\n    # fixed rather than free_x: the +Str panels are missing four carbon\n    # sources, and free scales would misalign the rows across panels\n    facet_grid(~panel) +\n    labs(\n      y = lab,\n      x = NULL,\n      color = \"Str Resistance\"\n    ) +\n    # colour each axis label by carbon_class, looked up fresh from\n    # carbon_class_lookup by name so the colouring can't come out of step\n    # with whatever order the breaks (x) are actually passed in\n    scale_x_discrete(\n      labels = function(x) {\n        glue::glue(\"{{.{class_colors[carbon_class_lookup[x]]} {x}}}\")\n      }\n    ) +\n    scale_color_manual(values = histcols) +\n    coord_flip() +\n    theme_mct() +\n    theme(\n      axis.text.y = marquee::element_marquee(size = 11),\n      strip.text = element_text(size = 12),\n      legend.title = element_blank()\n    )\n}",
+    "crumbs": [
+      "05.B Growth summaries"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#plot-differences-in-mean-maximum-density-empirical-k",
+    "href": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#plot-differences-in-mean-maximum-density-empirical-k",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "5.2 Plot differences in mean maximum density (empirical K)",
+    "text": "5.2 Plot differences in mean maximum density (empirical K)\n\n\nShow/hide code\npk &lt;- plotter(k_summary, \"Mean K (OD600)\")\n\nggsave(\n  here::here(figs, \"one_carbon_K_strep.svg\"),\n  plot = pk,\n  device = \"svg\",\n  width = 13,\n  height = 8\n)\n\n\n\n\n\n\n\n\n\n\nFigure 1: Mean maximum density for ANC and EVO forms of each species grown on 34 substrates as the sole carbon source in a minimal medium lacking carbon, at each streptomycin concentration that species was dosed at. Mean K and bootstrapped 95% CI (2000 resamples) are computed for each combination of strainID, evo_hist, streptomycin_ug_ml and carbon_source. Point colour is streptomycin resistance evolution; y axis text colour is molecular class, starting at the top with sugars, then organic acids, then amino acids. Gaps in the +Str panels are the four carbon sources that were only run without streptomycin.",
+    "crumbs": [
+      "05.B Growth summaries"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#plot-differences-in-mean-auc-area-under-growth-curve",
+    "href": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#plot-differences-in-mean-auc-area-under-growth-curve",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "5.3 Plot differences in mean AUC (area under growth curve)",
+    "text": "5.3 Plot differences in mean AUC (area under growth curve)\n\n\nShow/hide code\npauc &lt;- plotter(auc_summary, \"Mean AUC (OD600•h)\")\n\nggsave(\n  here::here(figs, \"one_carbon_AUC_strep.svg\"),\n  plot = pauc,\n  device = \"svg\",\n  width = 13,\n  height = 8\n)\n\n\n\n\n\n\n\n\n\n\nFigure 2: As in Figure 1 but for mean area under the growth curve.",
+    "crumbs": [
+      "05.B Growth summaries"
+    ]
+  },
+  {
+    "objectID": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#plot-differences-in-mean-growth-rate",
+    "href": "scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html#plot-differences-in-mean-growth-rate",
+    "title": "05.C Growth curves on M9MM + single carbon",
+    "section": "5.4 Plot differences in mean growth rate",
+    "text": "5.4 Plot differences in mean growth rate\n\n\nShow/hide code\npgr &lt;- plotter(gr_summary, \"Mean μ (per hour)\")\n\nggsave(\n  here::here(figs, \"one_carbon_mumax_strep.svg\"),\n  plot = pgr,\n  device = \"svg\",\n  width = 13,\n  height = 8\n)\n\n\n\n\n\n\n\n\n\n\nFigure 3: As in Figure 1 but for mean maximum per capita growth rate from the spline fits.",
+    "crumbs": [
+      "05.B Growth summaries"
+    ]
+  }
+]

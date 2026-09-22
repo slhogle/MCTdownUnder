@@ -1,0 +1,221 @@
+---
+title: "01.A Monoculture growth at a range of streptomycin concentrations"
+subtitle: "Bioscreen growth curves"
+author: "Shane Hogle"
+date: today
+---
+
+# Introduction
+
+Inspect the monoculture growth of both Streptomycin-sensitive (Sens/Anc) and Streptomycin-resistant (Res/Evo) forms of *Citrobacter koseri* 1287 and *Pseudomonas chlororaphis* 1977 at different streptomycin concentrations.
+
+These are high resolution growth curves (every 10 minutes) collected on a very nice instrument (Bioscreen). Here we examine how the monoculture growth changed with respect to evolutionary history and streptomycin concentrations.
+
+::: {.callout-note}
+## Provenance of the input data
+
+The three TSVs read below are not produced by any notebook in this repository. They are an export from the sister project [hambiEvoEnvCoexist](https://github.com/slhogle/hambiEvoEnvCoexist), subset to the two species used here, and are treated as immutable raw input. The formatting and growth-rate estimation that produced them lives in `scripts/01_r2a_gcurves_bioscreen/` of that project.
+:::
+
+# Setup
+
+## Libraries
+
+```{r}
+library(here)
+library(tidyverse)
+library(fs)
+library(scales)
+source(here::here("R", "generic.R"))
+```
+
+## Global variables
+
+```{r}
+data_raw <- here::here("data", "raw", "20240328_bioscreen_strains")
+data_processed <- here::here("data", "processed", "01_bioscreen_strains")
+figs <- here::here("output", "figures")
+
+# make processed data and figure directories if they don't exist
+fs::dir_create(data_processed)
+fs::dir_create(figs)
+```
+
+## Read data
+
+```{r}
+many_auc_res <- readr::read_tsv(here::here(data_raw, "gcurve_auc_results.tsv"))
+
+many_spline_res <- readr::read_tsv(here::here(
+  data_raw,
+  "gcurve_spline_results.tsv"
+))
+
+gcurves <- readr::read_tsv(here::here(
+  data_raw,
+  "gcurves_formatted_thinned.tsv"
+))
+```
+
+# Growth curves
+
+```{r}
+pgcurves <- gcurves %>%
+  mutate(
+    hist = str_split_i(sp_hist, "_", 1),
+    sp = str_split_i(sp_hist, "_", 2),
+    strep_conc = factor(strep_conc, ordered = TRUE)
+  ) %>%
+  mutate(sp = sp_labels[sp]) %>%
+  ggplot(aes(x = hours, y = OD600_rollmean, color = hist)) +
+  geom_line(aes(group = interaction(sp_hist, bioscreen_well))) +
+  labs(
+    y = "Optical density (OD600)",
+    x = "Time (hours)",
+    color = "Evolutionary history"
+  ) +
+  facet_grid(strep_conc ~ sp) +
+  scale_color_manual(values = histcols) +
+  theme_mct()
+
+ggsave(
+  here::here(figs, "growthcurves_monoculture.svg"),
+  plot = pgcurves,
+  device = "svg",
+  width = 7,
+  height = 12
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-01
+#| fig-width: 7
+#| fig-height: 12
+#| fig-cap: Growth curves of *Citrobacter koseri* 1287 (left column grid) and *Pseudomonas chlororaphis* 1977 (right column grid) at different streptomycin concentrations (grid rows) and evolutionary histories/sensitivities to streptomycin (colors). Each line is a biological replicate (n=5). Growth (culture turbidity) is measured at 10 minute intervals over 48 hours.
+pgcurves
+```
+
+# Growth rates
+
+```{r}
+gr_strep <- many_spline_res %>%
+  mutate(
+    hist = str_split_i(sp_hist, "_", 1),
+    sp = str_split_i(sp_hist, "_", 2)
+  ) %>%
+  summarize(ggplot2::mean_cl_boot(mumax), .by = c(sp, hist, strep_conc)) %>%
+  mutate(
+    sp = sp_labels[sp],
+    strep_conc = factor(strep_conc, ordered = TRUE)
+  ) %>%
+  ggplot(aes(x = strep_conc, y = y)) +
+  geom_linerange(aes(ymin = ymin, ymax = ymax, color = hist)) +
+  geom_line(aes(color = hist, group = hist), lty = 1) +
+  geom_point(aes(color = hist)) +
+  labs(
+    y = "Maximum per capita growth rate μ (hr-1)",
+    x = "Streptomycin conc. (μg/ml)",
+    color = "Evolutionary\nhistory"
+  ) +
+  facet_grid(~sp) +
+  scale_x_discrete(guide = guide_axis(angle = 90)) +
+  scale_color_manual(values = histcols) +
+  theme_mct()
+
+ggsave(
+  here::here(figs, "u_streptomycin_monoculture.svg"),
+  plot = gr_strep,
+  device = "svg",
+  width = 7,
+  height = 4
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-02
+#| fig-width: 7
+#| fig-height: 4
+#| fig-cap: Maximum specific growth rate ($\mathrm{\mu_{max}}$ in $\mathrm{hr^{-1}}$) for the two bacterial species (panels) and their different evolutionary histories (colors) at different streptomycin concentrations (horizontal axis, μg/ml). Points are the mean over five biological replicates and line ranges show the 95% confidence interval from bootstraps. evo = experimentally evolved to high streptomycin.
+gr_strep
+```
+
+# Maximum carrying capacity (K, maximum observed OD)
+
+```{r}
+k_strep <- many_auc_res %>%
+  mutate(
+    hist = str_split_i(sp_hist, "_", 1),
+    sp = str_split_i(sp_hist, "_", 2)
+  ) %>%
+  summarize(ggplot2::mean_cl_boot(max_od), .by = c(sp, hist, strep_conc)) %>%
+  mutate(
+    sp = sp_labels[sp],
+    strep_conc = factor(strep_conc, ordered = TRUE)
+  ) %>%
+  ggplot(aes(x = strep_conc, y = y)) +
+  geom_linerange(aes(ymin = ymin, ymax = ymax, color = hist)) +
+  geom_line(aes(color = hist, group = hist), lty = 1) +
+  geom_point(aes(color = hist)) +
+  labs(
+    y = "Maximum carrying capacity (K, OD units)",
+    x = "Streptomycin conc. (μg/ml)",
+    color = "Evolutionary\nhistory"
+  ) +
+  facet_grid(~sp) +
+  scale_x_discrete(guide = guide_axis(angle = 90)) +
+  scale_color_manual(values = histcols) +
+  theme_mct()
+
+ggsave(
+  here::here(figs, "k_streptomycin_monoculture.svg"),
+  plot = k_strep,
+  device = "svg",
+  width = 7,
+  height = 4
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-03
+#| fig-width: 7
+#| fig-height: 4
+#| fig-cap: As in @fig-02 but for maximum carrying capacity (K, maximum observed OD).
+k_strep
+```
+
+# Area under the curve (AUC) vs streptomycin level
+
+Not run, but retained for reference.
+
+```{r}
+#| eval: false
+auc_strep <- many_auc_res %>%
+  mutate(
+    hist = str_split_i(sp_hist, "_", 1),
+    sp = str_split_i(sp_hist, "_", 2)
+  ) %>%
+  summarize(ggplot2::mean_cl_boot(auc), .by = c(sp, hist, strep_conc)) %>%
+  mutate(
+    sp = sp_labels[sp],
+    strep_conc = factor(strep_conc, ordered = TRUE)
+  ) %>%
+  ggplot(aes(x = strep_conc, y = y)) +
+  geom_linerange(aes(ymin = ymin, ymax = ymax, color = hist)) +
+  geom_line(aes(color = hist, group = hist), lty = 1) +
+  geom_point(aes(color = hist)) +
+  labs(
+    y = "Total area under the growth curve",
+    x = "Streptomycin conc. (μg/ml)",
+    color = "Evolutionary\nhistory"
+  ) +
+  facet_grid(~sp) +
+  scale_x_discrete(guide = guide_axis(angle = 90)) +
+  scale_color_manual(values = histcols) +
+  theme_mct()
+```

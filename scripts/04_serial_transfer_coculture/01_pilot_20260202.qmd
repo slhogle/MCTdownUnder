@@ -1,0 +1,328 @@
+---
+title: "04.A Serial transfer pilot"
+subtitle: "Choosing a dilution factor, 2026-02-02 experiment"
+author: "Shane Hogle"
+date: today
+---
+
+# Introduction
+
+Strain naming convention: 1287 = *Citrobacter koseri* 1287, 1977 = *Pseudomonas chlororaphis* 1977, A = Ancestral/Streptomycin sensitive, E = Evolved/Streptomycin resistant.
+
+This is the pilot that preceded the [main serial transfer experiment](02_20260410_format_growthcurves.qmd). Its purpose was to pick a serial dilution factor: each transfer was carried out at three different dilutions in parallel so we could see which one gives a full growth cycle inside a 48 hour window.
+
+- `d1` = 100,000 fold dilution
+- `d2` = 1,000 fold dilution
+- `d3` = 50 fold dilution
+
+Plates are named `h<hours>_d<dilution>`, so `h96_d2` is the 1,000 fold dilution read at the 96 hour timepoint.
+
+# Setup
+
+## Libraries
+
+```{r}
+library(here)
+library(tidyverse)
+library(readxl)
+library(stringr)
+library(lubridate)
+library(fs)
+library(ggforce)
+library(slider)
+source(here::here("R", "gcurves.R"))
+source(here::here("R", "generic.R"))
+```
+
+## Global variables
+
+```{r}
+data_raw <- here::here("data", "raw", "20260202_serial_transfer_pilot")
+data_processed <- here::here(
+  "data",
+  "processed",
+  "04_serial_transfer_coculture"
+)
+figs <- here::here("output", "figures")
+
+# make output directories if they don't exist
+fs::dir_create(data_processed)
+fs::dir_create(figs)
+```
+
+## Read sample metadata
+
+```{r}
+samplesheet_coculture <- readxl::read_xlsx(here::here(
+  data_raw,
+  "coculture_samplesheet.xlsx"
+))
+```
+
+# Read growth curves
+
+Note that the 1,000 fold dilution was not read at the 48 hour timepoint, so
+`h48_d2` does not exist.
+
+```{r}
+read_pilot_plate <- function(file, sheet, dilution, plate_name, start_hrs) {
+  read_logphase_xlsx(here::here(data_raw, file), sheet = sheet, skip = 1) %>%
+    left_join(samplesheet_coculture, by = join_by(well)) %>%
+    mutate(
+      dilution = dilution,
+      plate_name = plate_name,
+      start_hrs_from_0 = start_hrs
+    )
+}
+```
+
+## 48 hours
+
+```{r}
+h48_d1 <- read_pilot_plate(
+  "Coculture_45h_04-helmi-2026 11-54-19.xlsx", 2, 100000, "h48_d1", 0
+)
+
+h48_d3 <- read_pilot_plate(
+  "Coculture_45h_04-helmi-2026 11-54-19.xlsx", 5, 50, "h48_d3", 0
+)
+```
+
+## 96 hours
+
+```{r}
+h96_d1 <- read_pilot_plate(
+  "Co-culture_96h_06-helmi-2026 11-54-27.xlsx", 2, 100000, "h96_d1", 45
+)
+
+h96_d2 <- read_pilot_plate(
+  "Co-culture_96h_06-helmi-2026 11-54-27.xlsx", 5, 1000, "h96_d2", 45
+)
+
+h96_d3 <- read_pilot_plate(
+  "Co-culture_96h_06-helmi-2026 11-54-27.xlsx", 8, 50, "h96_d3", 45
+)
+```
+
+## 144 hours
+
+```{r}
+h144_d1 <- read_pilot_plate(
+  "Co-culture_6.2_09-helmi-2026 15-48-52.xlsx", 2, 100000, "h144_d1", 96
+)
+
+h144_d2 <- read_pilot_plate(
+  "Co-culture_6.2_09-helmi-2026 15-48-52.xlsx", 5, 1000, "h144_d2", 96
+)
+
+h144_d3 <- read_pilot_plate(
+  "Co-culture_6.2_09-helmi-2026 15-48-52.xlsx", 8, 50, "h144_d3", 96
+)
+```
+
+# Combine, tidy, format
+
+```{r}
+coculture_gcurves_sm <- bind_rows(
+  h48_d1,
+  h48_d3,
+  h96_d1,
+  h96_d2,
+  h96_d3,
+  h144_d1,
+  h144_d2,
+  h144_d3,
+) %>%
+  dplyr::group_by(plate_name, well) %>%
+  arrange(plate_name, well) %>%
+  dplyr::mutate(
+    OD600_rollmean = slider::slide_dbl(OD600, mean, .before = 2, .after = 2)
+  ) %>%
+  ungroup() %>%
+  relocate(OD600_rollmean, .after = "OD600")
+
+# save result for later
+readr::write_tsv(
+  coculture_gcurves_sm,
+  here::here(data_processed, "20260202_pilot_gcurves_smooth.tsv")
+)
+```
+
+# Growth curves with transfers combined
+
+```{r}
+p <- coculture_gcurves_sm %>%
+  mutate(hours_agg = hours + start_hrs_from_0) %>%
+  mutate(
+    strainID = paste0(
+      str_to_upper(str_sub(evolution, 1, 1)),
+      str_sub(strain, 2, 5)
+    ),
+    growthenv = paste(media, strep_conc_ugml, sep = "_")
+  ) %>%
+  mutate(
+    strainID = factor(strainID, levels = c("A1287", "E1287", "A1977", "E1977"))
+  ) %>%
+  summarize(
+    y = mean(OD600_rollmean),
+    sd = sd(OD600_rollmean),
+    .by = c(
+      hours_agg,
+      strainID,
+      growthenv,
+      dilution
+    )
+  ) %>%
+  ggplot(aes(
+    x = hours_agg,
+  )) +
+  ggplot2::geom_ribbon(
+    aes(ymin = y - sd, ymax = y + sd, fill = factor(dilution)),
+    alpha = 0.5,
+    show.legend = FALSE
+  ) +
+  ggplot2::geom_line(aes(y = y, color = factor(dilution)), linewidth = 0.75) +
+  facet_grid(growthenv ~ strainID) +
+  labs(
+    y = "OD",
+    x = "Total hours from start",
+    color = "Serial dilution\nfactor"
+  )
+
+ggsave(
+  here::here(figs, "20260202_pilot_trial_timecourse.png"),
+  p,
+  device = "png",
+  dpi = 300,
+  width = 14,
+  height = 8
+)
+```
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-01
+#| fig-width: 14
+#| fig-height: 8
+#| fig-cap: Pilot serial transfer time course. Grid columns are the four strains, grid rows are the growth medium and streptomycin concentration. Color is the serial dilution factor, the heavy line is the mean and the ribbon is one standard deviation. The horizontal axis joins all three transfers end to end.
+p
+```
+
+# Inspect individual growth curves
+
+```{r}
+plotter <- function(id) {
+  plotplate(
+    coculture_gcurves_sm,
+    dfxy = NULL,
+    unsmoothed = TRUE,
+    predicted = FALSE,
+    plate = id,
+    rows = 8,
+    cols = 12,
+    page = 1,
+    scales = "fixed"
+  )
+}
+```
+
+::: {.panel-tabset}
+
+## h48_d1
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-h48_d1
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Growth curves for plate h48_d1. X-axis is time in hours. Blue line is smoothed with a moving average window of five points, orange dashed is non-smoothed raw data."
+plotter("h48_d1")
+```
+
+## h48_d3
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-h48_d3
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Growth curves for plate h48_d3. X-axis is time in hours. Blue line is smoothed with a moving average window of five points, orange dashed is non-smoothed raw data."
+plotter("h48_d3")
+```
+
+## h96_d1
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-h96_d1
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Growth curves for plate h96_d1. X-axis is time in hours. Blue line is smoothed with a moving average window of five points, orange dashed is non-smoothed raw data."
+plotter("h96_d1")
+```
+
+## h96_d2
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-h96_d2
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Growth curves for plate h96_d2. X-axis is time in hours. Blue line is smoothed with a moving average window of five points, orange dashed is non-smoothed raw data."
+plotter("h96_d2")
+```
+
+## h96_d3
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-h96_d3
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Growth curves for plate h96_d3. X-axis is time in hours. Blue line is smoothed with a moving average window of five points, orange dashed is non-smoothed raw data."
+plotter("h96_d3")
+```
+
+## h144_d1
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-h144_d1
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Growth curves for plate h144_d1. X-axis is time in hours. Blue line is smoothed with a moving average window of five points, orange dashed is non-smoothed raw data."
+plotter("h144_d1")
+```
+
+## h144_d2
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-h144_d2
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Growth curves for plate h144_d2. X-axis is time in hours. Blue line is smoothed with a moving average window of five points, orange dashed is non-smoothed raw data."
+plotter("h144_d2")
+```
+
+## h144_d3
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-h144_d3
+#| fig-width: 12
+#| fig-height: 8
+#| fig-cap: "Growth curves for plate h144_d3. X-axis is time in hours. Blue line is smoothed with a moving average window of five points, orange dashed is non-smoothed raw data."
+plotter("h144_d3")
+```
+
+:::
