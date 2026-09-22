@@ -1,6 +1,8 @@
 # repo specific files
 wip
 _notrack
+# this file is too big
+growth_curves_sm_bl_filt.tsv
 
 # Quarto
 _freeze
