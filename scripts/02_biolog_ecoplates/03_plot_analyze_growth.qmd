@@ -299,6 +299,7 @@ ggsave(
 pcarbonindv
 ```
 
+<!-- 
 # Appendix: superseded code
 
 Code for plotting heatmaps of growth parameters, plotting maximum observed
@@ -437,4 +438,4 @@ absorbance, and clustering by similar responses. Retained for reference, not run
 #     strip.background = element_blank(),
 #     panel.border = element_blank()
 #   )
-```
+``` -->

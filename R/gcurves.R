@@ -61,6 +61,18 @@ plotplate <- function(
 
 # Plate reader IO ---------------------------------------------------------
 
+# Each plate reader keeps its own clock, so the raw elapsed time for what is
+# meant to be the same nominal timepoint can drift by a second or more between
+# plates/runs. Left as-is, that drift makes exact-value grouping (e.g.
+# `group_by(hours)` when pooling replicates across plates) silently fracture
+# into multiple near-duplicate groups instead of one, which shows up
+# downstream as an artificially jagged mean. Snap elapsed hours onto the
+# nominal read-interval grid (default 20 min / 1/3 hour, matching the design
+# of these growth curve runs) so timepoints line up exactly across plates.
+snap_hours <- function(hours, interval_hours = 1 / 3) {
+  round(hours / interval_hours) * interval_hours
+}
+
 # Shared tidying for the wide "Time in column 1, wells across the top" layout
 # that both plate readers export. Sets the first interval as time zero, pivots
 # to long form, and zero-pads the well ids (A1 -> A01) so they join to the
@@ -80,7 +92,10 @@ tidy_plate_wide <- function(df) {
       names_to = "well",
       values_to = "OD600"
     ) %>%
-    dplyr::mutate(hours = lubridate::time_length(seconds, unit = "hours")) %>%
+    # snap to the nominal read-interval grid so replicate plates align exactly
+    dplyr::mutate(
+      hours = snap_hours(lubridate::time_length(seconds, unit = "hours"))
+    ) %>%
     # converting the well format so it matches the samplesheet
     dplyr::mutate(
       well = paste0(
@@ -127,7 +142,10 @@ read_logphase_txt <- function(file, skip) {
       names_to = "well",
       values_to = "OD600"
     ) %>%
-    dplyr::mutate(hours = lubridate::time_length(seconds, unit = "hours")) %>%
+    # snap to the nominal read-interval grid so replicate plates align exactly
+    dplyr::mutate(
+      hours = snap_hours(lubridate::time_length(seconds, unit = "hours"))
+    ) %>%
     # converting the well format so it matches the samplesheet
     dplyr::mutate(
       well = paste0(
@@ -181,5 +199,49 @@ boot_mean_ci <- function(x, n_boot = N_BOOT, ci = 0.95) {
     mn = mean(x),
     ci_lo = stats::quantile(boot_means, alpha),
     ci_hi = stats::quantile(boot_means, 1 - alpha)
+  )
+}
+
+# To estimate a 95% confidence interval, the formula generally takes
+# the form of: Estimate ~(1.96 * std.error)
+dirty_mean_ci <- function(x, ci = 0.95) {
+  x <- x[!is.na(x)]
+  if (length(x) == 0) {
+    return(tibble::tibble(mn = NA_real_, ci_lo = NA_real_, ci_hi = NA_real_))
+  }
+  y <- mean(x)
+  se <- sd(x) / sqrt(length(x))
+  tibble::tibble(
+    mn = y,
+    ci_lo = y - 1.96 * se,
+    ci_hi = y + 1.96 * se
+  )
+}
+
+tidy_bayes_boot <- function(
+  x,
+  estimator,
+  use.weights = TRUE,
+  n_boot = 4000,
+  ci = 0.95
+) {
+  x <- x[!is.na(x)]
+  if (length(x) == 0) {
+    return(tibble::tibble(mn = NA_real_, ci_lo = NA_real_, ci_hi = NA_real_))
+  }
+  alpha <- (1 - ci) / 2
+
+  boot_estimator <- pull(bayesboot::bayesboot(
+    x,
+    {{ estimator }},
+    R = n_boot,
+    R1 = n_boot,
+    use.weights = use.weights
+  ))
+
+  tibble::tibble(
+    md = stats::quantile(boot_estimator, 0.5),
+    ci_lo = stats::quantile(boot_estimator, alpha),
+    ci_hi = stats::quantile(boot_estimator, 1 - alpha)
   )
 }

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Shane L Hogle">
-<meta name="dcterms.date" content="2026-08-19">
+<meta name="dcterms.date" content="2026-09-22">
 <meta name="keywords" content="Microbiology, Ecology, Evolution, Antimicrobial resistance (AMR)">
 
 <title>Data analysis for the project MCTdownUnder – MCTdownUnder</title>
@@ -362,16 +362,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-single-carbon">    
         <li>
-    <a class="dropdown-item" href="./scripts/05_one_carbon_gcurves/01_carbon_source_platemap_format.html">
- <span class="dropdown-text">05.A Carbon platemap</span></a>
+    <a class="dropdown-item" href="./scripts/05_one_carbon_gcurves/01_analyze_gcurves.html">
+ <span class="dropdown-text">05.A Single carbon analysis</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./scripts/05_one_carbon_gcurves/02_read_format_gcurves.html">
- <span class="dropdown-text">05.B Single carbon QC</span></a>
+    <a class="dropdown-item" href="./scripts/05_one_carbon_gcurves/02_analyze_gcurves_summary.html">
+ <span class="dropdown-text">05.B Growth summaries</span></a>
   </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-cfu-competition" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">CFU competition</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-cfu-competition">    
         <li>
-    <a class="dropdown-item" href="./scripts/05_one_carbon_gcurves/03_analyze_gcurves.html">
- <span class="dropdown-text">05.C Single carbon analysis</span></a>
+    <a class="dropdown-item" href="./scripts/06_cfu_competition/01_cfu_competition_outcomes.html">
+ <span class="dropdown-text">06.A CFU competition outcomes</span></a>
   </li>  
     </ul>
   </li>
@@ -437,7 +444,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 19, 2026</p>
+      <p class="date">September 22, 2026</p>
     </div>
   </div>
   
@@ -477,7 +484,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="analysis-overview" class="level2" data-number="4">
 <h2 data-number="4" class="anchored" data-anchor-id="analysis-overview"><span class="header-section-number">4</span> Analysis overview</h2>
 <p>Every figure and processed data file in this repository is produced by the notebooks under <code>scripts/</code>. Each notebook reads from <code>data/raw/</code>, writes analysis-ready tables to <code>data/processed/</code>, caches expensive model fits in <code>data/interim/</code>, and saves publication figures to <code>output/figures/</code>. Raw instrument output in <code>data/raw/</code> is never modified. Shared helper functions live in <code>R/</code>.</p>
-<p>The notebooks are grouped into four tracks, run in order within each track:</p>
+<p>The notebooks are grouped into six tracks, run in order within each track:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -505,6 +512,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="even">
 <td><code>scripts/04_serial_transfer_coculture</code></td>
 <td>Serial transfer co-culture over five 48 hour cycles</td>
+</tr>
+<tr class="odd">
+<td><code>scripts/05_one_carbon_gcurves</code></td>
+<td>Growth on 20 single carbon sources across streptomycin concentrations</td>
+</tr>
+<tr class="even">
+<td><code>scripts/06_traditional_competition</code></td>
+<td>CFU-based competition between sensitive and resistant forms of the same species</td>
 </tr>
 </tbody>
 </table>
@@ -1042,7 +1057,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-57"><a href="#cb1-57"></a>instrument output in <span class="in">`data/raw/`</span> is never modified. Shared helper functions</span>
 <span id="cb1-58"><a href="#cb1-58"></a>live in <span class="in">`R/`</span>.</span>
 <span id="cb1-59"><a href="#cb1-59"></a></span>
-<span id="cb1-60"><a href="#cb1-60"></a>The notebooks are grouped into four tracks, run in order within each track:</span>
+<span id="cb1-60"><a href="#cb1-60"></a>The notebooks are grouped into six tracks, run in order within each track:</span>
 <span id="cb1-61"><a href="#cb1-61"></a></span>
 <span id="cb1-62"><a href="#cb1-62"></a><span class="pp">|</span> Track <span class="pp">|</span> What it covers <span class="pp">|</span></span>
 <span id="cb1-63"><a href="#cb1-63"></a><span class="pp">|---|---|</span></span>
@@ -1050,11 +1065,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-65"><a href="#cb1-65"></a><span class="pp">|</span> <span class="in">`scripts/02_biolog_ecoplates`</span> <span class="pp">|</span> Carbon substrate use in monoculture (Biolog Ecoplates, Synergy H1) <span class="pp">|</span></span>
 <span id="cb1-66"><a href="#cb1-66"></a><span class="pp">|</span> <span class="in">`scripts/03_coculture_plates`</span> <span class="pp">|</span> Competition in membrane-separated co-culture plates (Logphase 600) <span class="pp">|</span></span>
 <span id="cb1-67"><a href="#cb1-67"></a><span class="pp">|</span> <span class="in">`scripts/04_serial_transfer_coculture`</span> <span class="pp">|</span> Serial transfer co-culture over five 48 hour cycles <span class="pp">|</span></span>
-<span id="cb1-68"><a href="#cb1-68"></a></span>
-<span id="cb1-69"><a href="#cb1-69"></a><span class="fu">## Availability</span></span>
+<span id="cb1-68"><a href="#cb1-68"></a><span class="pp">|</span> <span class="in">`scripts/05_one_carbon_gcurves`</span> <span class="pp">|</span> Growth on 20 single carbon sources across streptomycin concentrations <span class="pp">|</span></span>
+<span id="cb1-69"><a href="#cb1-69"></a><span class="pp">|</span> <span class="in">`scripts/06_traditional_competition`</span> <span class="pp">|</span> CFU-based competition between sensitive and resistant forms of the same species <span class="pp">|</span></span>
 <span id="cb1-70"><a href="#cb1-70"></a></span>
-<span id="cb1-71"><a href="#cb1-71"></a>Data and code in this GitHub repository (<span class="ot">&lt;https://github.com/slhogle/MCTdownUnder&gt;</span>) are provided under <span class="co">[</span><span class="ot">GNU AGPL3</span><span class="co">](https://www.gnu.org/licenses/agpl-3.0.html)</span>.</span>
-<span id="cb1-72"><a href="#cb1-72"></a><span class="ss">- </span>An archived release of the code is available from Zenodo: <span class="ot">&lt;https://zenodo.org/records/EVENTUAL_ZENODO_RECORD&gt;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb1-71"><a href="#cb1-71"></a><span class="fu">## Availability</span></span>
+<span id="cb1-72"><a href="#cb1-72"></a></span>
+<span id="cb1-73"><a href="#cb1-73"></a>Data and code in this GitHub repository (<span class="ot">&lt;https://github.com/slhogle/MCTdownUnder&gt;</span>) are provided under <span class="co">[</span><span class="ot">GNU AGPL3</span><span class="co">](https://www.gnu.org/licenses/agpl-3.0.html)</span>.</span>
+<span id="cb1-74"><a href="#cb1-74"></a><span class="ss">- </span>An archived release of the code is available from Zenodo: <span class="ot">&lt;https://zenodo.org/records/EVENTUAL_ZENODO_RECORD&gt;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

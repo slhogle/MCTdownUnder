@@ -1,0 +1,196 @@
+---
+title: "05.C Growth curves on M9MM + single carbon"
+subtitle: "Analysis and plots across streptomycin concentrations"
+author: "Shane Hogle"
+date: today
+toc: true
+toc-depth: 3
+---
+
+# Quick Jump:
+
+### Citrobacter koseri 
+- [amino acids](#sec-h1287-amino)
+- [organic acids](#sec-h1287-organic)
+- [sugars](#sec-h1287-sugar) 
+
+### Pseudomonas chlororaphis
+- [amino acids](#sec-h1977-amino)
+- [organic acids](#sec-h1977-organic)
+- [sugars](#sec-h1977-sugar)
+
+# Introduction
+
+Ancestral (streptomycin sensitive) and evolved (streptomycin resistant) forms of *Citrobacter koseri* HAMBI_1287 and *Pseudomonas chlororaphis* HAMBI_1977 were grown on 33 single carbon sources in M9 minimal medium, with and without streptomycin.
+
+# Setup
+
+## Libraries
+
+```{r}
+library(here)
+library(tidyverse)
+library(growthrates)
+library(fs)
+library(glue)
+library(marquee)
+library(bayesboot)
+source(here::here("R", "gcurves.R"))
+source(here::here("R", "generic.R"))
+```
+
+## Global variables
+
+```{r}
+data_interim <- here::here("data", "interim", "05_one_carbon_gcurves")
+data_processed <- here::here("data", "processed", "05_one_carbon_gcurves")
+figs <- here::here("output", "figures")
+
+# make output directories if they don't exist
+fs::dir_create(data_interim)
+fs::dir_create(data_processed)
+fs::dir_create(figs)
+```
+
+# Load data
+
+```{r}
+growth_curves_sm_bl_filt <- read_tsv(here::here(
+  data_processed,
+  "growth_curves_sm_bl_filt.tsv"
+)) |>
+  mutate(plate_name = as.character(plate_name)) |>
+  filter(strainID %in% c("H1287", "H1977")) |>
+  filter(!is.na(OD600_rollmean))
+```
+
+# Processing
+
+Take mean +- crude estimate of the 95% CI
+```{r}
+growth_curves_sm_bl_filt_95ci <- growth_curves_sm_bl_filt |>
+  summarize(
+    dirty_mean_ci(OD600_rollmean, ci = 0.95),
+    .by = c(
+      hours,
+      strainID,
+      evo_hist,
+      streptomycin_ug_ml,
+      carbon_source,
+      carbon_class
+    )
+  )
+```
+
+# Plot curves
+
+One panel of `carbon_source ~ streptomycin_ug_ml` facets per species per
+`carbon_class`, so each plot stays small enough to read (carbon classes range
+from 7 carbon sources for sugars up to 16 for amino acids). `theme_mct()` and
+`histcols` (both from `R/generic.R`) keep the styling consistent with the rest
+of the project.
+
+```{r}
+plot_gcurve_class <- function(data, species, class) {
+  data |>
+    filter(carbon_class == class & strainID == species) |>
+    ggplot(aes(x = hours, y = mn)) +
+    geom_ribbon(aes(ymin = ci_lo, ymax = ci_hi, fill = evo_hist), alpha = 0.5) +
+    geom_line(aes(color = evo_hist)) +
+    facet_grid(
+      carbon_source ~ streptomycin_ug_ml,
+      labeller = labeller(
+        carbon_source = label_wrap_gen(15),
+        streptomycin_ug_ml = \(x) paste0(x, " \u03bcg/ml")
+      )
+    ) +
+    scale_color_manual(values = histcols) +
+    scale_fill_manual(values = histcols) +
+    labs(y = "OD_600", x = "Hours") +
+    theme_mct() +
+    theme(
+      axis.text.y = marquee::element_marquee(size = 11),
+      strip.text = element_text(size = 12),
+      strip.text.y = element_text(angle = 0),
+      legend.title = element_blank()
+    )
+}
+```
+
+## C. koseri HAMBI_1287 {#sec-h1287}
+
+For coexistence, 1287 is the interesting case. Under drug, which strain is fitter flips with the carbon source: sugars, malate and amides favor EVO; other amino acids and succinate favor ANC.
+
+### Amino acids {#sec-h1287-amino}
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-01
+#| fig-cap: "Mean OD600 (rolling average) over time for *C. koseri* HAMBI_1287 grown on 16 amino acid carbon sources, at 0 and 512 μg/ml streptomycin. Lines show the mean across replicate wells; ribbons show an estimate of the 95% CI (mean ± 1.96 SE). Orange = ancestral (streptomycin sensitive), purple = evolved (streptomycin resistant)."
+#| fig-width: 7
+#| fig-height: 17
+plot_gcurve_class(growth_curves_sm_bl_filt_95ci, "H1287", "amino_acid")
+```
+
+### Organic acids {#sec-h1287-organic}
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-02
+#| fig-cap: "Mean OD600 (rolling average) over time for *C. koseri* HAMBI_1287 grown on 11 organic acid carbon sources, at 0 and 512 μg/ml streptomycin. Lines show the mean across replicate wells; ribbons show an estimate of the 95% CI (mean ± 1.96 SE). Orange = ancestral (streptomycin sensitive), purple = evolved (streptomycin resistant)."
+#| fig-width: 7
+#| fig-height: 12
+plot_gcurve_class(growth_curves_sm_bl_filt_95ci, "H1287", "organic_acid")
+```
+
+### Sugars {#sec-h1287-sugar}
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-03
+#| fig-cap: "Mean OD600 (rolling average) over time for *C. koseri* HAMBI_1287 grown on 7 sugar carbon sources, at 0 and 512 μg/ml streptomycin. Lines show the mean across replicate wells; ribbons show an estimate of the 95% CI (mean ± 1.96 SE). Orange = ancestral (streptomycin sensitive), purple = evolved (streptomycin resistant)."
+#| fig-width: 7
+#| fig-height: 8
+plot_gcurve_class(growth_curves_sm_bl_filt_95ci, "H1287", "sugar")
+```
+
+## P. chlororaphis HAMBI_1977 {#sec-h1977}
+
+### Amino acids {#sec-h1977-amino}
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-04
+#| fig-cap: "Mean OD600 (rolling average) over time for *P. chlororaphis* HAMBI_1977 grown on 16 amino acid carbon sources, at 0 and 10 μg/ml streptomycin. Lines show the mean across replicate wells; ribbons show an estimate of the 95% CI (mean ± 1.96 SE). Orange = ancestral (streptomycin sensitive), purple = evolved (streptomycin resistant)."
+#| fig-width: 7
+#| fig-height: 17
+plot_gcurve_class(growth_curves_sm_bl_filt_95ci, "H1977", "amino_acid")
+```
+
+### Organic acids {#sec-h1977-organic}
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-05
+#| fig-cap: "Mean OD600 (rolling average) over time for *P. chlororaphis* HAMBI_1977 grown on 11 organic acid carbon sources, at 0 and 10 μg/ml streptomycin. Lines show the mean across replicate wells; ribbons show an estimate of the 95% CI (mean ± 1.96 SE). Orange = ancestral (streptomycin sensitive), purple = evolved (streptomycin resistant)."
+#| fig-width: 7
+#| fig-height: 12
+plot_gcurve_class(growth_curves_sm_bl_filt_95ci, "H1977", "organic_acid")
+```
+
+### Sugars {#sec-h1977-sugar}
+
+```{r}
+#| echo: false
+#| output: true
+#| label: fig-06
+#| fig-cap: "Mean OD600 (rolling average) over time for *P. chlororaphis* HAMBI_1977 grown on 7 sugar carbon sources, at 0 and 10 μg/ml streptomycin. Lines show the mean across replicate wells; ribbons show an estimate of the 95% CI (mean ± 1.96 SE). Orange = ancestral (streptomycin sensitive), purple = evolved (streptomycin resistant)."
+#| fig-width: 7
+#| fig-height: 8
+plot_gcurve_class(growth_curves_sm_bl_filt_95ci, "H1977", "sugar")
+```
