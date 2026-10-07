@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Shane Hogle">
-<meta name="dcterms.date" content="2026-09-22">
+<meta name="dcterms.date" content="2026-10-07">
 
 <title>05.C Growth curves on M9MM + single carbon – MCTdownUnder</title>
 <style>
@@ -479,7 +479,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 22, 2026</p>
+      <p class="date">October 7, 2026</p>
     </div>
   </div>
   
@@ -538,9 +538,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <summary>Show/hide code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(</span>
 <span id="cb3-2"><a href="#cb3-2"></a>  data_processed,</span>
-<span id="cb3-3"><a href="#cb3-3"></a>  <span class="st">"growth_curves_sm_bl_filt.tsv"</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="st">"growth_curves_sm_bl_filt_nr.tsv"</span></span>
 <span id="cb3-4"><a href="#cb3-4"></a>)) <span class="sc">|&gt;</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a>  <span class="fu">mutate</span>(<span class="at">plate_name =</span> <span class="fu">as.character</span>(plate_name)) <span class="sc">|&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>  <span class="fu">mutate</span>(<span class="at">plate_name =</span> <span class="fu">as.character</span>(plate_int)) <span class="sc">|&gt;</span></span>
 <span id="cb3-6"><a href="#cb3-6"></a>  <span class="fu">filter</span>(strainID <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"H1287"</span>, <span class="st">"H1977"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb3-7"><a href="#cb3-7"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(OD600_rollmean))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
@@ -732,7 +732,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
-{"columns":[{"label":["metric"],"name":[1],"type":["chr"],"align":["left"]},{"label":["strainID"],"name":[2],"type":["chr"],"align":["left"]},{"label":["streptomycin_ug_ml"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["wells"],"name":[4],"type":["int"],"align":["right"]},{"label":["reps_per_point"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"K","2":"H1287","3":"0","4":"66","5":"8, 16"},{"1":"K","2":"H1287","3":"512","4":"64","5":"8"},{"1":"K","2":"H1977","3":"0","4":"66","5":"8, 16"},{"1":"K","2":"H1977","3":"10","4":"64","5":"8"},{"1":"auc","2":"H1287","3":"0","4":"66","5":"8, 16"},{"1":"auc","2":"H1287","3":"512","4":"64","5":"8"},{"1":"auc","2":"H1977","3":"0","4":"66","5":"8, 16"},{"1":"auc","2":"H1977","3":"10","4":"64","5":"8"},{"1":"mu","2":"H1287","3":"0","4":"66","5":"8, 16"},{"1":"mu","2":"H1287","3":"512","4":"64","5":"8"},{"1":"mu","2":"H1977","3":"0","4":"66","5":"8, 16"},{"1":"mu","2":"H1977","3":"10","4":"64","5":"8"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["metric"],"name":[1],"type":["chr"],"align":["left"]},{"label":["strainID"],"name":[2],"type":["chr"],"align":["left"]},{"label":["streptomycin_ug_ml"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["wells"],"name":[4],"type":["int"],"align":["right"]},{"label":["reps_per_point"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"K","2":"H1287","3":"0","4":"68","5":"8, 16, 24"},{"1":"K","2":"H1287","3":"512","4":"68","5":"8, 16"},{"1":"K","2":"H1977","3":"0","4":"68","5":"8, 16, 24"},{"1":"K","2":"H1977","3":"10","4":"68","5":"8, 16"},{"1":"auc","2":"H1287","3":"0","4":"68","5":"8, 16, 24"},{"1":"auc","2":"H1287","3":"512","4":"68","5":"8, 16"},{"1":"auc","2":"H1977","3":"0","4":"68","5":"8, 16, 24"},{"1":"auc","2":"H1977","3":"10","4":"68","5":"8, 16"},{"1":"mu","2":"H1287","3":"0","4":"68","5":"8, 16, 24"},{"1":"mu","2":"H1287","3":"512","4":"68","5":"8, 16"},{"1":"mu","2":"H1977","3":"0","4":"68","5":"8, 16, 24"},{"1":"mu","2":"H1977","3":"10","4":"68","5":"8, 16"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>
@@ -1465,9 +1465,9 @@ Figure&nbsp;3: As in <a href="#fig-01" class="quarto-xref">Figure&nbsp;1</a> but
 <span id="cb17-50"><a href="#cb17-50"></a><span class="in">```{r}</span></span>
 <span id="cb17-51"><a href="#cb17-51"></a>df <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(</span>
 <span id="cb17-52"><a href="#cb17-52"></a>  data_processed,</span>
-<span id="cb17-53"><a href="#cb17-53"></a>  <span class="st">"growth_curves_sm_bl_filt.tsv"</span></span>
+<span id="cb17-53"><a href="#cb17-53"></a>  <span class="st">"growth_curves_sm_bl_filt_nr.tsv"</span></span>
 <span id="cb17-54"><a href="#cb17-54"></a>)) <span class="sc">|&gt;</span></span>
-<span id="cb17-55"><a href="#cb17-55"></a>  <span class="fu">mutate</span>(<span class="at">plate_name =</span> <span class="fu">as.character</span>(plate_name)) <span class="sc">|&gt;</span></span>
+<span id="cb17-55"><a href="#cb17-55"></a>  <span class="fu">mutate</span>(<span class="at">plate_name =</span> <span class="fu">as.character</span>(plate_int)) <span class="sc">|&gt;</span></span>
 <span id="cb17-56"><a href="#cb17-56"></a>  <span class="fu">filter</span>(strainID <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"H1287"</span>, <span class="st">"H1977"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb17-57"><a href="#cb17-57"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(OD600_rollmean))</span>
 <span id="cb17-58"><a href="#cb17-58"></a><span class="in">```</span></span>

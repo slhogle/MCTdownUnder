@@ -44,9 +44,9 @@ fs::dir_create(figs)
 ```{r}
 df <- read_tsv(here::here(
   data_processed,
-  "growth_curves_sm_bl_filt.tsv"
+  "growth_curves_sm_bl_filt_nr.tsv"
 )) |>
-  mutate(plate_name = as.character(plate_name)) |>
+  mutate(plate_name = as.character(plate_int)) |>
   filter(strainID %in% c("H1287", "H1977")) |>
   filter(!is.na(OD600_rollmean))
 ```

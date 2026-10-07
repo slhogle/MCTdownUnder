@@ -3,6 +3,7 @@ wip
 _notrack
 # this file is too big
 growth_curves_sm_bl_filt.tsv
+growth_curves_sm_bl_filt_nr.tsv
 
 # Quarto
 _freeze
