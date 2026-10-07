@@ -14,6 +14,7 @@ _freeze
 .vscode
 .posit
 AGENTS.md
+CLAUDE.md
 
 # ----- R ----- #
 # package specific files
